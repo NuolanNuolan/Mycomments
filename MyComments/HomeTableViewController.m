@@ -7,12 +7,24 @@
 //
 
 #import "HomeTableViewController.h"
+#import "BWCommon.h"
+#import "CommentTableViewCell.h"
+#import "CommentTableViewFrame.h"
+#import "BWSectionView.h"
+#import "AFNetworkTool.h"
 
 @interface HomeTableViewController ()
+@property (nonatomic, strong) NSArray *statusFrames;
+@property (nonatomic,assign) NSUInteger gpage;
 
 @end
 
 @implementation HomeTableViewController
+
+@synthesize dataArray;
+@synthesize popularCityArray;
+
+CGSize size;
 
 - (void)viewDidLoad {
     [super viewDidLoad];
@@ -22,6 +34,108 @@
     
     // Uncomment the following line to display an Edit button in the navigation bar for this view controller.
     // self.navigationItem.rightBarButtonItem = self.editButtonItem;
+    
+    [self pageLayout];
+}
+
+-(void) pageLayout{
+    
+    CGRect rect = [[UIScreen mainScreen] bounds];
+    size = rect.size;
+    
+    [self.view setBackgroundColor:[UIColor colorWithPatternImage:[UIImage imageNamed:@"bg.gif"]]];
+    
+    dataArray = [[NSMutableArray alloc] init];
+    
+    popularCityArray = [BWCommon getDataInfo:@"popular_city"];
+    
+    self.gpage = 1;
+    
+    [self refreshingData:self.gpage callback:^{}];
+
+    
+    [self.tableView addLegendHeaderWithRefreshingTarget:self refreshingAction:@selector(headerRefreshing)];
+    
+    [self.tableView addLegendFooterWithRefreshingTarget:self refreshingAction:@selector(footerRereshing)];
+
+}
+
+- (void) headerRefreshing{
+    
+    self.gpage = 1;
+    [self refreshingData:self.gpage callback:^{
+        [self.tableView.header endRefreshing];
+    }];
+    
+}
+
+- (void )footerRereshing{
+    
+    [self refreshingData:++self.gpage callback:^{
+        [self.tableView.footer endRefreshing];
+    }];
+}
+
+
+- (void) refreshingData:(NSUInteger)page callback:(void(^)()) callback
+{
+    
+    hud = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
+    hud.delegate=self;
+    
+    NSString *url =  [[BWCommon getBaseInfo:@"api_url"] stringByAppendingString:@"LatestComments"];
+    
+    NSMutableDictionary *postData = [[NSMutableDictionary alloc] init];
+    [postData setValue:[NSString stringWithFormat:@"%ld",page] forKey:@"page"];
+    [postData setValue:@"20" forKey:@"region_id"];
+   
+
+    NSLog(@"%@",url);
+    //load data
+    
+    [AFNetworkTool postJSONWithUrl:url parameters:postData success:^(id responseObject) {
+        
+        NSInteger code = [[responseObject objectForKey:@"code"] integerValue];
+        
+        [hud removeFromSuperview];
+        if(code == 200)
+        {
+            NSMutableDictionary *data = [responseObject objectForKey:@"data"];
+            if(page == 1)
+            {
+                dataArray = [ [data objectForKey:@"lists"] mutableCopy];
+            }
+            else
+            {
+                [dataArray addObjectsFromArray:[[data objectForKey:@"lists"] mutableCopy]];
+                
+            }
+            
+            self.tableView.footer.hidden = (dataArray.count <=0) ? YES : NO;
+            
+            NSLog(@"%@",[responseObject objectForKey:@"data"]);
+            self.statusFrames = nil;
+            
+            [self.tableView setHidden:NO];
+            [self.tableView reloadData];
+            
+            if(callback){
+                callback();
+            }
+            
+            //NSLog(@"%@",json);
+        }
+        else
+        {
+            NSLog(@"%@",[responseObject objectForKey:@"error"]);
+        }
+        
+    } fail:^{
+        [hud removeFromSuperview];
+        NSLog(@"请求失败");
+    }];
+    
+    
 }
 
 - (void)didReceiveMemoryWarning {
@@ -29,7 +143,6 @@
     // Dispose of any resources that can be recreated.
 }
 
-#pragma mark - Table view data source
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
 
@@ -41,54 +154,195 @@
 
     // Return the number of rows in the section.
     if(section == 0)
-    return 0;
+        return 1;
+    else if(section == 1)
+        return 1;
+    else if(section == 2)
+        return [dataArray count];
     
     return 0;
 }
 
-/*
+
+-(CGFloat)tableView:(UITableView *)tableView heightForFooterInSection:(NSInteger)section{
+    
+    return 0;
+}
+
+-(CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section{
+    if(section == 0)
+        return  0;
+
+    return 30;
+}
+
+- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    if(indexPath.section == 0){
+        NSInteger swidth = (size.width *0.6)/3;
+        return swidth + 40;
+    }
+    else if(indexPath.section == 1){
+        return 120;
+    }
+    else if(indexPath.section == 2){
+        CommentTableViewFrame *vf = self.statusFrames[indexPath.row];
+
+        return vf.cellHeight;
+    }
+    
+    return 30;
+}
+
+
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
-    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:<#@"reuseIdentifier"#> forIndexPath:indexPath];
     
-    // Configure the cell...
     
-    return cell;
-}
-*/
+    if(indexPath.section == 2)
+    {
+        CommentTableViewCell * cell = [CommentTableViewCell cellWithTableView:tableView];
+        cell.viewFrame = self.statusFrames[indexPath.row];
+        cell.separatorInset = UIEdgeInsetsMake(0, 0, 0, 0);
+        return cell;
+    
+    }
+    else{
+    
+    UITableViewCell * cell = [tableView dequeueReusableCellWithIdentifier:@"cell1"];
+    
+    if (cell == nil) {
+        cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:@"cell11"];
+    }
+    
+    if (indexPath.section==0){
+        NSInteger swidth = (size.width *0.6)/3;
+        NSInteger spadding = (size.width *0.4)/4;
+        UIButton *restaurant = [self createButton:self Selector:nil Image:@"home_restaurant_icon.png" Title:@"Restaurant"];
+        restaurant.frame = CGRectMake(spadding, 10, swidth, swidth);
+        [cell addSubview:restaurant];
+        UIButton *lifestyle = [self createButton:self Selector:nil Image:@"home_life_style_icon.png" Title:@"Life & Style"];
+        lifestyle.frame = CGRectMake(spadding*2 + swidth, 10, swidth, swidth);
+        [cell addSubview:lifestyle];
+        UIButton *travel = [self createButton:self Selector:nil Image:@"home_travel_icon.png" Title:@"Travel"];
+        travel.frame = CGRectMake(spadding*3 + swidth*2, 10, swidth, swidth);
+        [cell addSubview:travel];
+    }
+    else if(indexPath.section == 1){
+        
+        CGFloat bx=8;
+        CGFloat by=8;
+        for (int i=0;i<[popularCityArray count];i++){
+            
+            NSString *title = [popularCityArray[i] objectForKey:@"region_name"];
+            UIButton *b1 = [self createCityButton:self Selector:nil Title:title];
+            b1.tag = [[popularCityArray[i] objectForKey:@"region_id"] integerValue];
+            CGSize bsize = [BWCommon sizeWithString:title font:[UIFont systemFontOfSize:14] maxSize:CGSizeMake(160,MAXFLOAT)];
+            CGFloat bwidth = bsize.width + 22;
+            if(bx+ bwidth > size.width){
+                by += 34;
+                bx = 8;
+            }
+            
+            b1.frame = CGRectMake(bx, by, bwidth, 35);
+            UIImageView *dot = [[UIImageView alloc] initWithImage:[UIImage imageNamed: @"dot"]];
+            dot.frame = CGRectMake(bwidth-5, 30, 4, 4);
+            [b1 addSubview:dot];
+            
+            bx += bwidth-1;
+            [cell addSubview:b1];
+        }
+    }
+        
+        return cell;
+    }
+    
+    
 
-/*
-// Override to support conditional editing of the table view.
-- (BOOL)tableView:(UITableView *)tableView canEditRowAtIndexPath:(NSIndexPath *)indexPath {
-    // Return NO if you do not want the specified item to be editable.
-    return YES;
 }
-*/
 
-/*
-// Override to support editing the table view.
-- (void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath {
-    if (editingStyle == UITableViewCellEditingStyleDelete) {
-        // Delete the row from the data source
-        [tableView deleteRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationFade];
-    } else if (editingStyle == UITableViewCellEditingStyleInsert) {
-        // Create a new instance of the appropriate class, insert it into the array, and add a new row to the table view
-    }   
-}
-*/
+- (UIButton*) createButton:(id)target Selector:(SEL)selector Image:(NSString *)image Title:(NSString *) title
+{
+    UIButton * button = [UIButton buttonWithType:UIButtonTypeCustom];
 
-/*
-// Override to support rearranging the table view.
-- (void)tableView:(UITableView *)tableView moveRowAtIndexPath:(NSIndexPath *)fromIndexPath toIndexPath:(NSIndexPath *)toIndexPath {
+    UIImage *newImage = [UIImage imageNamed: image];
+    [button setBackgroundImage:newImage forState:UIControlStateNormal];
+    [button setTitle:title forState:UIControlStateNormal];
+    button.titleLabel.font=[UIFont systemFontOfSize:14.0];
+    
+    [button setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
+    button.contentVerticalAlignment = UIControlContentVerticalAlignmentBottom;
+    button.contentHorizontalAlignment = UIControlContentHorizontalAlignmentCenter;
+    [button setTitleEdgeInsets:UIEdgeInsetsMake(0.0, 0.0, -20.0, 0.0)];
+    [button addTarget:target action:selector forControlEvents:UIControlEventTouchUpInside];
+    return button;
 }
-*/
 
-/*
-// Override to support conditional rearranging of the table view.
-- (BOOL)tableView:(UITableView *)tableView canMoveRowAtIndexPath:(NSIndexPath *)indexPath {
-    // Return NO if you do not want the item to be re-orderable.
-    return YES;
+- (UIButton *) createCityButton:(id)target Selector:(SEL)selector Title:(NSString *) title
+{
+    UIButton * button = [UIButton buttonWithType:UIButtonTypeCustom];
+    
+    [button setTitle:title forState:UIControlStateNormal];
+    button.titleLabel.font=[UIFont systemFontOfSize:14.0];
+    button.layer.borderWidth = 1.0f;
+    button.layer.borderColor = [BWCommon getBorderColor].CGColor;
+    
+    [button setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
+    button.contentHorizontalAlignment = UIControlContentHorizontalAlignmentCenter;
+    [button addTarget:target action:selector forControlEvents:UIControlEventTouchUpInside];
+    return button;
+
 }
-*/
+
+
+- (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section{
+    
+
+
+    BWSectionView *headView = [[BWSectionView alloc] initWithFrame:CGRectMake(0, 0, size.width, 30)];
+    
+    headView.tableView = tableView;
+    headView.section = section;
+    
+    UILabel *titleLabel = [[UILabel alloc] initWithFrame:CGRectMake(10, 6, 200, 20)];
+    titleLabel.font = [UIFont systemFontOfSize:14];
+    [headView addSubview:titleLabel];
+    
+    if(section == 1){
+        titleLabel.text = @"Popular City";
+    }
+    else if(section == 2){
+        titleLabel.text = @"Latest Comments";
+    }
+    
+    return headView;
+}
+
+
+- (NSArray *)statusFrames
+{
+    if (_statusFrames == nil) {
+        
+        NSMutableArray *models = [NSMutableArray arrayWithCapacity:dataArray.count];
+        
+        for (NSDictionary *dict in dataArray) {
+            // 创建模型
+            CommentTableViewFrame *vf = [[CommentTableViewFrame alloc] init];
+            vf.data = dict;
+            [models addObject:vf];
+        }
+        self.statusFrames = [models copy];
+    }
+    return _statusFrames;
+}
+/*
+- (void)scrollViewDidScroll:(UIScrollView *)scrollView {
+    CGFloat sectionHeaderHeight = 20;
+    if (scrollView.contentOffset.y<=sectionHeaderHeight&&scrollView.contentOffset.y>=0) {
+        scrollView.contentInset = UIEdgeInsetsMake(-scrollView.contentOffset.y, 0, 0, 0);
+    } else if (scrollView.contentOffset.y>=sectionHeaderHeight) {
+        scrollView.contentInset = UIEdgeInsetsMake(-sectionHeaderHeight, 0, 0, 0);
+    }
+}*/
 
 /*
 #pragma mark - Navigation
