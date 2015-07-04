@@ -139,6 +139,31 @@
 }
 
 
++(NSMutableArray *) loadRegions:(NSInteger) parent_id initData:(NSString *)name{
+    NSArray *regions = [BWCommon getDataInfo:@"regions"];
+
+    NSMutableArray * data = [[NSMutableArray alloc] init];
+    if(![name isEqualToString:@""])
+    {
+        NSDictionary *item = [[NSDictionary alloc] initWithObjectsAndKeys:name,@"region_name",0,@"region_id", nil];
+        [data addObject:item];
+    }
+    for (int i=0;i<[regions count];i++){
+        NSDictionary *item = [[NSDictionary alloc] initWithDictionary:[regions objectAtIndex:i]];
+        if ([[item objectForKey:@"parent_id"] integerValue] == parent_id) {
+            
+            [data addObject:item];
+            
+            //[data setObject:[item objectForKey:@"region_name"] forKey:[item objectForKey:@"region_id"]];
+            
+        }
+    }
+    
+    return data;
+}
+
+
+
 
 +(UIColor *) getBackgroundColor{
     

@@ -36,6 +36,9 @@
 
 +(void) setRegionData;
 
++(NSMutableArray *) loadRegions:(NSInteger) parent_id initData:(NSString *) name;
+
+//+(NSMutableArray *) loadCategory:(NSInteger) parent_id initData:(NSString *) name;
 
 +(NSString *) getRegionById:(NSUInteger ) region_id;
 

@@ -9,6 +9,7 @@
 #import <UIKit/UIKit.h>
 #import "MBProgressHUD.h"
 #import "MJRefresh.h"
+#import "ShopDelegate.h"
 
 @interface HomeTableViewController : UITableViewController
 <MBProgressHUDDelegate>
@@ -18,5 +19,7 @@
 
 @property (nonatomic,retain) NSMutableArray *dataArray;
 @property (nonatomic,retain) NSArray *popularCityArray;
+
+@property (nonatomic,assign) id<ShopDelegate> delegate;
 
 @end

@@ -102,6 +102,9 @@
 		327733991B45890C005504C5 /* wifi.gif in Resources */ = {isa = PBXBuildFile; fileRef = 3277333C1B45890C005504C5 /* wifi.gif */; };
 		3277339C1B458984005504C5 /* HomeTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 3277339B1B458984005504C5 /* HomeTableViewController.m */; };
 		3277339F1B4589FF005504C5 /* SearchTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 3277339E1B4589FF005504C5 /* SearchTableViewController.m */; };
+		3288FB051B46E72C00906965 /* ShopTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 3288FB041B46E72C00906965 /* ShopTableViewController.m */; };
+		3288FB0B1B479DC000906965 /* ShopTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 3288FB0A1B479DC000906965 /* ShopTableViewCell.m */; };
+		3288FB0D1B479DD800906965 /* ShopTableViewFrame.m in Sources */ = {isa = PBXBuildFile; fileRef = 3288FB0C1B479DD800906965 /* ShopTableViewFrame.m */; };
 		329A4B6C1B469A5B006F30C3 /* AFNetworkTool.m in Sources */ = {isa = PBXBuildFile; fileRef = 329A4B691B469A5B006F30C3 /* AFNetworkTool.m */; };
 		329A4B6D1B469A5B006F30C3 /* BWCommon.m in Sources */ = {isa = PBXBuildFile; fileRef = 329A4B6B1B469A5B006F30C3 /* BWCommon.m */; };
 		329A4B711B46A5BD006F30C3 /* CategoryTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 329A4B701B46A5BD006F30C3 /* CategoryTableViewCell.m */; };
@@ -229,6 +232,14 @@
 		3277339B1B458984005504C5 /* HomeTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HomeTableViewController.m; sourceTree = "<group>"; };
 		3277339D1B4589FF005504C5 /* SearchTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SearchTableViewController.h; sourceTree = "<group>"; };
 		3277339E1B4589FF005504C5 /* SearchTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SearchTableViewController.m; sourceTree = "<group>"; };
+		3288FB031B46E72C00906965 /* ShopTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ShopTableViewController.h; sourceTree = "<group>"; };
+		3288FB041B46E72C00906965 /* ShopTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ShopTableViewController.m; sourceTree = "<group>"; };
+		3288FB061B46E83000906965 /* DetailDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DetailDelegate.h; sourceTree = "<group>"; };
+		3288FB071B46ED8700906965 /* ShopDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ShopDelegate.h; sourceTree = "<group>"; };
+		3288FB091B479DC000906965 /* ShopTableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ShopTableViewCell.h; sourceTree = "<group>"; };
+		3288FB0A1B479DC000906965 /* ShopTableViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ShopTableViewCell.m; sourceTree = "<group>"; };
+		3288FB0C1B479DD800906965 /* ShopTableViewFrame.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ShopTableViewFrame.m; sourceTree = "<group>"; };
+		3288FB0E1B479E1100906965 /* ShopTableViewFrame.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ShopTableViewFrame.h; sourceTree = "<group>"; };
 		329A4B681B469A5B006F30C3 /* AFNetworkTool.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AFNetworkTool.h; sourceTree = "<group>"; };
 		329A4B691B469A5B006F30C3 /* AFNetworkTool.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AFNetworkTool.m; sourceTree = "<group>"; };
 		329A4B6A1B469A5B006F30C3 /* BWCommon.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BWCommon.h; sourceTree = "<group>"; };
@@ -287,6 +298,8 @@
 				3277339B1B458984005504C5 /* HomeTableViewController.m */,
 				3277339D1B4589FF005504C5 /* SearchTableViewController.h */,
 				3277339E1B4589FF005504C5 /* SearchTableViewController.m */,
+				3288FB031B46E72C00906965 /* ShopTableViewController.h */,
+				3288FB041B46E72C00906965 /* ShopTableViewController.m */,
 			);
 			name = Controller;
 			sourceTree = "<group>";
@@ -393,6 +406,7 @@
 		327732DD1B4588CD005504C5 /* View */ = {
 			isa = PBXGroup;
 			children = (
+				3288FB081B479D7300906965 /* Shop */,
 				329A4B6E1B46A59C006F30C3 /* Home */,
 				329A4B801B46CECC006F30C3 /* BWSectionView.h */,
 				329A4B811B46CECC006F30C3 /* BWSectionView.m */,
@@ -421,6 +435,17 @@
 				327733391B45890C005504C5 /* weibo.png */,
 			);
 			path = share;
+			sourceTree = "<group>";
+		};
+		3288FB081B479D7300906965 /* Shop */ = {
+			isa = PBXGroup;
+			children = (
+				3288FB091B479DC000906965 /* ShopTableViewCell.h */,
+				3288FB0A1B479DC000906965 /* ShopTableViewCell.m */,
+				3288FB0C1B479DD800906965 /* ShopTableViewFrame.m */,
+				3288FB0E1B479E1100906965 /* ShopTableViewFrame.h */,
+			);
+			name = Shop;
 			sourceTree = "<group>";
 		};
 		329A4B6E1B46A59C006F30C3 /* Home */ = {
@@ -469,6 +494,8 @@
 				329B305D1B458315005BAC74 /* Images.xcassets */,
 				329B305F1B458315005BAC74 /* LaunchScreen.xib */,
 				329B304D1B458314005BAC74 /* Supporting Files */,
+				3288FB061B46E83000906965 /* DetailDelegate.h */,
+				3288FB071B46ED8700906965 /* ShopDelegate.h */,
 			);
 			path = MyComments;
 			sourceTree = "<group>";
@@ -752,10 +779,13 @@
 				329B30531B458314005BAC74 /* AppDelegate.m in Sources */,
 				3277339C1B458984005504C5 /* HomeTableViewController.m in Sources */,
 				329B30501B458314005BAC74 /* main.m in Sources */,
+				3288FB0D1B479DD800906965 /* ShopTableViewFrame.m in Sources */,
 				329A4B821B46CECC006F30C3 /* BWSectionView.m in Sources */,
 				329A4B711B46A5BD006F30C3 /* CategoryTableViewCell.m in Sources */,
 				329A4B6D1B469A5B006F30C3 /* BWCommon.m in Sources */,
 				329A4B6C1B469A5B006F30C3 /* AFNetworkTool.m in Sources */,
+				3288FB0B1B479DC000906965 /* ShopTableViewCell.m in Sources */,
+				3288FB051B46E72C00906965 /* ShopTableViewController.m in Sources */,
 				3277339F1B4589FF005504C5 /* SearchTableViewController.m in Sources */,
 				329A4B7A1B46BB42006F30C3 /* CommentTableViewFrame.m in Sources */,
 				329A4B781B46BB0A006F30C3 /* CommentTableViewCell.m in Sources */,

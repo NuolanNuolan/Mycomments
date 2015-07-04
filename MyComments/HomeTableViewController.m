@@ -10,6 +10,7 @@
 #import "BWCommon.h"
 #import "CommentTableViewCell.h"
 #import "CommentTableViewFrame.h"
+#import "ShopTableViewController.h"
 #import "BWSectionView.h"
 #import "AFNetworkTool.h"
 
@@ -44,6 +45,12 @@ CGSize size;
     size = rect.size;
     
     [self.view setBackgroundColor:[UIColor colorWithPatternImage:[UIImage imageNamed:@"bg.gif"]]];
+    
+    UIBarButtonItem *backItem=[[UIBarButtonItem alloc]init];
+    backItem.title=@"";
+    backItem.image=[UIImage imageNamed:@""];
+    self.navigationItem.backBarButtonItem=backItem;
+
     
     dataArray = [[NSMutableArray alloc] init];
     
@@ -217,13 +224,16 @@ CGSize size;
     if (indexPath.section==0){
         NSInteger swidth = (size.width *0.6)/3;
         NSInteger spadding = (size.width *0.4)/4;
-        UIButton *restaurant = [self createButton:self Selector:nil Image:@"home_restaurant_icon.png" Title:@"Restaurant"];
+        UIButton *restaurant = [self createButton:self Selector:@selector(categoryTouched:) Image:@"home_restaurant_icon.png" Title:@"Restaurant"];
         restaurant.frame = CGRectMake(spadding, 10, swidth, swidth);
+        restaurant.tag = 2;
         [cell addSubview:restaurant];
-        UIButton *lifestyle = [self createButton:self Selector:nil Image:@"home_life_style_icon.png" Title:@"Life & Style"];
+        UIButton *lifestyle = [self createButton:self Selector:@selector(categoryTouched:) Image:@"home_life_style_icon.png" Title:@"Life & Style"];
+        lifestyle.tag = 3;
         lifestyle.frame = CGRectMake(spadding*2 + swidth, 10, swidth, swidth);
         [cell addSubview:lifestyle];
-        UIButton *travel = [self createButton:self Selector:nil Image:@"home_travel_icon.png" Title:@"Travel"];
+        UIButton *travel = [self createButton:self Selector:@selector(categoryTouched:) Image:@"home_travel_icon.png" Title:@"Travel"];
+        travel.tag = 4;
         travel.frame = CGRectMake(spadding*3 + swidth*2, 10, swidth, swidth);
         [cell addSubview:travel];
     }
@@ -258,6 +268,18 @@ CGSize size;
     
     
 
+}
+
+-(void) categoryTouched:(UIButton *)sender{
+    
+    ShopTableViewController *viewController = [[ShopTableViewController alloc] init];
+    self.delegate = viewController;
+    viewController.hidesBottomBarWhenPushed = YES;
+
+    [self.delegate setValue:0 cid:sender.tag];
+    
+    [self.navigationController pushViewController:viewController animated:YES];
+    
 }
 
 - (UIButton*) createButton:(id)target Selector:(SEL)selector Image:(NSString *)image Title:(NSString *) title
