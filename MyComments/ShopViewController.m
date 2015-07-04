@@ -6,13 +6,13 @@
 //
 //
 
-#import "ShopTableViewController.h"
+#import "ShopViewController.h"
 #import "ShopTableViewFrame.h"
 #import "ShopTableViewCell.h"
 #import "BWCommon.h"
 #import "AFNetworkTool.h"
 
-@interface ShopTableViewController ()
+@interface ShopViewController ()
 
 @property (nonatomic, strong) NSArray *statusFrames;
 
@@ -26,7 +26,7 @@
 
 @end
 
-@implementation ShopTableViewController
+@implementation ShopViewController
 
 NSArray *cityData;
 NSArray *provinceData;
@@ -45,7 +45,7 @@ NSArray *subCategoryData;
     
     // Uncomment the following line to display an Edit button in the navigation bar for this view controller.
     // self.navigationItem.rightBarButtonItem = self.editButtonItem;
-
+    
     [self pagelayout];
 }
 
@@ -61,33 +61,33 @@ NSArray *subCategoryData;
     [self.navigationController.navigationBar setTintColor:[UIColor whiteColor ]];
     [self.navigationController.navigationBar setBarTintColor:[BWCommon getRedColor]];
     [self.navigationController.navigationBar setTitleTextAttributes:[NSDictionary dictionaryWithObjectsAndKeys:
-    [UIColor whiteColor], NSForegroundColorAttributeName, nil]];
+                                                                     [UIColor whiteColor], NSForegroundColorAttributeName, nil]];
     self.navigationItem.title = @"MyComments";
-
+    
     UIBarButtonItem *backItem=[[UIBarButtonItem alloc]init];
     backItem.title=@"";
     backItem.image=[UIImage imageNamed:@""];
     self.navigationItem.backBarButtonItem=backItem;
     
     
-    UITableView *tableView = [[UITableView alloc] initWithFrame:CGRectMake(0, 42, size.width, size.height-90)];
-
+    UITableView *tableView = [[UITableView alloc] initWithFrame:CGRectMake(0, 42, size.width, size.height-42)];
+    
     [self.view addSubview:tableView];
     
     self.tableView = tableView;
     self.tableView.delegate = self;
     self.tableView.dataSource = self;
     
-    //UIView *v = [[UIView alloc] initWithFrame:CGRectZero];
-    //[self.tableView setTableFooterView:v];
+    UIView *v = [[UIView alloc] initWithFrame:CGRectZero];
+    [self.tableView setTableFooterView:v];
     
     
     provinceData = [BWCommon loadRegions:1 initData:@"Location"];
     categoryData = [BWCommon getDataInfo:@"category"];
     
     NSLog(@"%@",categoryData);
-
-
+    
+    
     // 添加下拉菜单
     self.menu = [[DOPDropDownMenu alloc] initWithOrigin:CGPointMake(0, 64) andHeight:44];
     [self.menu setSeparatorColor:[UIColor whiteColor]];
@@ -110,7 +110,8 @@ NSArray *subCategoryData;
     [self.tableView.header setTitle:@"Pull down to refresh" forState:MJRefreshHeaderStateIdle];
     [self.tableView.header setTitle:@"Release to refresh" forState:MJRefreshHeaderStatePulling];
     [self.tableView.header setTitle:@"Loading ..." forState:MJRefreshHeaderStateRefreshing];
-
+    
+    [self.tableView.footer setTitle:@"" forState:MJRefreshFooterStateIdle];
     
 }
 
@@ -177,7 +178,7 @@ NSArray *subCategoryData;
                 
             }
             
-            //NSLog(@"%@",dataArray);
+            NSLog(@"%@",dataArray);
             
             self.tableView.footer.hidden = (dataArray.count <=0) ? YES : NO;
             
@@ -189,7 +190,7 @@ NSArray *subCategoryData;
             if(callback){
                 callback();
             }
-
+            
         }
         else
         {
@@ -306,8 +307,8 @@ NSArray *subCategoryData;
 
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
-
-    return 0;
+    
+    return 1;
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
@@ -317,9 +318,9 @@ NSArray *subCategoryData;
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-
+    
     ShopTableViewFrame *vf = self.statusFrames[indexPath.row];
-
+    
     return vf.cellHeight;
 }
 
@@ -349,7 +350,7 @@ NSArray *subCategoryData;
         }
         self.statusFrames = [models copy];
     }
-
+    
     return _statusFrames;
 }
 

@@ -10,7 +10,8 @@
 #import "BWCommon.h"
 #import "CommentTableViewCell.h"
 #import "CommentTableViewFrame.h"
-#import "ShopTableViewController.h"
+#import "ShopViewController.h"
+#import "ShopDetailViewController.h"
 #import "BWSectionView.h"
 #import "AFNetworkTool.h"
 
@@ -59,11 +60,17 @@ CGSize size;
     self.gpage = 1;
     
     [self refreshingData:self.gpage callback:^{}];
+    
+    
+    UIView *v = [[UIView alloc] initWithFrame:CGRectZero];
+    [self.tableView setTableFooterView:v];
 
     
     [self.tableView addLegendHeaderWithRefreshingTarget:self refreshingAction:@selector(headerRefreshing)];
     
     [self.tableView addLegendFooterWithRefreshingTarget:self refreshingAction:@selector(footerRereshing)];
+    
+    [self.tableView.footer setTitle:@"" forState:MJRefreshFooterStateIdle];
 
 }
 
@@ -219,6 +226,7 @@ CGSize size;
     
     if (cell == nil) {
         cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:@"cell11"];
+        cell.selectionStyle = UITableViewCellSelectionStyleNone;
     }
     
     if (indexPath.section==0){
@@ -272,7 +280,7 @@ CGSize size;
 
 -(void) categoryTouched:(UIButton *)sender{
     
-    ShopTableViewController *viewController = [[ShopTableViewController alloc] init];
+    ShopViewController *viewController = [[ShopViewController alloc] init];
     self.delegate = viewController;
     viewController.hidesBottomBarWhenPushed = YES;
 
@@ -337,6 +345,21 @@ CGSize size;
     }
     
     return headView;
+}
+
+- (void) tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath{
+    
+    [tableView deselectRowAtIndexPath:indexPath animated:indexPath.section>1 ? YES : NO];
+    
+    if(indexPath.section > 1){
+        ShopDetailViewController *viewController = [[ShopDetailViewController alloc] init];
+        self.detailDelegate = viewController;
+        
+        [self.navigationController pushViewController:viewController animated:YES];
+        
+        NSInteger sid = [[[dataArray objectAtIndex:[indexPath row]] objectForKey:@"sid"] integerValue];
+        [self.detailDelegate setValue:sid];
+    }
 }
 
 

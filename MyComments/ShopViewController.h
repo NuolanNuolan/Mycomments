@@ -12,16 +12,17 @@
 #import "MBProgressHUD.h"
 #import "MJRefresh.h"
 
-@interface ShopTableViewController : UIViewController
-<ShopDelegate,
-MBProgressHUDDelegate,
+@interface ShopViewController : UIViewController
+<
 UITableViewDataSource,
 UITableViewDelegate,
+ShopDelegate,
+MBProgressHUDDelegate,
 DOPDropDownMenuDataSource,
 DOPDropDownMenuDelegate>
 {
-     MBProgressHUD *hud;
-     NSMutableArray *dataArray;
+    MBProgressHUD *hud;
+    NSMutableArray *dataArray;
 }
 
 @property (nonatomic,retain) NSMutableArray *dataArray;
