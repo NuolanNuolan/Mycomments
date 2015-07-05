@@ -1,20 +1,21 @@
 //
-//  CommentTableViewCell.m
+//  CommentMainTableViewCell.m
 //  MyComments
 //
-//  Created by Bruce He on 15/7/3.
+//  Created by Bruce on 15-7-4.
 //
 //
 
-#import "CommentTableViewCell.h"
-#import "CommentTableViewFrame.h"
+
+#import "CommentMainTableViewCell.h"
+#import "CommentMainTableViewFrame.h"
 #import "BWCommon.h"
 
 #define NJNameFont [UIFont systemFontOfSize:14]
 #define NJTextFont [UIFont systemFontOfSize:12]
 
 
-@interface CommentTableViewCell ()
+@interface CommentMainTableViewCell ()
 
 // 名称
 @property (nonatomic, weak) UILabel *nameLabel;
@@ -25,11 +26,15 @@
 
 @property (nonatomic,weak) UIImageView *rateView;
 
-@property (nonatomic,weak) UIImageView *avatarView;
+@property (nonatomic,weak) UILabel *dateLabel;
+
+@property (nonatomic,weak) UIButton *likeButton;
+
+
 
 @end
 
-@implementation CommentTableViewCell
+@implementation CommentMainTableViewCell
 
 - (void)awakeFromNib {
     // Initialization code
@@ -37,22 +42,22 @@
 
 - (void)setSelected:(BOOL)selected animated:(BOOL)animated {
     [super setSelected:selected animated:animated];
-
+    
     // Configure the view for the selected state
 }
 
 - (void) layoutSubviews{
     [super layoutSubviews];
-    self.imageView.frame = CGRectMake(10, 10, 90, 90 );
+    self.imageView.frame = CGRectMake(10, 10, 50, 50 );
 }
 
 + (instancetype)cellWithTableView:(UITableView *)tableView {
     
-    static NSString *identifier = @"cell0";
-    CommentTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:identifier];
+    static NSString *identifier = @"cell2";
+    CommentMainTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:identifier];
     if (cell == nil) {
         
-        cell = [[CommentTableViewCell alloc]initWithStyle:UITableViewCellStyleDefault reuseIdentifier:identifier];
+        cell = [[CommentMainTableViewCell alloc]initWithStyle:UITableViewCellStyleDefault reuseIdentifier:identifier];
     }
     return cell;
 }
@@ -63,7 +68,7 @@
     self = [super initWithStyle:style reuseIdentifier:reuseIdentifier];
     if (self) {
         // 让自定义Cell和系统的cell一样, 一创建出来就拥有一些子控件提供给我们使用
-
+        
         
         UILabel *nameLabel = [[UILabel alloc] init];
         nameLabel.font = NJNameFont;
@@ -87,48 +92,41 @@
         
         UILabel *usernameLabel = [[UILabel alloc] init];
         usernameLabel.font = NJTextFont;
+        usernameLabel.textColor = [BWCommon getRGBColor:0x666666];
         usernameLabel.numberOfLines = 0;
         //usernameLabel.textColor = [UIColor colorWithRed:116/255.0f green:197/255.0f blue:67/255.0f alpha:1];
         self.usernameLabel = usernameLabel;
-        usernameLabel.textColor = [BWCommon getRGBColor:0x666666];
         
         [self.contentView addSubview:usernameLabel];
         
-        
-        UIImageView *avatarView = [[UIImageView alloc] init];
-        self.avatarView = avatarView;
-        
-        
-        [self.contentView addSubview:avatarView];
-        
+    
         UIImageView *rateView = [[UIImageView alloc] init];
         self.rateView = rateView;
         [self.contentView addSubview:rateView];
         
+        UILabel *dateLabel = [[UILabel alloc] init];
+        dateLabel.font = NJTextFont;
+        dateLabel.textColor = [BWCommon getRGBColor:0x999999];
+        self.dateLabel = dateLabel;
+
+        [self.contentView addSubview:dateLabel];
+        
+        
+        UIButton *likeButton = [[UIButton alloc] init];
+        self.likeButton = likeButton;
+        [self.contentView addSubview:likeButton];
+        
+        UIImageView *likeIcon = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"good"]];
+        [likeButton addSubview:likeIcon];
+        likeButton.titleLabel.font = NJTextFont;
+        [likeButton setTitleColor:[UIColor grayColor] forState:UIControlStateNormal];
         
     }
     return self;
 }
 
-/**
- *  计算文本的宽高
- *
- *  @param str     需要计算的文本
- *  @param font    文本显示的字体
- *  @param maxSize 文本显示的范围
- *
- *  @return 文本占用的真实宽高
- */
-- (CGSize)sizeWithString:(NSString *)str font:(UIFont *)font maxSize:(CGSize)maxSize
-{
-    NSDictionary *dict = @{NSFontAttributeName : font};
-    // 如果将来计算的文字的范围超出了指定的范围,返回的就是指定的范围
-    // 如果将来计算的文字的范围小于指定的范围, 返回的就是真实的范围
-    CGSize size =  [str boundingRectWithSize:maxSize options:NSStringDrawingUsesLineFragmentOrigin attributes:dict context:nil].size;
-    return size;
-}
 
-- (void)setViewFrame:(CommentTableViewFrame *)viewFrame
+- (void)setViewFrame:(CommentMainTableViewFrame *)viewFrame
 {
     _viewFrame = viewFrame;
     
@@ -146,25 +144,32 @@
     
     NSDictionary *data = self.viewFrame.data;
     
+    /*
     NSString *image_url = [data objectForKey:@"shop_small_image"];
     
     image_url = [NSString stringWithFormat:@"%@/uploadfiles/%@!m90x90.jpg",[BWCommon getBaseInfo:@"site_url"],image_url ];
     
     [self.imageView sd_setImageWithURL:[NSURL URLWithString:image_url] placeholderImage:[UIImage imageNamed:@"appicon.png"] options:SDWebImageCacheMemoryOnly];
+     */
     
     self.nameLabel.text = [data objectForKey:@"shop_name"];
     self.commentLabel.text = [data objectForKey:@"detail"];
     
-    self.priceLabel.text = [NSString stringWithFormat:@"RM %@",[data objectForKey:@"price"]];
+    self.priceLabel.text = [NSString stringWithFormat:@"Spending per person: RM %@",[data objectForKey:@"price"]];
     self.usernameLabel.text = [data objectForKey:@"username"];
     
     NSString *avatar_url = [data objectForKey:@"avatar"];
     avatar_url = [NSString stringWithFormat:@"%@/%@",[BWCommon getBaseInfo:@"site_url"],avatar_url];
-    [self.avatarView sd_setImageWithURL:[NSURL URLWithString:avatar_url] placeholderImage:[UIImage imageNamed:@"noavatar_small.png"] options:SDWebImageCacheMemoryOnly];
+    [self.imageView sd_setImageWithURL:[NSURL URLWithString:avatar_url] placeholderImage:[UIImage imageNamed:@"noavatar_small.png"] options:SDWebImageCacheMemoryOnly];
     
+    NSInteger rate = [[data objectForKey:@"rate"] integerValue];
     
-    NSString *rateImage = [NSString stringWithFormat:@"comment_star_%@.png",[data objectForKey:@"rate"] ];
+    NSString *rateImage = [NSString stringWithFormat:@"comment_star_%ld.png",rate];
     [self.rateView setImage:[UIImage imageNamed:rateImage]];
+    
+    self.dateLabel.text = [data objectForKey:@"created_time"];
+    
+    [self.likeButton setTitle:[NSString stringWithFormat:@"(%@)",[data objectForKey:@"likeit_number"]] forState:UIControlStateNormal];
 }
 /**
  *  设置子控件的frame
@@ -177,10 +182,12 @@
     
     self.nameLabel.frame = self.viewFrame.nameF;
     self.priceLabel.frame = self.viewFrame.priceF;
-    self.avatarView.frame = self.viewFrame.avatarF;
+    //self.avatarView.frame = self.viewFrame.avatarF;
     self.rateView.frame = self.viewFrame.rateF;
     self.commentLabel.frame = self.viewFrame.commentF;
     self.usernameLabel.frame = self.viewFrame.usernameF;
+    self.dateLabel.frame = self.viewFrame.dateF;
+    self.likeButton.frame = self.viewFrame.likeF;
     
 }
 

@@ -46,7 +46,7 @@
     
     CGFloat commentX = paddingX;
     CGFloat commentY = 90 + paddingY * 2;
-    CGSize commentSize = [self sizeWithString:[data objectForKey:@"detail"] font:NJTextFont maxSize:CGSizeMake(300, MAXFLOAT)];
+    CGSize commentSize = [self sizeWithString:[data objectForKey:@"detail"] font:NJTextFont maxSize:CGSizeMake(size.width - 20, MAXFLOAT)];
     
     self.commentF = CGRectMake(commentX, commentY, commentSize.width, commentSize.height);
     
@@ -57,8 +57,8 @@
     
     CGSize usernameSize = [self sizeWithString:[data objectForKey:@"username"] font:NJTextFont maxSize:CGSizeMake(100, MAXFLOAT)];
     
-    CGFloat usernameX = size.width - paddingY - usernameSize.width;
-    CGFloat usernameY = avatarY + avatarW + paddingY;
+    CGFloat usernameX = size.width - avatarW - paddingY*2 - usernameSize.width;
+    CGFloat usernameY = rateY + 35;
     self.usernameF = CGRectMake(usernameX, usernameY, usernameSize.width, usernameSize.height);
 
     

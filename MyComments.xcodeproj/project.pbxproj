@@ -113,6 +113,9 @@
 		3277339F1B4589FF005504C5 /* SearchTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 3277339E1B4589FF005504C5 /* SearchTableViewController.m */; };
 		3288FB0B1B479DC000906965 /* ShopTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 3288FB0A1B479DC000906965 /* ShopTableViewCell.m */; };
 		3288FB0D1B479DD800906965 /* ShopTableViewFrame.m in Sources */ = {isa = PBXBuildFile; fileRef = 3288FB0C1B479DD800906965 /* ShopTableViewFrame.m */; };
+		3288FB111B48165B00906965 /* CommentMainTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 3288FB101B48165B00906965 /* CommentMainTableViewCell.m */; };
+		3288FB141B48167F00906965 /* CommentMainTableViewFrame.m in Sources */ = {isa = PBXBuildFile; fileRef = 3288FB131B48167F00906965 /* CommentMainTableViewFrame.m */; };
+		3288FB171B4830B200906965 /* CommentViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 3288FB161B4830B200906965 /* CommentViewController.m */; };
 		329A4B6C1B469A5B006F30C3 /* AFNetworkTool.m in Sources */ = {isa = PBXBuildFile; fileRef = 329A4B691B469A5B006F30C3 /* AFNetworkTool.m */; };
 		329A4B6D1B469A5B006F30C3 /* BWCommon.m in Sources */ = {isa = PBXBuildFile; fileRef = 329A4B6B1B469A5B006F30C3 /* BWCommon.m */; };
 		329A4B711B46A5BD006F30C3 /* CategoryTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 329A4B701B46A5BD006F30C3 /* CategoryTableViewCell.m */; };
@@ -259,6 +262,12 @@
 		3288FB0A1B479DC000906965 /* ShopTableViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ShopTableViewCell.m; sourceTree = "<group>"; };
 		3288FB0C1B479DD800906965 /* ShopTableViewFrame.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ShopTableViewFrame.m; sourceTree = "<group>"; };
 		3288FB0E1B479E1100906965 /* ShopTableViewFrame.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ShopTableViewFrame.h; sourceTree = "<group>"; };
+		3288FB0F1B48165B00906965 /* CommentMainTableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CommentMainTableViewCell.h; sourceTree = "<group>"; };
+		3288FB101B48165B00906965 /* CommentMainTableViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CommentMainTableViewCell.m; sourceTree = "<group>"; };
+		3288FB121B48167100906965 /* CommentMainTableViewFrame.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CommentMainTableViewFrame.h; sourceTree = "<group>"; };
+		3288FB131B48167F00906965 /* CommentMainTableViewFrame.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CommentMainTableViewFrame.m; sourceTree = "<group>"; };
+		3288FB151B4830B200906965 /* CommentViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CommentViewController.h; sourceTree = "<group>"; };
+		3288FB161B4830B200906965 /* CommentViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CommentViewController.m; sourceTree = "<group>"; };
 		329A4B681B469A5B006F30C3 /* AFNetworkTool.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AFNetworkTool.h; sourceTree = "<group>"; };
 		329A4B691B469A5B006F30C3 /* AFNetworkTool.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AFNetworkTool.m; sourceTree = "<group>"; };
 		329A4B6A1B469A5B006F30C3 /* BWCommon.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BWCommon.h; sourceTree = "<group>"; };
@@ -321,6 +330,8 @@
 				327272EE1B47B8AC00A00EF4 /* ShopViewController.m */,
 				327272F01B47C4B300A00EF4 /* ShopDetailViewController.h */,
 				327272F11B47C4B300A00EF4 /* ShopDetailViewController.m */,
+				3288FB151B4830B200906965 /* CommentViewController.h */,
+				3288FB161B4830B200906965 /* CommentViewController.m */,
 			);
 			name = Controller;
 			sourceTree = "<group>";
@@ -436,6 +447,10 @@
 				329A4B6E1B46A59C006F30C3 /* Home */,
 				329A4B801B46CECC006F30C3 /* BWSectionView.h */,
 				329A4B811B46CECC006F30C3 /* BWSectionView.m */,
+				3288FB0F1B48165B00906965 /* CommentMainTableViewCell.h */,
+				3288FB101B48165B00906965 /* CommentMainTableViewCell.m */,
+				3288FB121B48167100906965 /* CommentMainTableViewFrame.h */,
+				3288FB131B48167F00906965 /* CommentMainTableViewFrame.m */,
 			);
 			name = View;
 			sourceTree = "<group>";
@@ -811,6 +826,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				3288FB171B4830B200906965 /* CommentViewController.m in Sources */,
 				327272F81B47D74E00A00EF4 /* ShopMainTableViewFrame.m in Sources */,
 				329B30531B458314005BAC74 /* AppDelegate.m in Sources */,
 				3277339C1B458984005504C5 /* HomeTableViewController.m in Sources */,
@@ -821,11 +837,13 @@
 				329A4B821B46CECC006F30C3 /* BWSectionView.m in Sources */,
 				329A4B711B46A5BD006F30C3 /* CategoryTableViewCell.m in Sources */,
 				327272EF1B47B8AC00A00EF4 /* ShopViewController.m in Sources */,
+				3288FB141B48167F00906965 /* CommentMainTableViewFrame.m in Sources */,
 				329A4B6D1B469A5B006F30C3 /* BWCommon.m in Sources */,
 				329A4B6C1B469A5B006F30C3 /* AFNetworkTool.m in Sources */,
 				3288FB0B1B479DC000906965 /* ShopTableViewCell.m in Sources */,
 				3277339F1B4589FF005504C5 /* SearchTableViewController.m in Sources */,
 				329A4B7A1B46BB42006F30C3 /* CommentTableViewFrame.m in Sources */,
+				3288FB111B48165B00906965 /* CommentMainTableViewCell.m in Sources */,
 				329A4B781B46BB0A006F30C3 /* CommentTableViewCell.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

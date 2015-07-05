@@ -47,6 +47,22 @@ CGSize size;
     
     [self.view setBackgroundColor:[UIColor colorWithPatternImage:[UIImage imageNamed:@"bg.gif"]]];
     
+    self.navigationController.navigationBar.barStyle = UIStatusBarStyleDefault;
+    [self.navigationController.navigationBar setTintColor:[UIColor whiteColor ]];
+    [self.navigationController.navigationBar setBarTintColor:[BWCommon getRedColor]];
+    UIBarButtonItem *mapItem = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"navbar_map.png"] style:UIBarButtonItemStylePlain target:self action:nil];
+    
+    self.navigationItem.rightBarButtonItem = mapItem;
+    
+    UIView *middleView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 200, 30)];
+    UIButton *searchButton = [[UIButton alloc] initWithFrame:CGRectMake(0, 0, 200, 30)];
+    [searchButton setBackgroundImage:[UIImage imageNamed:@"navbar_search.png"] forState:UIControlStateNormal];
+    
+    [middleView addSubview:searchButton];
+    
+    
+    [self.navigationItem setTitleView:middleView];
+    
     UIBarButtonItem *backItem=[[UIBarButtonItem alloc]init];
     backItem.title=@"";
     backItem.image=[UIImage imageNamed:@""];
@@ -354,6 +370,7 @@ CGSize size;
     if(indexPath.section > 1){
         ShopDetailViewController *viewController = [[ShopDetailViewController alloc] init];
         self.detailDelegate = viewController;
+        viewController.hidesBottomBarWhenPushed = YES;
         
         [self.navigationController pushViewController:viewController animated:YES];
         
