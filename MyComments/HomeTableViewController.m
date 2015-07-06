@@ -12,6 +12,7 @@
 #import "CommentTableViewFrame.h"
 #import "ShopViewController.h"
 #import "ShopDetailViewController.h"
+#import "MapViewController.h"
 #import "BWSectionView.h"
 #import "AFNetworkTool.h"
 
@@ -50,7 +51,7 @@ CGSize size;
     self.navigationController.navigationBar.barStyle = UIStatusBarStyleDefault;
     [self.navigationController.navigationBar setTintColor:[UIColor whiteColor ]];
     [self.navigationController.navigationBar setBarTintColor:[BWCommon getRedColor]];
-    UIBarButtonItem *mapItem = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"navbar_map.png"] style:UIBarButtonItemStylePlain target:self action:nil];
+    UIBarButtonItem *mapItem = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"navbar_map.png"] style:UIBarButtonItemStylePlain target:self action:@selector(mapTouched:)];
     
     self.navigationItem.rightBarButtonItem = mapItem;
     
@@ -88,6 +89,13 @@ CGSize size;
     
     [self.tableView.footer setTitle:@"" forState:MJRefreshFooterStateIdle];
 
+}
+
+- (void) mapTouched:(id) sender{
+    MapViewController *mapView = [[MapViewController alloc] init];
+    mapView.hidesBottomBarWhenPushed = YES;
+    
+    [self.navigationController pushViewController:mapView animated:YES];
 }
 
 - (void) headerRefreshing{

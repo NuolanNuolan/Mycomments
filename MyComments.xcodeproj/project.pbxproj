@@ -116,6 +116,7 @@
 		3288FB111B48165B00906965 /* CommentMainTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 3288FB101B48165B00906965 /* CommentMainTableViewCell.m */; };
 		3288FB141B48167F00906965 /* CommentMainTableViewFrame.m in Sources */ = {isa = PBXBuildFile; fileRef = 3288FB131B48167F00906965 /* CommentMainTableViewFrame.m */; };
 		3288FB171B4830B200906965 /* CommentViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 3288FB161B4830B200906965 /* CommentViewController.m */; };
+		3288FB1A1B4AD21E00906965 /* MapViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 3288FB191B4AD21E00906965 /* MapViewController.m */; };
 		329A4B6C1B469A5B006F30C3 /* AFNetworkTool.m in Sources */ = {isa = PBXBuildFile; fileRef = 329A4B691B469A5B006F30C3 /* AFNetworkTool.m */; };
 		329A4B6D1B469A5B006F30C3 /* BWCommon.m in Sources */ = {isa = PBXBuildFile; fileRef = 329A4B6B1B469A5B006F30C3 /* BWCommon.m */; };
 		329A4B711B46A5BD006F30C3 /* CategoryTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 329A4B701B46A5BD006F30C3 /* CategoryTableViewCell.m */; };
@@ -268,6 +269,8 @@
 		3288FB131B48167F00906965 /* CommentMainTableViewFrame.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CommentMainTableViewFrame.m; sourceTree = "<group>"; };
 		3288FB151B4830B200906965 /* CommentViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CommentViewController.h; sourceTree = "<group>"; };
 		3288FB161B4830B200906965 /* CommentViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CommentViewController.m; sourceTree = "<group>"; };
+		3288FB181B4AD21E00906965 /* MapViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MapViewController.h; sourceTree = "<group>"; };
+		3288FB191B4AD21E00906965 /* MapViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MapViewController.m; sourceTree = "<group>"; };
 		329A4B681B469A5B006F30C3 /* AFNetworkTool.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AFNetworkTool.h; sourceTree = "<group>"; };
 		329A4B691B469A5B006F30C3 /* AFNetworkTool.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AFNetworkTool.m; sourceTree = "<group>"; };
 		329A4B6A1B469A5B006F30C3 /* BWCommon.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BWCommon.h; sourceTree = "<group>"; };
@@ -332,6 +335,8 @@
 				327272F11B47C4B300A00EF4 /* ShopDetailViewController.m */,
 				3288FB151B4830B200906965 /* CommentViewController.h */,
 				3288FB161B4830B200906965 /* CommentViewController.m */,
+				3288FB181B4AD21E00906965 /* MapViewController.h */,
+				3288FB191B4AD21E00906965 /* MapViewController.m */,
 			);
 			name = Controller;
 			sourceTree = "<group>";
@@ -833,6 +838,7 @@
 				329B30501B458314005BAC74 /* main.m in Sources */,
 				327272F51B47D08F00A00EF4 /* ShopMainTableViewCell.m in Sources */,
 				327272F21B47C4B300A00EF4 /* ShopDetailViewController.m in Sources */,
+				3288FB1A1B4AD21E00906965 /* MapViewController.m in Sources */,
 				3288FB0D1B479DD800906965 /* ShopTableViewFrame.m in Sources */,
 				329A4B821B46CECC006F30C3 /* BWSectionView.m in Sources */,
 				329A4B711B46A5BD006F30C3 /* CategoryTableViewCell.m in Sources */,

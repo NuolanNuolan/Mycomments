@@ -9,6 +9,8 @@
 #import "AppDelegate.h"
 #import "BWCommon.h"
 
+@import GoogleMaps;
+
 @interface AppDelegate ()
 
 @end
@@ -19,6 +21,7 @@
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
     // Override point for customization after application launch.
     [BWCommon loadCommonData];
+    [GMSServices provideAPIKey:@"AIzaSyAmjS-efiXz5xtBYgzRFqDowbZ4KApieEw"];
     
     return YES;
 }
