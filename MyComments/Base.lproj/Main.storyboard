@@ -25,6 +25,16 @@
             </objects>
             <point key="canvasLocation" x="2374" y="360"/>
         </scene>
+        <!--User Table View Controller-->
+        <scene sceneID="Fvq-xa-Afa">
+            <objects>
+                <viewController id="mga-fX-h1V" customClass="UserTableViewController" sceneMemberID="viewController">
+                    <navigationItem key="navigationItem" id="rvr-xs-BnG"/>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="kV7-Av-pkg" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="1544" y="-1050"/>
+        </scene>
         <!--Tab Bar Controller-->
         <scene sceneID="yl2-sM-qoP">
             <objects>
@@ -46,11 +56,12 @@
                         <segue destination="InG-bi-ERE" kind="relationship" relationship="viewControllers" id="u7Y-xg-7CH"/>
                         <segue destination="xZy-W5-2Of" kind="relationship" relationship="viewControllers" id="lzU-1b-eKA"/>
                         <segue destination="ceJ-UE-H96" kind="relationship" relationship="viewControllers" id="5uc-wT-wbd"/>
+                        <segue destination="fDE-Wg-H9i" kind="relationship" relationship="viewControllers" id="iB8-zp-Tiv"/>
                     </connections>
                 </tabBarController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="HuB-VB-40B" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="14" y="-62"/>
+            <point key="canvasLocation" x="20" y="-120"/>
         </scene>
         <!--Comment View Controller-->
         <scene sceneID="X45-3j-Dra">
@@ -119,10 +130,30 @@
             </objects>
             <point key="canvasLocation" x="2" y="690"/>
         </scene>
+        <!--My-->
+        <scene sceneID="uzf-Fj-1Cd">
+            <objects>
+                <navigationController automaticallyAdjustsScrollViewInsets="NO" id="fDE-Wg-H9i" sceneMemberID="viewController">
+                    <tabBarItem key="tabBarItem" title="My" image="menu_my.png" id="WhH-J5-wcJ"/>
+                    <toolbarItems/>
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" id="Xpu-oZ-Qgp">
+                        <rect key="frame" x="0.0" y="0.0" width="320" height="44"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                    </navigationBar>
+                    <nil name="viewControllers"/>
+                    <connections>
+                        <segue destination="mga-fX-h1V" kind="relationship" relationship="rootViewController" id="iU6-Jj-hFl"/>
+                    </connections>
+                </navigationController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="4Lk-Hk-naT" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="732" y="-1050"/>
+        </scene>
     </scenes>
     <resources>
         <image name="menu_comment.png" width="26" height="24"/>
         <image name="menu_home2.png" width="24" height="24"/>
+        <image name="menu_my.png" width="24" height="24"/>
         <image name="menu_search.png" width="23" height="24"/>
     </resources>
 </document>

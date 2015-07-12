@@ -7,6 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		32205AD61B52B2C200308481 /* UserTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 32205AD51B52B2C200308481 /* UserTableViewController.m */; };
+		32205ADA1B52B5E500308481 /* UserTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 32205AD91B52B5E500308481 /* UserTableViewCell.m */; };
+		32205ADD1B52B60800308481 /* UserTableViewFrame.m in Sources */ = {isa = PBXBuildFile; fileRef = 32205ADC1B52B60800308481 /* UserTableViewFrame.m */; };
 		327272EF1B47B8AC00A00EF4 /* ShopViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 327272EE1B47B8AC00A00EF4 /* ShopViewController.m */; };
 		327272F21B47C4B300A00EF4 /* ShopDetailViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 327272F11B47C4B300A00EF4 /* ShopDetailViewController.m */; };
 		327272F51B47D08F00A00EF4 /* ShopMainTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 327272F41B47D08F00A00EF4 /* ShopMainTableViewCell.m */; };
@@ -147,6 +150,12 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		32205AD41B52B2C200308481 /* UserTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UserTableViewController.h; sourceTree = "<group>"; };
+		32205AD51B52B2C200308481 /* UserTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UserTableViewController.m; sourceTree = "<group>"; };
+		32205AD81B52B5E500308481 /* UserTableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UserTableViewCell.h; sourceTree = "<group>"; };
+		32205AD91B52B5E500308481 /* UserTableViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UserTableViewCell.m; sourceTree = "<group>"; };
+		32205ADB1B52B5F700308481 /* UserTableViewFrame.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UserTableViewFrame.h; sourceTree = "<group>"; };
+		32205ADC1B52B60800308481 /* UserTableViewFrame.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UserTableViewFrame.m; sourceTree = "<group>"; };
 		327272ED1B47B8AC00A00EF4 /* ShopViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ShopViewController.h; sourceTree = "<group>"; };
 		327272EE1B47B8AC00A00EF4 /* ShopViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ShopViewController.m; sourceTree = "<group>"; };
 		327272F01B47C4B300A00EF4 /* ShopDetailViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ShopDetailViewController.h; sourceTree = "<group>"; };
@@ -322,6 +331,17 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		32205AD71B52B5CF00308481 /* User */ = {
+			isa = PBXGroup;
+			children = (
+				32205AD81B52B5E500308481 /* UserTableViewCell.h */,
+				32205AD91B52B5E500308481 /* UserTableViewCell.m */,
+				32205ADB1B52B5F700308481 /* UserTableViewFrame.h */,
+				32205ADC1B52B60800308481 /* UserTableViewFrame.m */,
+			);
+			name = User;
+			sourceTree = "<group>";
+		};
 		327732DB1B4588C0005504C5 /* Controller */ = {
 			isa = PBXGroup;
 			children = (
@@ -337,6 +357,8 @@
 				3288FB161B4830B200906965 /* CommentViewController.m */,
 				3288FB181B4AD21E00906965 /* MapViewController.h */,
 				3288FB191B4AD21E00906965 /* MapViewController.m */,
+				32205AD41B52B2C200308481 /* UserTableViewController.h */,
+				32205AD51B52B2C200308481 /* UserTableViewController.m */,
 			);
 			name = Controller;
 			sourceTree = "<group>";
@@ -448,6 +470,7 @@
 		327732DD1B4588CD005504C5 /* View */ = {
 			isa = PBXGroup;
 			children = (
+				32205AD71B52B5CF00308481 /* User */,
 				3288FB081B479D7300906965 /* Shop */,
 				329A4B6E1B46A59C006F30C3 /* Home */,
 				329A4B801B46CECC006F30C3 /* BWSectionView.h */,
@@ -836,6 +859,7 @@
 				329B30531B458314005BAC74 /* AppDelegate.m in Sources */,
 				3277339C1B458984005504C5 /* HomeTableViewController.m in Sources */,
 				329B30501B458314005BAC74 /* main.m in Sources */,
+				32205ADD1B52B60800308481 /* UserTableViewFrame.m in Sources */,
 				327272F51B47D08F00A00EF4 /* ShopMainTableViewCell.m in Sources */,
 				327272F21B47C4B300A00EF4 /* ShopDetailViewController.m in Sources */,
 				3288FB1A1B4AD21E00906965 /* MapViewController.m in Sources */,
@@ -845,10 +869,12 @@
 				327272EF1B47B8AC00A00EF4 /* ShopViewController.m in Sources */,
 				3288FB141B48167F00906965 /* CommentMainTableViewFrame.m in Sources */,
 				329A4B6D1B469A5B006F30C3 /* BWCommon.m in Sources */,
+				32205ADA1B52B5E500308481 /* UserTableViewCell.m in Sources */,
 				329A4B6C1B469A5B006F30C3 /* AFNetworkTool.m in Sources */,
 				3288FB0B1B479DC000906965 /* ShopTableViewCell.m in Sources */,
 				3277339F1B4589FF005504C5 /* SearchTableViewController.m in Sources */,
 				329A4B7A1B46BB42006F30C3 /* CommentTableViewFrame.m in Sources */,
+				32205AD61B52B2C200308481 /* UserTableViewController.m in Sources */,
 				3288FB111B48165B00906965 /* CommentMainTableViewCell.m in Sources */,
 				329A4B781B46BB0A006F30C3 /* CommentTableViewCell.m in Sources */,
 			);
