@@ -9,6 +9,7 @@
 #import "UserTableViewController.h"
 #import "UserTableViewCell.h"
 #import "UserTableViewFrame.h"
+#import "BWCommon.h"
 
 @interface UserTableViewController ()
 
@@ -40,8 +41,34 @@ CGSize size;
     size = rect.size;
     
     self.view.backgroundColor = [UIColor whiteColor];
+    
+    self.list = [[NSMutableArray alloc] initWithCapacity:3];
+    
+    NSMutableArray *menu1 = [[NSMutableArray alloc] init];
+    [menu1 addObject:[self createRow:@"brucehe3" text:@"" icon:@""]];
+    
+    self.list[0] = menu1;
+    
+    NSMutableArray *menu2 = [[NSMutableArray alloc] init];
+    [menu2 addObject:[self createRow:@"brucehe3" text:@"" icon:@""]];
+    [menu2 addObject:[self createRow:@"brucehe3" text:@"" icon:@""]];
+    [menu2 addObject:[self createRow:@"brucehe3" text:@"" icon:@""]];
+    self.list[1] = menu2;
+    
+    NSMutableArray *menu3 = [[NSMutableArray alloc] init];
+    [menu3 addObject:[self createRow:@"brucehe3" text:@"" icon:@""]];
+
+    self.list[2] = menu3;
+    
+    
 
 }
+- (NSDictionary *) createRow:(NSString *) title  text: (NSString *) text icon: (NSString *) icon{
+    
+    NSDictionary *row = [[NSMutableDictionary alloc] initWithObjectsAndKeys:title,@"title",text,@"text", icon,@"icon", nil];
+    return row;
+}
+
 
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];
@@ -57,9 +84,7 @@ CGSize size;
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
     // Return the number of rows in the section.
     
-    if(section == 0)
-        return 1;
-    else if(section == 1)
+    if(section == 1)
         return 3;
     
     return 1;
@@ -97,6 +122,42 @@ CGSize size;
 }
 
 
+- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    return 48;
+}
+
+-(CGFloat)tableView:(UITableView *)tableView heightForFooterInSection:(NSInteger)section{
+    
+    return 0;
+}
+
+
+-(CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section{
+    
+    return 20;
+}
+
+-(UIView *) tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section {
+    
+    UIView *headerView = [[UIView alloc] init];
+    headerView.backgroundColor = [BWCommon getBackgroundColor];
+        
+    [headerView sizeToFit];
+        
+    [BWCommon setTopBorder:headerView color:[BWCommon getBorderColor]];
+    [BWCommon setBottomBorder:headerView color:[BWCommon getBorderColor]];
+    
+    return headerView;
+}
+
+-(UIView *) tableView:(UITableView *)tableView viewForFooterInSection:(NSInteger)section{
+    UIView *footView = [[UIView alloc] init];
+    footView.backgroundColor = [BWCommon getBackgroundColor];
+    return footView;
+}
+
+
 - (NSArray *)statusFrames
 {
     if (_statusFrames == nil) {
@@ -126,39 +187,6 @@ CGSize size;
 }
 
 
-/*
-// Override to support conditional editing of the table view.
-- (BOOL)tableView:(UITableView *)tableView canEditRowAtIndexPath:(NSIndexPath *)indexPath {
-    // Return NO if you do not want the specified item to be editable.
-    return YES;
-}
-*/
-
-/*
-// Override to support editing the table view.
-- (void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath {
-    if (editingStyle == UITableViewCellEditingStyleDelete) {
-        // Delete the row from the data source
-        [tableView deleteRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationFade];
-    } else if (editingStyle == UITableViewCellEditingStyleInsert) {
-        // Create a new instance of the appropriate class, insert it into the array, and add a new row to the table view
-    }   
-}
-*/
-
-/*
-// Override to support rearranging the table view.
-- (void)tableView:(UITableView *)tableView moveRowAtIndexPath:(NSIndexPath *)fromIndexPath toIndexPath:(NSIndexPath *)toIndexPath {
-}
-*/
-
-/*
-// Override to support conditional rearranging of the table view.
-- (BOOL)tableView:(UITableView *)tableView canMoveRowAtIndexPath:(NSIndexPath *)indexPath {
-    // Return NO if you do not want the item to be re-orderable.
-    return YES;
-}
-*/
 
 /*
 #pragma mark - Navigation
