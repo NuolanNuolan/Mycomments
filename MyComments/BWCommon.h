@@ -15,6 +15,7 @@
 #import <UIKit/UIKit.h>
 #import <Foundation/Foundation.h>
 #import <CommonCrypto/CommonDigest.h>
+#import "MBProgressHUD.h"
 
 @interface BWCommon : NSObject
 
@@ -41,6 +42,7 @@
 //+(NSMutableArray *) loadCategory:(NSInteger) parent_id initData:(NSString *) name;
 
 +(NSString *) getRegionById:(NSUInteger ) region_id;
++(NSUInteger) getParentIdById: (NSUInteger) region_id;
 
 +(id) getDataInfo:(NSString *) key;
 +(void) setUserInfo:(NSString *) key value:(NSString *) value;
@@ -52,11 +54,16 @@
 +(UIColor *) getRedColor;
 +(void) setTopBorder:(UIView *)view color:(UIColor *)color;
 +(void) setBottomBorder:(UIView *)view color:(UIColor *)color;
++(void) setRightBorder:(UIView *)view color:(UIColor *)color;
 
 
 +(NSMutableDictionary *) getCommonTokenData;
 +(NSMutableDictionary *) getTokenData:(NSString *) api;
 
 +(NSString *) md5: (NSString *) str;
+
++ (UIViewController *)getCurrentVC;
+
++(MBProgressHUD *)getHUD;
 
 @end

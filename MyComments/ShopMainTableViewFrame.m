@@ -35,13 +35,54 @@
     CGFloat imageX = paddingX;
     CGFloat imageY = nameY + nameSize.height + paddingY;
     CGFloat imageW = 125;
-    self.imageF = CGRectMake(imageX, imageY, imageW, 83);
+    self.imageF = CGRectMake(imageX, imageY, imageW, 90);
+    
+    CGFloat imageNumX = 80;
+    CGFloat imageNumY = imageY + 65;
+    
+    self.imageNumF = CGRectMake(imageNumX, imageNumY, 50, 20);
+    
+
     
     CGFloat rateX = 125 + paddingX*2;
     CGFloat rateY =nameSize.height + paddingY *2;
     CGFloat rateH = 15;
     CGFloat rateW = 91;
     self.rateF = CGRectMake(rateX, rateY, rateW, rateH);
+    
+    
+    CGFloat tagX = rateX + rateW + paddingX;
+    CGFloat tagY = rateY - 5;
+    CGFloat halaX = -50;
+    CGFloat wifiX = -50;
+    CGFloat psX = -50;
+    
+    NSArray *tags =[_data objectForKey:@"tags_all"];
+    
+
+    for(NSDictionary *dict in tags){
+        NSString *name = [dict objectForKey:@"name"];
+        if ([name  isEqual: @"halal"]){
+            halaX = tagX;
+            tagX+= 30;
+        }
+        
+        if ([name  isEqual: @"wifi"]){
+            wifiX = tagX;
+            tagX+= 30;
+        }
+        
+        if ([name  isEqual: @"ps"]){
+            psX = tagX;
+            tagX+= 30;
+        }
+    }
+
+    self.halaF = CGRectMake(halaX, tagY, 27, 27);
+    self.wifiF = CGRectMake(wifiX, tagY, 27, 27);
+    self.psF = CGRectMake(psX, tagY, 27, 27);
+    
+
     
     CGFloat priceX = rateX;
     CGFloat priceY = rateY + rateH;

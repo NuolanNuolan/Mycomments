@@ -28,7 +28,7 @@
 
 @property (nonatomic,weak) UILabel *dateLabel;
 
-@property (nonatomic,weak) UIButton *likeButton;
+
 
 
 
@@ -48,7 +48,13 @@
 
 - (void) layoutSubviews{
     [super layoutSubviews];
-    self.imageView.frame = CGRectMake(10, 10, 50, 50 );
+    CGRect rect;
+    if(self.hasName)
+        rect = CGRectMake(10, 40, 50, 50);
+    else
+        rect = CGRectMake(10, 14, 50, 50);
+
+    self.imageView.frame = rect;
 }
 
 + (instancetype)cellWithTableView:(UITableView *)tableView {
@@ -121,6 +127,7 @@
         likeButton.titleLabel.font = NJTextFont;
         [likeButton setTitleColor:[UIColor grayColor] forState:UIControlStateNormal];
         
+        
     }
     return self;
 }
@@ -170,6 +177,12 @@
     self.dateLabel.text = [data objectForKey:@"created_time"];
     
     [self.likeButton setTitle:[NSString stringWithFormat:@"(%@)",[data objectForKey:@"likeit_number"]] forState:UIControlStateNormal];
+    
+    NSInteger cid =[[data objectForKey:@"id"] integerValue];
+    if(!cid){
+        cid = [[data objectForKey:@"cid"] integerValue];
+    }
+    self.likeButton.tag = cid;
 }
 /**
  *  设置子控件的frame
@@ -180,9 +193,9 @@
     self.layer.borderColor = [[UIColor whiteColor] CGColor];
     //self.layer.borderWidth=1.0;
     
+    self.imageView.frame = self.viewFrame.avatarF;
     self.nameLabel.frame = self.viewFrame.nameF;
     self.priceLabel.frame = self.viewFrame.priceF;
-    //self.avatarView.frame = self.viewFrame.avatarF;
     self.rateView.frame = self.viewFrame.rateF;
     self.commentLabel.frame = self.viewFrame.commentF;
     self.usernameLabel.frame = self.viewFrame.usernameF;
@@ -190,6 +203,7 @@
     self.likeButton.frame = self.viewFrame.likeF;
     
 }
+
 
 
 @end

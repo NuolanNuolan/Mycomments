@@ -7,13 +7,15 @@
 //
 
 #import <UIKit/UIKit.h>
+#import <CoreLocation/CoreLocation.h>
 #import "MBProgressHUD.h"
 #import "MJRefresh.h"
 #import "ShopDelegate.h"
 #import "DetailDelegate.h"
 
 @interface HomeTableViewController : UITableViewController
-<MBProgressHUDDelegate>
+<MBProgressHUDDelegate,
+CLLocationManagerDelegate>
 {
     MBProgressHUD *hud;
 }
@@ -23,5 +25,6 @@
 
 @property (nonatomic,assign) id<ShopDelegate> delegate;
 @property (nonatomic,assign) id<DetailDelegate> detailDelegate;
+@property (nonatomic,strong) CLLocationManager *manager;
 
 @end

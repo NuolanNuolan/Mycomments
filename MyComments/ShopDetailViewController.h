@@ -14,6 +14,9 @@
 @interface ShopDetailViewController : UIViewController
 <UITableViewDataSource,
 UITableViewDelegate,
+UIActionSheetDelegate,
+UIImagePickerControllerDelegate,
+UINavigationControllerDelegate,
 DetailDelegate,
 MBProgressHUDDelegate>
 {

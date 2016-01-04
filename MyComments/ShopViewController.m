@@ -9,6 +9,7 @@
 #import "ShopViewController.h"
 #import "ShopTableViewFrame.h"
 #import "ShopTableViewCell.h"
+#import "ShopDetailViewController.h"
 #import "BWCommon.h"
 #import "AFNetworkTool.h"
 
@@ -19,6 +20,11 @@
 @property (nonatomic,assign) NSUInteger region_id;
 @property (nonatomic,assign) NSUInteger cid;
 @property (nonatomic,assign) NSUInteger gpage;
+@property (nonatomic,assign) NSString *o;
+@property (nonatomic,assign) NSUInteger ot;
+
+@property (nonatomic,assign) NSString *region_name;
+@property (nonatomic,assign) NSString *cat_name;
 
 
 @property (nonatomic,strong) DOPDropDownMenu *menu;
@@ -34,6 +40,8 @@ NSArray *provinceData;
 
 NSArray *categoryData;
 NSArray *subCategoryData;
+
+NSMutableArray *filterData;
 
 @synthesize dataArray;
 
@@ -85,7 +93,19 @@ NSArray *subCategoryData;
     provinceData = [BWCommon loadRegions:1 initData:@"Location"];
     categoryData = [BWCommon getDataInfo:@"category"];
     
-    NSLog(@"%@",categoryData);
+    //NSLog(@"%@",categoryData);
+    
+    //Default, Rate Descending , Rate Ascending, Price Ascending, Price Descending,Nearest
+    
+    filterData = [[NSMutableArray alloc] initWithCapacity:6];
+    [filterData addObject:[[NSDictionary alloc] initWithObjectsAndKeys:@"Default",@"name",@"",@"o",@"0",@"ot", nil]];
+    [filterData addObject:[[NSDictionary alloc] initWithObjectsAndKeys:@"Rate Descending",@"name",@"rate",@"o",@"2",@"ot", nil]];
+    [filterData addObject:[[NSDictionary alloc] initWithObjectsAndKeys:@"Rate Ascending",@"name",@"rate",@"o",@"1",@"ot", nil]];
+    [filterData addObject:[[NSDictionary alloc] initWithObjectsAndKeys:@"Price Ascending",@"name",@"price",@"o",@"1",@"ot", nil]];
+    [filterData addObject:[[NSDictionary alloc] initWithObjectsAndKeys:@"Price Descending",@"name",@"price",@"o",@"2",@"ot", nil]];
+    [filterData addObject:[[NSDictionary alloc] initWithObjectsAndKeys:@"Nearest",@"name",@"nearest",@"o",@"2",@"ot", nil]];
+    
+    //NSLog(@"%@",filterData);
     
     
     // 添加下拉菜单
@@ -98,7 +118,12 @@ NSArray *subCategoryData;
     self.menu.delegate = self;
     self.menu.dataSource = self;
     
+    
     [self.view addSubview:self.menu];
+    
+    //初始化
+    self.o = @"";
+    self.ot = 0;
     
     self.gpage = 1;
     [self refreshingData:self.gpage callback:^{}];
@@ -132,17 +157,19 @@ NSArray *subCategoryData;
 }
 
 
-- (void) setValue:(NSUInteger)region_id cid:(NSUInteger)cid{
+- (void) setValue:(NSUInteger)region_id cid:(NSUInteger)cid region_name:(NSString *)region_name cat_name:(NSString *)cat_name{
     
     self.region_id = region_id;
     self.cid = cid;
+    self.region_name = region_name;
+    self.cat_name = cat_name;
 }
 
 
 - (void) refreshingData:(NSUInteger)page callback:(void(^)()) callback
 {
     
-    hud = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
+    hud = [BWCommon getHUD];
     //hud.mode = MBProgressHUDModeCustomView;
     hud.delegate=self;
     
@@ -153,8 +180,9 @@ NSArray *subCategoryData;
     [postData setValue:[NSString stringWithFormat:@"%ld",page] forKey:@"page"];
     [postData setValue:[NSString stringWithFormat:@"%ld",self.region_id] forKey:@"region_id"];
     [postData setValue:[NSString stringWithFormat:@"%ld",self.cid] forKey:@"cid"];
-    //[postData setValue:[NSString stringWithFormat:@"%@",self.OrderInfo_sort] forKey:@"OrderInfo_sort"];
-    
+    [postData setValue:self.o forKey:@"o"];
+    [postData setValue:[NSString stringWithFormat:@"%ld",self.ot] forKey:@"ot"];
+  
     NSLog(@"%@",url);
     //load data
     
@@ -205,6 +233,19 @@ NSArray *subCategoryData;
     
 }
 
+- (void) tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath{
+    
+    [tableView deselectRowAtIndexPath:indexPath animated:YES];
+    ShopDetailViewController *viewController = [[ShopDetailViewController alloc] init];
+    self.detailDelegate = viewController;
+    viewController.hidesBottomBarWhenPushed = YES;
+        
+    [self.navigationController pushViewController:viewController animated:YES];
+    NSInteger sid = [[[dataArray objectAtIndex:[indexPath row]] objectForKey:@"sid"] integerValue];
+    [self.detailDelegate setValue:sid];
+
+}
+
 
 // DOP Dropdown Menu begin
 - (NSInteger)numberOfColumnsInMenu:(DOPDropDownMenu *)menu
@@ -223,7 +264,7 @@ NSArray *subCategoryData;
         return [categoryData count];
     }
     else if(column == 2) {
-        return 0;
+        return [filterData count];
     }
     
     return 0;
@@ -234,11 +275,18 @@ NSArray *subCategoryData;
     
     if (indexPath.column == 0) {
         
+        //if(self.region_id>0 && indexPath.row == 0){
+        //    return [BWCommon getRegionById:self.region_id];
+        //}
         return [[provinceData objectAtIndex:[indexPath row]] objectForKey:@"region_name"];
         //return [[provinceData allValues] objectAtIndex:[indexPath row]];
     }
     else if(indexPath.column == 1){
+        
         return [[categoryData objectAtIndex:[indexPath row]] objectForKey:@"cat_name"];
+    }
+    else if (indexPath.column == 2){
+        return [[filterData objectAtIndex:[indexPath row]] objectForKey:@"name"];
     }
     
     return @"";
@@ -258,7 +306,7 @@ NSArray *subCategoryData;
     }
     else if(column == 1){
         
-        subCategoryData = [[categoryData objectAtIndex:row] objectForKey:@"childrens"];
+        subCategoryData = [self subCategory:row];
         return [subCategoryData count];
     }
     
@@ -280,7 +328,8 @@ NSArray *subCategoryData;
         
     }
     else if(indexPath.column == 1){
-        subCategoryData = [[categoryData objectAtIndex:indexPath.row] objectForKey:@"childrens"];
+        //subCategoryData = [[categoryData objectAtIndex:indexPath.row] objectForKey:@"childrens"];
+        subCategoryData = [self subCategory:indexPath.row];
         return [[subCategoryData objectAtIndex:indexPath.item] objectForKey:@"cat_name"];
     }
     return nil;
@@ -290,11 +339,38 @@ NSArray *subCategoryData;
     
     if(indexPath.column == 0){
         
-        //NSLog(@"item %ld",indexPath.item);
-        //NSLog(@"row %ld",indexPath.row);
+        NSLog(@"item %ld",indexPath.item);
+        NSLog(@"row %ld",indexPath.row);
         
-        //self.region_id = (int)indexPath.row;
-        //[self refreshingData:1 callback:^{}];
+        if (indexPath.item >= 0){
+            NSUInteger parent_id =[[[provinceData objectAtIndex:indexPath.row] objectForKey:@"region_id"]
+                                   integerValue];
+            cityData = [BWCommon loadRegions:parent_id initData:@""];
+            self.region_id = [[[cityData objectAtIndex:indexPath.item] objectForKey:@"region_id"] integerValue];
+            [self refreshingData:1 callback:^{}];
+        }
+        
+        if(indexPath.row == 0){
+            self.region_id = 0;
+            [self refreshingData:1 callback:^{}];
+        }
+    }
+    else if (indexPath.column == 1){
+        if (indexPath.item >= 0){
+            //subCategoryData = [[categoryData objectAtIndex:indexPath.row] objectForKey:@"childrens"];
+            subCategoryData = [self subCategory:indexPath.row];
+            self.cid = [[[subCategoryData objectAtIndex:indexPath.item] objectForKey:@"cid"] integerValue];
+
+            [self refreshingData:1 callback:^{}];
+        }
+
+    }
+    else if(indexPath.column == 2){
+        
+        self.o = [[filterData objectAtIndex:indexPath.row] objectForKey:@"o"];
+        self.ot = [[[filterData objectAtIndex:indexPath.row] objectForKey:@"ot"] integerValue];
+        
+        [self refreshingData:1 callback:^{}];
     }
 }
 
@@ -334,6 +410,28 @@ NSArray *subCategoryData;
     cell.separatorInset = UIEdgeInsetsMake(0, 0, 0, 0);
     
     return cell;
+}
+
+- (NSArray *) subCategory:(NSInteger) row
+{
+    NSMutableArray *category = [[NSMutableArray alloc] init];
+    NSArray *pCategory = [[categoryData objectAtIndex:row] objectForKey:@"childrens"];
+    NSLog(@"-!!!!--%@",categoryData);
+    
+    for (NSInteger i=0;i<pCategory.count;i++){
+        NSArray *childs = [[pCategory objectAtIndex:i] objectForKey:@"childrens"];
+        
+        
+        if([childs count]>0){
+            
+            for(NSInteger j=0;j<childs.count;j++){
+                [category addObject:childs[j]];
+            }
+        }else{
+            [category addObject:pCategory[i]];
+        }
+    }
+    return category;
 }
 
 - (NSArray *)statusFrames

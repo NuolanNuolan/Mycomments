@@ -184,7 +184,7 @@
         // 将本地的文件上传至服务器
 //        NSURL *fileURL = [[NSBundle mainBundle] URLForResource:@"头像1.png" withExtension:nil];
         
-        [formData appendPartWithFileURL:fileURL name:@"filename" error:NULL];
+        [formData appendPartWithFileURL:fileURL name:@"photo" error:NULL];
     } success:^(AFHTTPRequestOperation *operation, id responseObject) {
 //        NSString *result = [[NSString alloc] initWithData:responseObject encoding:NSUTF8StringEncoding];
 //        

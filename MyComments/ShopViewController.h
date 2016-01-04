@@ -8,6 +8,7 @@
 
 #import <UIKit/UIKit.h>
 #import "ShopDelegate.h"
+#import "DetailDelegate.h"
 #import "DOPDropDownMenu.h"
 #import "MBProgressHUD.h"
 #import "MJRefresh.h"
@@ -27,5 +28,7 @@ DOPDropDownMenuDelegate>
 
 @property (nonatomic,retain) NSMutableArray *dataArray;
 @property (nonatomic,strong) UITableView *tableView;
+@property (nonatomic,assign) id<ShopDelegate> delegate;
+@property (nonatomic,assign) id<DetailDelegate> detailDelegate;
 
 @end

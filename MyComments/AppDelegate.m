@@ -8,6 +8,14 @@
 
 #import "AppDelegate.h"
 #import "BWCommon.h"
+#import <ShareSDK/ShareSDK.h>
+#import <ShareSDKConnector/ShareSDKConnector.h>
+
+#import "WXApi.h"
+
+#import "WeiboSDK.h"
+
+
 
 @import GoogleMaps;
 
@@ -23,6 +31,59 @@
     [BWCommon loadCommonData];
     [GMSServices provideAPIKey:@"AIzaSyAmjS-efiXz5xtBYgzRFqDowbZ4KApieEw"];
     
+    
+    
+    [ShareSDK registerApp:@"59afde02e570"
+     
+          activePlatforms:@[
+                            @(SSDKPlatformTypeFacebook),
+                            @(SSDKPlatformTypeTwitter),
+                            @(SSDKPlatformTypeSinaWeibo),
+                            @(SSDKPlatformTypeWechat)]
+                 onImport:^(SSDKPlatformType platformType)
+     {
+         switch (platformType)
+         {
+             case SSDKPlatformTypeWechat:
+                 [ShareSDKConnector connectWeChat:[WXApi class]];
+                 break;
+             case SSDKPlatformTypeSinaWeibo:
+                 [ShareSDKConnector connectWeibo:[WeiboSDK class]];
+                 break;
+            default:
+                 break;
+         }
+     }
+    onConfiguration:^(SSDKPlatformType platformType, NSMutableDictionary *appInfo)
+     {
+         
+         switch (platformType)
+         {
+             case SSDKPlatformTypeSinaWeibo:
+                 //设置新浪微博应用信息,其中authType设置为使用SSO＋Web形式授权
+                 [appInfo SSDKSetupSinaWeiboByAppKey:@"3586513229"
+                                           appSecret:@"b395c8748ebc529343f877abc9f8aa41"
+                                         redirectUri:@"http://www.mycomments.com.my"
+                                            authType:SSDKAuthTypeBoth];
+                 break;
+             case SSDKPlatformTypeWechat:
+                 [appInfo SSDKSetupWeChatByAppId:@"wx9b9dd08be944b3ad"
+                                       appSecret:@"3ac11194d13bfd1c75205486b4c25e83"];
+                 break;
+             case SSDKPlatformTypeFacebook:
+                 //设置Facebook应用信息，其中authType设置为只用SSO形式授权
+                 [appInfo SSDKSetupFacebookByAppKey:@"447958285326593"
+                                          appSecret:@"d1ad021a5ad3ec4b5220d36bcfcfea1e"
+                                           authType:SSDKAuthTypeBoth];
+                 break;
+             case SSDKPlatformTypeTwitter:
+                 [appInfo SSDKSetupTwitterByConsumerKey:@"ZsCJu8mLXt2sldPa9PfUfQ" consumerSecret:@"yiArqnLlegFi66NUT0oka2xvpcgMJejIhmcnzU14Y" redirectUri:@"http://www.mycomments.com.my"];
+                 break;
+            default:
+                 break;
+         }
+     }];
+
     return YES;
 }
 

@@ -7,7 +7,12 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "MBProgressHUD.h"
 
 @interface UserTableViewController : UITableViewController
+<MBProgressHUDDelegate>
+{
+    MBProgressHUD *hud;
+}
 
 @end

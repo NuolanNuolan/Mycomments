@@ -33,6 +33,8 @@
     CGFloat usernameX;
     CGFloat usernameY;
     
+    CGFloat avatarY;
+    
     if(showShopName){
         nameX = paddingX;
         nameY = paddingY;
@@ -41,12 +43,17 @@
         self.nameF = CGRectMake(nameX, nameY, nameSize.width, nameSize.height);
         
         usernameY = nameY+nameSize.height + paddingY;
+        avatarY = nameY + nameSize.height;
 
     }
     else
     {
+       
         usernameY = paddingY;
+        avatarY = paddingY;
     }
+    
+    self.avatarF = CGRectMake(paddingX,avatarY,50,50);
     
     usernameX = 60 + paddingX;
     self.usernameF = CGRectMake(usernameX, usernameY, 160, 20);
@@ -63,7 +70,7 @@
     
     
     CGFloat commentX = paddingX;
-    CGFloat commentY = 50 + paddingY * 2;
+    CGFloat commentY = avatarY + 50 + paddingY * 2;
     CGSize commentSize = [BWCommon sizeWithString:[data objectForKey:@"detail"] font:NJTextFont maxSize:CGSizeMake(size.width - 20, MAXFLOAT)];
     
     self.commentF = CGRectMake(commentX, commentY, commentSize.width, commentSize.height);
@@ -76,7 +83,7 @@
     CGFloat dateY = likeY;
     self.dateF = CGRectMake(dateX, dateY, 100, 20);
     
-    self.cellHeight =  50+paddingY*3 + commentSize.height + 25;
+    self.cellHeight =  avatarY + 50 +paddingY*3 + commentSize.height + 25;
     
     
     

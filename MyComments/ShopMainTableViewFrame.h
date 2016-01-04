@@ -17,10 +17,15 @@
 @property (nonatomic, assign) CGRect rateF;
 @property (nonatomic, assign) CGRect priceF;
 
+@property (nonatomic, assign) CGRect imageNumF;
 
 @property (nonatomic, assign) CGRect rate1F;
 @property (nonatomic, assign) CGRect rate2F;
 @property (nonatomic, assign) CGRect rate3F;
+
+@property (nonatomic, assign) CGRect halaF;
+@property (nonatomic, assign) CGRect wifiF;
+@property (nonatomic, assign) CGRect psF;
 
 
 @property (nonatomic, assign) CGFloat cellHeight;

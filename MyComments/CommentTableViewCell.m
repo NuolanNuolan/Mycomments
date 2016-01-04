@@ -97,6 +97,7 @@
         
         UIImageView *avatarView = [[UIImageView alloc] init];
         self.avatarView = avatarView;
+        [avatarView.layer setCornerRadius:5.0f];
         
         
         [self.contentView addSubview:avatarView];

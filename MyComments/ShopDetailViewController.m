@@ -14,6 +14,16 @@
 #import "CommentMainTableViewFrame.h"
 #import "BWSectionView.h"
 #import "AFNetworkTool.h"
+#import "PhotoViewController.h"
+#import "AddMerchantViewController.h"
+#import "AddCommentViewController.h"
+
+#import <ShareSDK/ShareSDK.h>
+#import <ShareSDKExtension/SSEShareHelper.h>
+#import <ShareSDKUI/ShareSDK+SSUI.h>
+#import <ShareSDKUI/SSUIShareActionSheetStyle.h>
+#import <ShareSDKUI/SSUIShareActionSheetCustomItem.h>
+#import <ShareSDK/ShareSDK+Base.h>
 
 #define NJNameFont [UIFont systemFontOfSize:14]
 #define NJTextFont [UIFont systemFontOfSize:12]
@@ -77,7 +87,7 @@ CGSize size;
     _headTitleArray = [[NSArray alloc] initWithObjects:@"",@"Address",@"Tel",@"Website",@"Details",@"Comments", nil];
     _headIconArray = [[NSArray alloc] initWithObjects:@"",@"detail-location",@"detail-phone",@"detail-website",@"detail-details",@"detail-comment", nil];
     
-    UITableView *tableView = [[UITableView alloc] initWithFrame:CGRectMake(0, 0, size.width, size.height)];
+    UITableView *tableView = [[UITableView alloc] initWithFrame:CGRectMake(0, 0, size.width, size.height-50)];
     
     [self.view addSubview:tableView];
     
@@ -103,13 +113,273 @@ CGSize size;
     [self refreshingData:self.sid callback:^{}];
     
     //右侧按钮
-    UIBarButtonItem *shareButton = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"btn_back.png"] style:UIBarButtonItemStylePlain target:self action:nil];
+    UIBarButtonItem *shareButton = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"btn_share.png"] style:UIBarButtonItemStylePlain target:self action:@selector(shareTouched:)];
     
-    UIBarButtonItem *collectionButton = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"btn_collection.png"] style:UIBarButtonItemStylePlain target:self action:nil];
+    UIBarButtonItem *collectionButton = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"btn_collection.png"] style:UIBarButtonItemStylePlain target:self action:@selector(collectionTouched:)];
     
-    NSArray *barItems = [[NSArray alloc] initWithObjects:shareButton,collectionButton, nil];
+    NSArray *barItems = [[NSArray alloc] initWithObjects:collectionButton,shareButton, nil];
     [self.navigationItem setRightBarButtonItems:barItems];
     
+    UIView *actionView = [[UIView alloc] initWithFrame:CGRectMake(0, size.height-50, size.width, 50)];
+    [actionView setBackgroundColor: [BWCommon getRGBColor:0x3f3f3f]];
+    [self.view addSubview:actionView];
+    
+    UIButton *photoButton = [self createActionButton:@"Photo" imageName:@"detail_btn_photos"];
+    photoButton.frame = CGRectMake(20, 15, 100, 20);
+    [actionView addSubview:photoButton];
+    UIButton *merchantButton = [self createActionButton:@"Merchant" imageName:@"detail_btn_add"];
+    merchantButton.frame = CGRectMake((size.width - 110)/2, 15, 110, 20);
+    [actionView addSubview:merchantButton];
+    UIButton *commentButton = [self createActionButton:@"Comment" imageName:@"detail_btn_comment"];
+    commentButton.frame = CGRectMake(size.width - 115, 15, 115, 20);
+    [actionView addSubview:commentButton];
+    
+    [photoButton addTarget:self action:@selector(uploadTouched:) forControlEvents:UIControlEventTouchUpInside];
+    
+    [merchantButton addTarget:self action:@selector(merchantTouched:) forControlEvents:UIControlEventTouchUpInside];
+    
+    [commentButton addTarget:self action:@selector(commentTouched:) forControlEvents:UIControlEventTouchUpInside];
+    
+    
+}
+
+- (void) merchantTouched:(UIButton *) sender{
+    
+    BOOL isLoggedIn = [BWCommon isLoggedIn];
+    
+    if (!isLoggedIn) {
+        
+        __weak ShopDetailViewController *weakSelf = self;
+        
+        UIViewController *viewController = [self.parentViewController.storyboard instantiateViewControllerWithIdentifier:@"loginView"];
+        
+        UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:viewController];
+        
+        [self presentViewController:navigationController animated:YES completion:^{
+            [weakSelf.tableView reloadData];
+        }];
+        
+        return;
+    }
+    
+    AddMerchantViewController *viewController = [[AddMerchantViewController alloc] init];
+    
+    [self.navigationController pushViewController:viewController animated:YES];
+    
+    
+}
+
+- (void) commentTouched:(UIButton *) sender{
+    
+    BOOL isLoggedIn = [BWCommon isLoggedIn];
+    
+    if (!isLoggedIn) {
+        
+        __weak ShopDetailViewController *weakSelf = self;
+        
+        UIViewController *viewController = [self.parentViewController.storyboard instantiateViewControllerWithIdentifier:@"loginView"];
+        
+        UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:viewController];
+        
+        [self presentViewController:navigationController animated:YES completion:^{
+            [weakSelf.tableView reloadData];
+        }];
+        
+        return;
+    }
+    
+    AddCommentViewController *viewController = [[AddCommentViewController alloc] init];
+    
+    [self.navigationController pushViewController:viewController animated:YES];
+    
+    
+}
+
+
+-(void) likeTouched:(UIButton *) sender{
+    NSLog(@"%ld",sender.tag);
+    BOOL isLoggedIn = [BWCommon isLoggedIn];
+    
+    if (!isLoggedIn) {
+        
+        //__weak CommentViewController *weakSelf = self;
+        
+        UIViewController *viewController = [self.parentViewController.storyboard instantiateViewControllerWithIdentifier:@"loginView"];
+        
+        UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:viewController];
+        
+        [self presentViewController:navigationController animated:YES completion:^{
+            //[weakSelf.tableView reloadData];
+        }];
+        
+        return;
+    }
+    
+    hud = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
+    hud.delegate=self;
+    
+    NSString *username = [BWCommon getUserInfo:@"username"];
+    NSInteger cid = sender.tag;
+    
+    NSString *url =  [[BWCommon getBaseInfo:@"api_url"] stringByAppendingString:@"likeIt"];
+    
+    [AFNetworkTool postJSONWithUrl:url parameters:@{@"username":username,@"id":[NSString stringWithFormat:@"%ld",cid]} success:^(id responseObject) {
+        
+        NSLog(@"%@",responseObject);
+        NSInteger code = [[responseObject objectForKey:@"code"] integerValue];
+        
+        [hud removeFromSuperview];
+        if(code == 200)
+        {
+            [sender setTitle:[NSString stringWithFormat:@"(%@)",[responseObject objectForKey:@"data"]] forState:UIControlStateNormal];
+        }
+        else
+        {
+            UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Tips" message:[responseObject objectForKey:@"data"] delegate:nil cancelButtonTitle:@"Cancel" otherButtonTitles:nil, nil];
+            
+            [alert show];
+            
+            NSLog(@"%@",[responseObject objectForKey:@"data"]);
+        }
+    } fail:^{
+        [hud removeFromSuperview];
+    }];
+    
+    
+}
+
+- (void) imageTouched:(UIButton *) sender{
+    
+    PhotoViewController *photoView = [[PhotoViewController alloc] init];
+    photoView.sid = sender.tag;
+    photoView.shop_name = [[shopDict objectForKey:@"shop"] objectForKey:@"name"];
+    
+    [self.navigationController pushViewController:photoView animated:YES];
+}
+
+-(void) shareTouched: (UIBarButtonItem *) sender{
+
+    /**
+     * 在简单分享中，只要设置共有分享参数即可分享到任意的社交平台
+     **/
+
+    //1、创建分享参数（必要）
+    NSMutableDictionary *shareParams = [NSMutableDictionary dictionary];
+    //NSArray* imageArray = @[[UIImage imageNamed:@"shareImg.png"]];
+    
+    NSString *image_url = [[shopDict objectForKey:@"shop"] objectForKey:@"small_image"];
+    
+    image_url = [NSString stringWithFormat:@"%@/uploadfiles/%@",[BWCommon getBaseInfo:@"site_url"],image_url];
+    NSString *shop_name = [[shopDict objectForKey:@"shop"] objectForKey:@"name"];
+    
+    [shareParams SSDKSetupShareParamsByText:shop_name
+                                     images:@[image_url]
+                                        url:[NSURL URLWithString:[NSString stringWithFormat:@"http://www.mycomments.com.my/shop/%ld",self.sid]]
+                                      title:shop_name
+                                       type:SSDKContentTypeAuto];
+    
+    //1.2、自定义分享平台（非必要）
+    NSMutableArray *activePlatforms = [NSMutableArray arrayWithArray:[ShareSDK activePlatforms]];
+
+    //2、分享
+    [ShareSDK showShareActionSheet:self.view
+                             items:activePlatforms
+                       shareParams:shareParams
+               onShareStateChanged:^(SSDKResponseState state, SSDKPlatformType platformType, NSDictionary *userData, SSDKContentEntity *contentEntity, NSError *error, BOOL end) {
+                   
+                   switch (state) {
+                           
+                       case SSDKResponseStateBegin:
+                       {
+    
+                           break;
+                       }
+                       case SSDKResponseStateSuccess:
+                       {
+                           UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Thanks for your sharing"
+                                                                               message:nil
+                                                                              delegate:nil
+                                                                     cancelButtonTitle:@"Ok"
+                                                                     otherButtonTitles:nil];
+                           [alertView show];
+                           break;
+                       }
+                       case SSDKResponseStateFail:
+                       {
+                           
+                               UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Failed"
+                                                                               message:[NSString stringWithFormat:@"%@",error]
+                                                                              delegate:nil
+                                                                     cancelButtonTitle:@"OK"
+                                                                     otherButtonTitles:nil, nil];
+                               [alert show];
+                               break;
+
+                       }
+                       case SSDKResponseStateCancel:
+                       {
+                           
+                           break;
+                       }
+                       default:
+                           break;
+                   }
+                   
+               }];
+}
+
+-(void) collectionTouched: (UIBarButtonItem *) sender{
+    
+    hud = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
+    hud.delegate=self;
+    NSString *url =  [[BWCommon getBaseInfo:@"api_url"] stringByAppendingString:@"addCollection"];
+    
+    NSMutableDictionary *postData = [[NSMutableDictionary alloc] init];
+    
+    [postData setValue:[NSString stringWithFormat:@"%ld",self.sid] forKey:@"sid"];
+    [postData setValue:[BWCommon getUserInfo:@"username"] forKey:@"username"];
+    
+    [AFNetworkTool postJSONWithUrl:url parameters:postData success:^(id responseObject) {
+        
+        NSInteger code = [[responseObject objectForKey:@"code"] integerValue];
+        
+        [hud removeFromSuperview];
+        if(code == 200)
+        {
+            UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"System Tips" message:@"Action successfully" delegate:self cancelButtonTitle:@"Ok" otherButtonTitles: nil];
+            [alertView show];
+            
+        }
+        else
+        {
+            UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"System Tips" message:[responseObject objectForKey:@"msg"] delegate:self cancelButtonTitle:@"Ok" otherButtonTitles: nil];
+            [alertView show];
+            NSLog(@"%@",[responseObject objectForKey:@"msg"]);
+        }
+        
+    } fail:^{
+        [hud removeFromSuperview];
+        NSLog(@"请求失败");
+    }];
+
+}
+
+- (UIButton *) createActionButton:(NSString *) title imageName:(NSString *) imageName{
+    
+    UIButton *button = [[UIButton alloc] init];
+    
+    UIImage *icon = [UIImage imageNamed:imageName];
+    UIImageView *iconView = [[UIImageView alloc] initWithImage:icon];
+    iconView.frame = CGRectMake(0, 0, 22, 20);
+    [button addSubview:iconView];
+    //[photoButton setBackgroundImage:[UIImage imageNamed:@"detail_btn_photos"] forState:UIControlStateNormal];
+    [button setTitleColor:[BWCommon getRGBColor:0xffffff] forState:UIControlStateNormal];
+    [button setTitle:title forState:UIControlStateNormal];
+    [button.titleLabel setTextAlignment:NSTextAlignmentRight];
+    [button.titleLabel setFont:[UIFont systemFontOfSize:14]];
+    
+    return button;
+    //[photoButton setTitleEdgeInsets:UIEdgeInsetsMake(60.0, 0.0, 40.0, 0.0)];
 }
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
@@ -210,6 +480,8 @@ CGSize size;
     if (indexPath.section == 0) {
         ShopMainTableViewCell *cell = [ShopMainTableViewCell cellWithTableView:tableView];
         cell.viewFrame = self.shopFrames[0];
+
+        [cell.imageButton addTarget:self action:@selector(imageTouched:) forControlEvents:UIControlEventTouchUpInside];
         return cell;
     }
     
@@ -217,6 +489,7 @@ CGSize size;
         CommentMainTableViewCell *cell = [CommentMainTableViewCell cellWithTableView:tableView];
         cell.viewFrame = self.statusFrames[indexPath.row];
         cell.separatorInset = UIEdgeInsetsMake(0, 0, 0, 0);
+        [cell.likeButton addTarget:self action:@selector(likeTouched:) forControlEvents:UIControlEventTouchUpInside];
         return cell;
     }
     
@@ -279,11 +552,24 @@ CGSize size;
     
 }
 
+-(void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath{
+    [tableView deselectRowAtIndexPath:indexPath animated:YES];
+    if(indexPath.section == 2){
+        
+        NSString *number = [[shopDict objectForKey:@"shop"] objectForKey:@"tel"];
+        NSString *num = [[NSString alloc] initWithFormat:@"tel://%@",number];
+        
+        //UIWebView * callWebview = [[UIWebView alloc] init];
+        //[callWebview loadRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:num]]];
+        //[self.view addSubview:callWebview];
+        [[UIApplication sharedApplication] openURL:[NSURL URLWithString:num]];
+    }
+}
 
 - (void) headerRefreshing{
     
-    self.gpage = 1;
-    [self refreshingData:self.gpage callback:^{
+    //self.gpage = 1;
+    [self refreshingData:self.sid callback:^{
         [self.tableView.header endRefreshing];
     }];
     
@@ -300,8 +586,8 @@ CGSize size;
 - (void) refreshingData:(NSUInteger)sid callback:(void(^)()) callback
 {
     
-    hud = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
-    //hud.mode = MBProgressHUDModeCustomView;
+    hud = [BWCommon getHUD];
+    //hud.mode = MBProgressHUDModeDeterminate;
     hud.delegate=self;
     
     NSString *url =  [[BWCommon getBaseInfo:@"api_url"] stringByAppendingString:@"detail"];
@@ -325,7 +611,7 @@ CGSize size;
             
             dataArray = [[[shopDict objectForKey:@"comments"] objectForKey:@"lists"] mutableCopy];
             
-            NSLog(@"%@",dataArray);
+            NSLog(@"%@",shopDict);
             
             self.tableView.footer.hidden = (dataArray.count <=0) ? YES : NO;
             
@@ -392,6 +678,171 @@ CGSize size;
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];
     // Dispose of any resources that can be recreated.
+}
+
+
+
+-(void) uploadTouched:(UIButton *)sender{
+    
+    UIActionSheet *menu=[[UIActionSheet alloc] initWithTitle:@"Add Photo" delegate:self cancelButtonTitle:@"Cancel" destructiveButtonTitle:nil otherButtonTitles:@"Camera",@"Photo Gallery", nil];
+    menu.actionSheetStyle=UIActionSheetStyleBlackTranslucent;
+    [menu showInView:self.view];
+}
+
+
+
+- (void) actionSheet:(UIActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex{
+    
+    if(buttonIndex==0){
+        [self snapImage];
+        
+    }else if(buttonIndex==1){
+        [self pickImage];
+    }
+    
+}
+
+//拍照
+- (void) snapImage{
+    UIImagePickerController *ipc=[[UIImagePickerController alloc] init];
+    ipc.sourceType=UIImagePickerControllerSourceTypeCamera;
+    ipc.delegate = self;
+    ipc.allowsEditing=NO;
+    
+    [self presentViewController:ipc animated:YES completion:^{
+        
+        
+    }];
+    
+}
+//从相册里找
+- (void) pickImage{
+    UIImagePickerController *ipc=[[UIImagePickerController alloc] init];
+    ipc.sourceType=UIImagePickerControllerSourceTypePhotoLibrary;
+    ipc.delegate = self;
+    ipc.allowsEditing=NO;
+    
+    [self presentViewController:ipc animated:YES completion:^{
+    }];
+    
+}
+
+-(void) imagePickerController:(UIImagePickerController *)picker didFinishPickingMediaWithInfo:(NSDictionary *) info{
+    
+    UIImage *img=[info objectForKey:@"UIImagePickerControllerOriginalImage"];
+    
+    if(picker.sourceType==UIImagePickerControllerSourceTypeCamera){
+        //UIImageWriteToSavedPhotosAlbum(img,nil,nil,nil);
+    }
+    
+    int y = (arc4random() % 1001) + 9000;
+    
+    NSString *fileName = [NSString stringWithFormat:@"%d%@",y,@".jpg"];
+    
+    [self saveImage:img WithName:fileName];
+    
+    NSString *fullFileName = [[self documentFolderPath] stringByAppendingPathComponent:fileName];
+    
+    NSURL *fileUrl = [[NSURL alloc] initFileURLWithPath:fullFileName];
+    //NSURL *fileUrl = [[NSBundle mainBundle] URLForResource:fileName withExtension:nil];
+    NSLog(@"%@",fileUrl);
+    
+    hud = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
+    hud.delegate=self;
+    
+    /*UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"提示" message:@"" delegate:self cancelButtonTitle:@"Ok" otherButtonTitles:nil];
+    
+    
+    NSString *api_url = @"http://hj.s10.baiwei.org/member/register/upload_img";
+    
+    NSDictionary *postData = @{@"password":[BWCommon getUserInfo:@"password"],@"uniqueid":[BWCommon getUserInfo:@"uid"]};
+    
+    
+    [AFNetworkTool postUploadWithUrl:api_url fileUrl:fileUrl parameters:postData success:^(id responseObject) {
+        
+        NSInteger errNo = [[responseObject objectForKey:@"errno"] integerValue];
+        
+        [hud removeFromSuperview];
+        
+        NSLog(@"%@",responseObject);
+        if (errNo > 0) {
+            [alert setMessage:[responseObject objectForKey:@"error"]];
+            [alert show];
+        }
+        else
+        {
+            NSString *imgurl = [[responseObject objectForKey:@"data"] objectForKey:@"imgurl"];
+            NSString *imgview = [[responseObject objectForKey:@"data"] objectForKey:@"imgview"];
+            
+            //图片获取的token
+            NSString *timestamp = [NSString stringWithFormat:@"%ld", (long)[[NSDate date] timeIntervalSince1970] ];
+            NSString *uid = [BWCommon getUserInfo:@"uid"];
+            
+            //NSLog(@"uniqueid:%@",uid);
+            
+            NSString *str = [NSString stringWithFormat:@"register/display_cert_image/%@/%@",timestamp,[BWCommon md5:uid]];
+            
+            
+            //init token
+            NSString *token = [BWCommon md5:str];
+            
+            NSString *nimgview = [[NSString alloc] init];
+            nimgview = [imgview stringByReplacingOccurrencesOfString:@"http://www.huaji.com/" withString:@"http://hj.s10.baiwei.org/"];
+            nimgview = [NSString stringWithFormat:@"%@?token=%@&time=%@&uid=%@",nimgview,token,timestamp,uid];
+            NSURL *dataurl = [NSURL URLWithString:nimgview];
+            
+            NSLog(@"%@",dataurl);
+            
+            NSData* ndata = [NSData dataWithContentsOfURL:dataurl];
+            
+            //NSLog(@"%@",ndata);
+            //[self.testImage sd_setImageWithURL:dataurl];
+            
+            if(photo_type==1){
+                face_pic = imgurl;
+                
+                [self.photo1Button setBackgroundImage:[UIImage imageWithData:ndata] forState:UIControlStateNormal];
+            }
+            else if(photo_type==2){
+                back_pic = imgurl;
+                
+                [self.photo2Button setBackgroundImage:[UIImage imageWithData:ndata] forState:UIControlStateNormal];
+            }
+            
+            NSLog(@"%@",imgurl);
+        }
+        
+    } fail:^{
+        
+        [hud removeFromSuperview];
+        
+        [alert setMessage:@"请求超时，请稍候重试"];
+        [alert show];
+        
+        NSLog(@"请求失败");
+    }];
+    */
+    
+    [self dismissViewControllerAnimated:YES completion:^{
+        
+    }];
+    
+}
+
+- (NSString *)documentFolderPath
+{
+    return [NSHomeDirectory() stringByAppendingPathComponent:@"Documents"];
+}
+
+- (void)saveImage:(UIImage *)tempImage WithName:(NSString *)imageName
+{
+    NSData* imageData = UIImageJPEGRepresentation(tempImage,1);
+    NSArray* paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
+    NSString* documentsDirectory = [paths objectAtIndex:0];
+    // Now we get the full path to the file
+    NSString* fullPathToFile = [documentsDirectory stringByAppendingPathComponent:imageName];
+    // and then we write it out
+    [imageData writeToFile:fullPathToFile atomically:NO];
 }
 
 /*

@@ -16,4 +16,7 @@
 
 + (instancetype)cellWithTableView:(UITableView *)tableView;
 
+@property (nonatomic,weak) UIImageView *mainImage;
+@property (nonatomic,weak) UIButton *imageButton;
+
 @end

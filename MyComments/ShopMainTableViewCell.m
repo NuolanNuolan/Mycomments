@@ -16,7 +16,7 @@
 
 @property (nonatomic,weak) UILabel *nameLabel;
 @property (nonatomic,weak) UILabel *priceLabel;
-@property (nonatomic,weak) UIImageView *mainImage;
+
 @property (nonatomic,weak) UIImageView *rateView;
 @property (nonatomic,weak) UIView *rate1View;
 @property (nonatomic,weak) UIView *rate2View;
@@ -24,6 +24,10 @@
 @property (nonatomic,weak) UILabel *rate1Label;
 @property (nonatomic,weak) UILabel *rate2Label;
 @property (nonatomic,weak) UILabel *rate3Label;
+
+@property (nonatomic,weak) UIImageView *halaView;
+@property (nonatomic,weak) UIImageView *wifiView;
+@property (nonatomic,weak) UIImageView *psView;
 
 @end
 
@@ -73,6 +77,19 @@
         self.mainImage = mainImage;
         [self.contentView addSubview:mainImage];
         
+        UIButton *imageButton = [UIButton buttonWithType:UIButtonTypeRoundedRect];
+
+        [imageButton.titleLabel setFont:[UIFont systemFontOfSize:12]];
+        [imageButton setTitleColor:[BWCommon getRGBColor:0x333333] forState:UIControlStateNormal];
+        imageButton.layer.cornerRadius = 10.0f;
+        [imageButton setBackgroundColor:[UIColor whiteColor]];
+        [imageButton setAlpha:0.6f];
+        
+        self.imageButton = imageButton;
+        
+        [self.contentView addSubview:imageButton];
+        
+        
         UILabel *priceLabel = [[UILabel alloc] init];
         self.priceLabel = priceLabel;
         priceLabel.font = NJTextFont;
@@ -106,6 +123,18 @@
         UILabel *rate3Label = [self createRateValue];
         self.rate3Label = rate3Label;
         [rate3View addSubview:rate3Label];
+        
+        UIImageView *halaView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"qz.gif"]];
+        self.halaView = halaView;
+        [self.contentView addSubview:halaView];
+        
+        UIImageView *wifiView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"wifi.gif"]];
+        self.wifiView = wifiView;
+        [self.contentView addSubview:wifiView];
+        
+        UIImageView *psView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"ps.gif"]];
+        self.psView = psView;
+        [self.contentView addSubview:psView];
     }
     return self;
 }
@@ -155,9 +184,13 @@
     
     NSString *image_url = [data objectForKey:@"small_image"];
     
-    image_url = [NSString stringWithFormat:@"%@/uploadfiles/%@",[BWCommon getBaseInfo:@"site_url"],image_url ];
+    image_url = [NSString stringWithFormat:@"%@/uploadfiles/%@!m125x90.jpg",[BWCommon getBaseInfo:@"site_url"],image_url ];
     
     [self.mainImage sd_setImageWithURL:[NSURL URLWithString:image_url] placeholderImage:[UIImage imageNamed:@"appicon.png"] options:SDWebImageCacheMemoryOnly];
+    
+    //[imageButton setBackgroundColor:[UIColor clearColor]];
+    [self.imageButton setTitle:[data objectForKey:@"photo_number"] forState:UIControlStateNormal];
+    self.imageButton.tag = [[data objectForKey:@"sid"] integerValue];
     
     self.nameLabel.text = [data objectForKey:@"name"];
     
@@ -177,11 +210,15 @@
 
     self.nameLabel.frame = self.viewFrame.nameF;
     self.mainImage.frame = self.viewFrame.imageF;
+    self.imageButton.frame = self.viewFrame.imageNumF;
     self.rateView.frame = self.viewFrame.rateF;
     self.priceLabel.frame = self.viewFrame.priceF;
     self.rate1View.frame = self.viewFrame.rate1F;
     self.rate2View.frame = self.viewFrame.rate2F;
     self.rate3View.frame = self.viewFrame.rate3F;
+    self.halaView.frame = self.viewFrame.halaF;
+    self.psView.frame = self.viewFrame.psF;
+    self.wifiView.frame = self.viewFrame.wifiF;
 
 }
 

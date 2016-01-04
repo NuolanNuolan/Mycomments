@@ -65,9 +65,25 @@
     
 }
 
+
++(NSUInteger) getParentIdById:(NSUInteger )region_id{
+    
+    NSArray *regions = [BWCommon getDataInfo:@"regions"];
+    for (int i=0;i<[regions count];i++){
+        NSDictionary *item = [[NSDictionary alloc] initWithDictionary:[regions objectAtIndex:i]];
+        if ([[item objectForKey:@"region_id"] integerValue] == region_id) {
+            return [[item objectForKey:@"parent_id"] integerValue];
+
+        }
+    }
+    
+    return 0;
+    
+}
+
 +(BOOL) isLoggedIn{
     
-    return [self getUserInfo:@"uid"] != nil && [[self getUserInfo:@"status"] isEqualToString:@"normal"];
+    return [self getUserInfo:@"uid"] != nil;
 }
 
 +(void) loadCommonData{
@@ -202,6 +218,19 @@
     bottomBorder.frame = CGRectMake(-1, layer.frame.size.height, layer.frame.size.width, 1);
     [bottomBorder setBorderColor:color.CGColor];
     [layer addSublayer:bottomBorder];
+}
+
++(void) setRightBorder:(UIView *)view color:(UIColor *)color{
+    
+    [view sizeToFit];
+    
+    CALayer* layer = [view layer];
+    
+    CALayer *rightBorder = [CALayer layer];
+    rightBorder.borderWidth = 1;
+    rightBorder.frame = CGRectMake(layer.frame.size.width-1, 0, 1, layer.frame.size.height);
+    [rightBorder setBorderColor:color.CGColor];
+    [layer addSublayer:rightBorder];
 }
 
 +(void) syncUserInfo{
@@ -343,5 +372,69 @@
     CGSize size =  [str boundingRectWithSize:maxSize options:NSStringDrawingUsesLineFragmentOrigin attributes:dict context:nil].size;
     return size;
 }
+
++ (UIViewController *)getCurrentVC
+{
+    UIViewController *result = nil;
+    
+    UIWindow * window = [[UIApplication sharedApplication] keyWindow];
+    if (window.windowLevel != UIWindowLevelNormal)
+    {
+        NSArray *windows = [[UIApplication sharedApplication] windows];
+        for(UIWindow * tmpWin in windows)
+        {
+            if (tmpWin.windowLevel == UIWindowLevelNormal)
+            {
+                window = tmpWin;
+                break;
+            }
+        }
+    }
+    
+    UIView *frontView = [[window subviews] objectAtIndex:0];
+    id nextResponder = [frontView nextResponder];
+    
+    if ([nextResponder isKindOfClass:[UIViewController class]])
+        result = nextResponder;
+    else
+        result = window.rootViewController;
+    
+    return result;
+}
+
++(MBProgressHUD *) getHUD{
+    
+    MBProgressHUD *hud = [MBProgressHUD showHUDAddedTo:[BWCommon getCurrentVC].view animated:YES];
+    
+    UIView *loadingView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 74, 74)];
+    UIImageView *loadingLogo =[[UIImageView alloc] initWithImage:[UIImage imageNamed:@"menu_home"]];
+    loadingLogo.frame = CGRectMake(20, 0, 34, 24);
+    [loadingView addSubview:loadingLogo];
+    //loadingLogo.frame = CGRectMake(10, 0, 40, 40);
+    /*UILabel *loadingText = [[UILabel alloc] initWithFrame:CGRectMake(0, 65, 60, 20)];
+     [loadingText setTextAlignment:NSTextAlignmentCenter];
+     [loadingText setTextColor:[UIColor whiteColor]];
+     [loadingText setText:@"加载中.."];
+     [loadingText setFont:[UIFont systemFontOfSize:12]];
+     [loadingView addSubview:loadingText];*/
+    
+    
+    UIActivityIndicatorView *indicator = [[UIActivityIndicatorView alloc]
+                                          initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhiteLarge];
+    [(UIActivityIndicatorView *)indicator startAnimating];
+    
+    indicator.frame = CGRectMake(35, 55, 10, 10);
+    [loadingView addSubview:indicator];
+    
+    
+    hud.customView = loadingView;
+    hud.mode = MBProgressHUDModeCustomView;
+    //hud.backgroundColor = [UIColor grayColor];
+    //hud.opacity = 0.6;
+    //hud.opaque = YES;
+    
+    return hud;
+}
+
 
 @end

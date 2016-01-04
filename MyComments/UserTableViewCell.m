@@ -10,7 +10,7 @@
 #import "UserTableViewFrame.h"
 #import "BWCommon.h"
 
-#define NJNameFont [UIFont systemFontOfSize:16]
+#define NJNameFont [UIFont systemFontOfSize:14]
 
 
 @interface UserTableViewCell ()
@@ -35,22 +35,18 @@
     CGRect tmpFrame = self.textLabel.frame;
     tmpFrame.origin.x = 55;
     self.textLabel.frame = tmpFrame;
-    
-    
+
     self.selectionStyle = UITableViewCellSelectionStyleNone;
-    
     //self.accessoryType = UITableViewCellAccessoryNone;
-    
-    
 }
 + (instancetype)cellWithTableView:(UITableView *)tableView {
     
     static NSString *identifier = @"cell0";
     UserTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:identifier];
-    //if (cell == nil) {
+    if (cell == nil) {
     
-    cell = [[UserTableViewCell alloc]initWithStyle:UITableViewCellStyleDefault reuseIdentifier:identifier];
-    //}
+        cell = [[UserTableViewCell alloc]initWithStyle:UITableViewCellStyleDefault reuseIdentifier:identifier];
+    }
     return cell;
 }
 
@@ -64,7 +60,7 @@
         self.valueLabel = valueLabel;
         [self.contentView addSubview:valueLabel];
         
-        UIImageView *iconImage = [[UIImageView alloc] initWithFrame:CGRectMake(15, 10, 30, 30)];
+        UIImageView *iconImage = [[UIImageView alloc] initWithFrame:CGRectMake(15, 10, 24, 24)];
         self.iconImage = iconImage;
         [self.contentView addSubview:iconImage];
     }
@@ -107,7 +103,7 @@
     
     self.textLabel.frame = self.viewFrame.textF;
     [self.textLabel setTextColor:[BWCommon getRGBColor:0x333333]];
-    self.textLabel.font = [UIFont systemFontOfSize:14 weight:10];
+    self.textLabel.font = [UIFont systemFontOfSize:14];
     
     self.valueLabel.frame = self.viewFrame.valueF;
     self.valueLabel.font = [UIFont systemFontOfSize:14];

@@ -12,6 +12,8 @@
 #import "CommentTableViewFrame.h"
 #import "ShopViewController.h"
 #import "ShopDetailViewController.h"
+#import "RegionTableViewController.h"
+#import "HomeSearchDisplayController.h"
 #import "MapViewController.h"
 #import "BWSectionView.h"
 #import "AFNetworkTool.h"
@@ -19,6 +21,9 @@
 @interface HomeTableViewController ()
 @property (nonatomic, strong) NSArray *statusFrames;
 @property (nonatomic,assign) NSUInteger gpage;
+@property (nonatomic,strong) UIBarButtonItem *cityItem;
+@property (nonatomic,strong) UIButton *cityItemButton;
+@property (nonatomic,strong) NSString *region_id;
 
 @end
 
@@ -32,13 +37,55 @@ CGSize size;
 - (void)viewDidLoad {
     [super viewDidLoad];
     
+    dataArray = [[NSMutableArray alloc] init];
+    
+    //self.region_id = @"20";
+    
     // Uncomment the following line to preserve selection between presentations.
     // self.clearsSelectionOnViewWillAppear = NO;
     
     // Uncomment the following line to display an Edit button in the navigation bar for this view controller.
     // self.navigationItem.rightBarButtonItem = self.editButtonItem;
     
+    self.manager = [[CLLocationManager alloc] init];
+    self.manager.delegate = self;
+    self.manager.desiredAccuracy = kCLLocationAccuracyNearestTenMeters;
+    self.manager.distanceFilter = 5.0f;
+    
+    if ([self.manager respondsToSelector:@selector(requestWhenInUseAuthorization)]) {
+        [self.manager requestWhenInUseAuthorization];
+        
+    }
+    if([CLLocationManager locationServicesEnabled]){
+        [self.manager startUpdatingLocation];
+    }else{
+        NSLog(@"Please enable location service.");
+    }
+    
     [self pageLayout];
+}
+
+-(void) viewDidAppear:(BOOL)animated{
+    
+    NSString *city_name = [BWCommon getUserInfo:@"region_name"];
+    if(city_name)
+    {
+        [self.cityItemButton setTitle:city_name forState:UIControlStateNormal];
+    }
+    
+    self.region_id = [BWCommon getUserInfo:@"region_id"];
+    
+    
+    if(!self.region_id )
+    {
+       self.region_id = @"20";
+    }
+    
+    NSLog(@"%@",self.region_id);
+    
+    self.gpage = 1;
+    
+    [self refreshingData:1 callback:^{}];
 }
 
 -(void) pageLayout{
@@ -51,13 +98,46 @@ CGSize size;
     self.navigationController.navigationBar.barStyle = UIStatusBarStyleDefault;
     [self.navigationController.navigationBar setTintColor:[UIColor whiteColor ]];
     [self.navigationController.navigationBar setBarTintColor:[BWCommon getRedColor]];
-    UIBarButtonItem *mapItem = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"navbar_map.png"] style:UIBarButtonItemStylePlain target:self action:@selector(mapTouched:)];
+    UIBarButtonItem *mapItem = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"navbar_map"] style:UIBarButtonItemStylePlain target:self action:@selector(mapTouched:)];
     
     self.navigationItem.rightBarButtonItem = mapItem;
     
     UIView *middleView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 200, 30)];
     UIButton *searchButton = [[UIButton alloc] initWithFrame:CGRectMake(0, 0, 200, 30)];
-    [searchButton setBackgroundImage:[UIImage imageNamed:@"navbar_search.png"] forState:UIControlStateNormal];
+    [searchButton setBackgroundImage:[UIImage imageNamed:@"navbar_search"] forState:UIControlStateNormal];
+    
+    [searchButton addTarget:self action:@selector(searchTouched:) forControlEvents:UIControlEventTouchUpInside];
+    
+    //cityButton
+    self.cityItemButton = [[UIButton alloc] initWithFrame:CGRectMake(0, 0, 50, 30)];
+    [self.cityItemButton.titleLabel setTextColor:[UIColor whiteColor]];
+    
+    //UIImage *arrowIcon = [UIImage imageNamed:@"navbar_arrow"];
+    //UIImageView *arrowIconView = [[UIImageView alloc] initWithImage:arrowIcon];
+    
+    //[cityButton addSubview:arrowIconView];
+    
+    
+    //self.cityItem = [[UIBarButtonItem alloc] initWithTitle:@"All" style:UIBarButtonItemStylePlain target:self action:@selector(regionTouched:)];
+    
+
+    self.cityItem = [[UIBarButtonItem alloc] initWithCustomView:self.cityItemButton];
+    
+    //[cityButton.titleLabel setText:@"All"];
+    [self.cityItemButton setTitle:@"All" forState:UIControlStateNormal];
+    [self.cityItemButton.titleLabel setFont:[UIFont systemFontOfSize:14]];
+    
+    
+    [self.cityItemButton addTarget:self action:@selector(regionTouched:) forControlEvents:UIControlEventTouchUpInside];
+    
+    //[leftItem setTitle:@"All"];
+    //[leftItem setImage:arrowIcon];
+    //[self.cityItem setTintColor:[UIColor whiteColor]];
+    //[self.cityItem setTitleTextAttributes:[NSDictionary
+      //      dictionaryWithObjectsAndKeys:[UIFont systemFontOfSize:12], NSFontAttributeName,nil] forState:UIControlStateNormal];
+
+    [self.navigationItem setLeftBarButtonItem:self.cityItem];
+    
     
     [middleView addSubview:searchButton];
     
@@ -70,13 +150,13 @@ CGSize size;
     self.navigationItem.backBarButtonItem=backItem;
 
     
-    dataArray = [[NSMutableArray alloc] init];
+    
     
     popularCityArray = [BWCommon getDataInfo:@"popular_city"];
     
-    self.gpage = 1;
+    //self.gpage = 1;
     
-    [self refreshingData:self.gpage callback:^{}];
+    //[self refreshingData:self.gpage callback:^{}];
     
     
     UIView *v = [[UIView alloc] initWithFrame:CGRectZero];
@@ -88,6 +168,34 @@ CGSize size;
     [self.tableView addLegendFooterWithRefreshingTarget:self refreshingAction:@selector(footerRereshing)];
     
     [self.tableView.footer setTitle:@"" forState:MJRefreshFooterStateIdle];
+
+}
+
+
+-(void) locationManager:(CLLocationManager *)manager didUpdateLocations:(NSArray *)locations{
+    
+    CLLocation *newLocation = [locations lastObject];
+    CLLocation *oldLocation;
+    if (locations.count > 1)
+    {
+        oldLocation = [locations objectAtIndex:locations.count-2];
+    }
+    else
+    {
+        oldLocation = nil;
+    }
+    NSLog(@"didUpdateToLocation %@ from %@", newLocation, oldLocation);
+    
+    // 停止位置更新
+    [self.manager stopUpdatingLocation];
+}
+
+- (void)locationManager:(CLLocationManager *)manager didFailWithError:(NSError *)error
+{
+    NSLog(@"%@",error);
+}
+
+-(void) searchTouched: (UIButton *) sender{
 
 }
 
@@ -118,14 +226,14 @@ CGSize size;
 - (void) refreshingData:(NSUInteger)page callback:(void(^)()) callback
 {
     
-    hud = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
+    hud = [BWCommon getHUD];
     hud.delegate=self;
     
     NSString *url =  [[BWCommon getBaseInfo:@"api_url"] stringByAppendingString:@"LatestComments"];
     
     NSMutableDictionary *postData = [[NSMutableDictionary alloc] init];
     [postData setValue:[NSString stringWithFormat:@"%ld",page] forKey:@"page"];
-    [postData setValue:@"20" forKey:@"region_id"];
+    [postData setValue:self.region_id forKey:@"region_id"];
    
 
     NSLog(@"%@",url);
@@ -138,7 +246,15 @@ CGSize size;
         [hud removeFromSuperview];
         if(code == 200)
         {
-            NSMutableDictionary *data = [responseObject objectForKey:@"data"];
+            
+            //NSLog(@"kkkkkk%@",[responseObject objectForKey:@"data"]);
+            
+            
+            if([responseObject objectForKey:@"data"])
+            {
+
+                NSMutableDictionary *data = [responseObject objectForKey:@"data"];
+                
             if(page == 1)
             {
                 dataArray = [ [data objectForKey:@"lists"] mutableCopy];
@@ -148,10 +264,13 @@ CGSize size;
                 [dataArray addObjectsFromArray:[[data objectForKey:@"lists"] mutableCopy]];
                 
             }
+                
+            }
+            
             
             self.tableView.footer.hidden = (dataArray.count <=0) ? YES : NO;
             
-            NSLog(@"%@",[responseObject objectForKey:@"data"]);
+            
             self.statusFrames = nil;
             
             [self.tableView setHidden:NO];
@@ -276,7 +395,7 @@ CGSize size;
         for (int i=0;i<[popularCityArray count];i++){
             
             NSString *title = [popularCityArray[i] objectForKey:@"region_name"];
-            UIButton *b1 = [self createCityButton:self Selector:nil Title:title];
+            UIButton *b1 = [self createCityButton:self Selector:@selector(cityTouched:) Title:title];
             b1.tag = [[popularCityArray[i] objectForKey:@"region_id"] integerValue];
             CGSize bsize = [BWCommon sizeWithString:title font:[UIFont systemFontOfSize:14] maxSize:CGSizeMake(160,MAXFLOAT)];
             CGFloat bwidth = bsize.width + 22;
@@ -285,6 +404,7 @@ CGSize size;
                 bx = 8;
             }
             
+            b1.tag = [[popularCityArray[i] objectForKey:@"region_id"] integerValue];
             b1.frame = CGRectMake(bx, by, bwidth, 35);
             UIImageView *dot = [[UIImageView alloc] initWithImage:[UIImage imageNamed: @"dot"]];
             dot.frame = CGRectMake(bwidth-5, 30, 4, 4);
@@ -307,11 +427,40 @@ CGSize size;
     ShopViewController *viewController = [[ShopViewController alloc] init];
     self.delegate = viewController;
     viewController.hidesBottomBarWhenPushed = YES;
+    
+    NSString *cat_name = @"";
+    if(sender.tag == 1){
+        cat_name = @"Restaurant";
+    }
+    else if(sender.tag == 2){
+        cat_name = @"Life & Style";
+    }
+    else if(sender.tag == 3){
+        cat_name = @"Travel";
+    }
+    
 
-    [self.delegate setValue:0 cid:sender.tag];
+    [self.delegate setValue:0 cid:sender.tag region_name:@"" cat_name:sender.titleLabel.text];
     
     [self.navigationController pushViewController:viewController animated:YES];
     
+}
+
+-(void) cityTouched:(UIButton *)sender{
+    
+    ShopViewController *viewController = [[ShopViewController alloc] init];
+    self.delegate = viewController;
+    viewController.hidesBottomBarWhenPushed = YES;
+    
+    [self.delegate setValue:sender.tag cid:0 region_name:@"" cat_name:@""];
+    [self.navigationController pushViewController:viewController animated:YES];
+    
+}
+
+-(void) regionTouched:(UIBarButtonItem *)sender{
+    RegionTableViewController *viewController = [[RegionTableViewController alloc] init];
+    viewController.hidesBottomBarWhenPushed = YES;
+    [self.navigationController pushViewController:viewController animated:YES];
 }
 
 - (UIButton*) createButton:(id)target Selector:(SEL)selector Image:(NSString *)image Title:(NSString *) title
