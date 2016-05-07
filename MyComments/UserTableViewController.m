@@ -13,6 +13,8 @@
 #import "AvatarTableViewFrame.h"
 #import "BWCommon.h"
 #import "CommentViewController.h"
+#import "MyPhotoViewController.h"
+#import "MyShopViewController.h"
 #import "AFNetworkTool.h"
 
 @interface UserTableViewController ()
@@ -34,6 +36,8 @@ NSString *fansNumber=@"";
 NSString *follwersNumber = @"";
 NSString *pointsNumber = @"";
 
+bool loadedData=YES;
+
 - (void)viewDidLoad {
     [super viewDidLoad];
     
@@ -46,7 +50,12 @@ NSString *pointsNumber = @"";
 }
 
 -(void) viewDidAppear:(BOOL)animated{
-    //[self loadUserData];
+    
+    
+    if([[BWCommon getUserInfo:@"need_refresh"] isEqualToString:@"1"]){
+        [self loadUserData];
+        [BWCommon setUserInfo:@"need_refresh" value:@"0"];
+    }
 }
 
 - (void) pagelayout{
@@ -90,6 +99,8 @@ NSString *pointsNumber = @"";
     [self.tableView setTableFooterView:v];
     
     
+    
+    
 
 }
 - (NSDictionary *) createRow:(NSString *) title  text: (NSString *) text icon: (NSString *) icon{
@@ -105,14 +116,15 @@ NSString *pointsNumber = @"";
     
     if (!isLoggedIn) {
         
-        __weak UserTableViewController *weakSelf = self;
+        //__weak UserTableViewController *weakSelf = self;
         
         UIViewController *viewController = [self.storyboard instantiateViewControllerWithIdentifier:@"loginView"];
         
         UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:viewController];
         
         [self presentViewController:navigationController animated:YES completion:^{
-            [weakSelf.tableView reloadData];
+            //[weakSelf.tableView reloadData];
+            //[weakSelf loadUserData];
         }];
         
         return;
@@ -127,6 +139,7 @@ NSString *pointsNumber = @"";
     
     [AFNetworkTool JSONDataWithUrl:url success:^(id json) {
         
+        loadedData = NO;
         NSLog(@"%@",json);
         NSInteger code = [[json objectForKey:@"code"] integerValue];
         
@@ -232,12 +245,13 @@ NSString *pointsNumber = @"";
         
         UITableViewCell *cell = [self.tableView dequeueReusableCellWithIdentifier:@"cell1"];
         
-        if(cell == nil){
+        //if(cell == nil){
             cell = [[UITableViewCell alloc]initWithStyle:UITableViewCellStyleDefault reuseIdentifier:@"cell1"];
-        }
+        //}
         
         UIView *fansView = [self createCellView:@"Fans" icon:@"ico-item4-active" number:fansNumber];
         fansView.frame = CGRectMake(0, 0, size.width/3, 50);
+        
         
         [BWCommon setRightBorder:fansView color:[BWCommon getRGBColor:0xdddddd]];
         
@@ -250,7 +264,7 @@ NSString *pointsNumber = @"";
         
         [cell addSubview:followsView];
         
-        UIView *pointsView = [self createCellView:@"Points" icon:@"icons-my-huaji-4" number:pointsNumber];
+        UIView *pointsView = [self createCellView:@"Points" icon:@"icon-point" number:pointsNumber];
         pointsView.frame = CGRectMake(size.width/3*2, 0, size.width/3, 50);
         
         [cell addSubview:pointsView];
@@ -287,7 +301,17 @@ NSString *pointsNumber = @"";
 -(void) logoutTouched: (UIButton *) sender{
     
     [BWCommon logout];
+    self.avatarFrames = nil;
+    //self.statusFrames = nil;
+    self.baseInfo = nil;
+
+    follwersNumber = @"";
+    fansNumber = @"";
+    pointsNumber = @"";
+    //[self loadUserData];
     [self.tableView reloadData];
+    
+
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
@@ -365,14 +389,14 @@ NSString *pointsNumber = @"";
     
     if (!isLoggedIn) {
         
-        __weak UserTableViewController *weakSelf = self;
+        //__weak UserTableViewController *weakSelf = self;
         
         UIViewController *viewController = [self.storyboard instantiateViewControllerWithIdentifier:@"loginView"];
         
         UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:viewController];
         
         [self presentViewController:navigationController animated:YES completion:^{
-            [weakSelf.tableView reloadData];
+            //[weakSelf loadUserData];
         }];
         
         return;
@@ -384,6 +408,14 @@ NSString *pointsNumber = @"";
             CommentViewController *viewController = [[CommentViewController alloc] init];
             viewController.hidesBottomBarWhenPushed = YES;
             viewController.myComments = YES;
+            [self.navigationController pushViewController:viewController animated:YES];
+        }else if(indexPath.row == 1){
+            MyShopViewController *viewController = [[MyShopViewController alloc] init];
+            viewController.hidesBottomBarWhenPushed = YES;
+            [self.navigationController pushViewController:viewController animated:YES];
+        }else if(indexPath.row == 2){
+            MyPhotoViewController *viewController = [[MyPhotoViewController alloc] init];
+            viewController.hidesBottomBarWhenPushed = YES;
             [self.navigationController pushViewController:viewController animated:YES];
         }
     }

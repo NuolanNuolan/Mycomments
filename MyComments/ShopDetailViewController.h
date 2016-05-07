@@ -10,6 +10,8 @@
 #import "DetailDelegate.h"
 #import "MBProgressHUD.h"
 #import "MJRefresh.h"
+#import "MapDelegate.h"
+#import "QBImagePickerController.h"
 
 @interface ShopDetailViewController : UIViewController
 <UITableViewDataSource,
@@ -17,6 +19,7 @@ UITableViewDelegate,
 UIActionSheetDelegate,
 UIImagePickerControllerDelegate,
 UINavigationControllerDelegate,
+QBImagePickerControllerDelegate,
 DetailDelegate,
 MBProgressHUDDelegate>
 {
@@ -26,6 +29,8 @@ MBProgressHUDDelegate>
 @property (nonatomic,retain) NSMutableArray *dataArray;
 
 @property (nonatomic,retain) NSMutableDictionary *shopDict;
+
+@property (nonatomic,assign) id<MapDelegate> mapDelegate;
 
 @property (nonatomic,strong) UITableView *tableView;
 

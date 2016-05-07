@@ -7,6 +7,7 @@
 //
 
 #import <UIKit/UIKit.h>
+#import <CoreLocation/CoreLocation.h>
 #import "ShopDelegate.h"
 #import "DetailDelegate.h"
 #import "DOPDropDownMenu.h"
@@ -19,6 +20,7 @@ UITableViewDataSource,
 UITableViewDelegate,
 ShopDelegate,
 MBProgressHUDDelegate,
+CLLocationManagerDelegate,
 DOPDropDownMenuDataSource,
 DOPDropDownMenuDelegate>
 {
@@ -30,5 +32,7 @@ DOPDropDownMenuDelegate>
 @property (nonatomic,strong) UITableView *tableView;
 @property (nonatomic,assign) id<ShopDelegate> delegate;
 @property (nonatomic,assign) id<DetailDelegate> detailDelegate;
+
+@property (nonatomic,strong) CLLocationManager *manager;
 
 @end

@@ -8,6 +8,7 @@
 
 #import <UIKit/UIKit.h>
 #import "MBProgressHUD.h"
+#import "MJRefresh.h"
 
 @interface UserTableViewController : UITableViewController
 <MBProgressHUDDelegate>

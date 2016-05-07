@@ -12,16 +12,17 @@
 #import "ShopDetailViewController.h"
 #import "BWCommon.h"
 #import "AFNetworkTool.h"
+#import "AddMerchantViewController.h"
 
 @interface ShopViewController ()
 
 @property (nonatomic, strong) NSArray *statusFrames;
 
-@property (nonatomic,assign) NSUInteger region_id;
-@property (nonatomic,assign) NSUInteger cid;
-@property (nonatomic,assign) NSUInteger gpage;
+@property (nonatomic,assign) NSInteger region_id;
+@property (nonatomic,assign) NSInteger cid;
+@property (nonatomic,assign) NSInteger gpage;
 @property (nonatomic,assign) NSString *o;
-@property (nonatomic,assign) NSUInteger ot;
+@property (nonatomic,assign) NSInteger ot;
 
 @property (nonatomic,assign) NSString *region_name;
 @property (nonatomic,assign) NSString *cat_name;
@@ -43,6 +44,12 @@ NSArray *subCategoryData;
 
 NSMutableArray *filterData;
 
+CLLocation *_location;
+
+BOOL has_data;
+
+CGSize size;
+
 @synthesize dataArray;
 
 - (void)viewDidLoad {
@@ -61,7 +68,9 @@ NSMutableArray *filterData;
     
     
     CGRect rect = [[UIScreen mainScreen] bounds];
-    CGSize size = rect.size;
+    size = rect.size;
+    
+    has_data = YES;
     
     self.view.backgroundColor = [UIColor whiteColor];
     
@@ -77,6 +86,21 @@ NSMutableArray *filterData;
     backItem.image=[UIImage imageNamed:@""];
     self.navigationItem.backBarButtonItem=backItem;
     
+    self.manager = [[CLLocationManager alloc] init];
+    self.manager.delegate = self;
+    self.manager.desiredAccuracy = kCLLocationAccuracyNearestTenMeters;
+    self.manager.distanceFilter = 5.0f;
+    
+    if ([self.manager respondsToSelector:@selector(requestWhenInUseAuthorization)]) {
+        [self.manager requestWhenInUseAuthorization];
+        
+    }
+    if([CLLocationManager locationServicesEnabled]){
+        [self.manager startUpdatingLocation];
+    }else{
+        NSLog(@"Please enable location service.");
+    }
+    
     
     UITableView *tableView = [[UITableView alloc] initWithFrame:CGRectMake(0, 42, size.width, size.height-42)];
     
@@ -89,8 +113,13 @@ NSMutableArray *filterData;
     UIView *v = [[UIView alloc] initWithFrame:CGRectZero];
     [self.tableView setTableFooterView:v];
     
+    //[BWCommon setUserInfo:@"parent_region_id" value:[drow objectForKey:@"parent_id" ]];
+    NSInteger parent_region_id = [[BWCommon getUserInfo:@"parent_region_id"] integerValue];
     
-    provinceData = [BWCommon loadRegions:1 initData:@"Location"];
+    if(parent_region_id<=0){
+        parent_region_id = 1;
+    }
+    provinceData = [BWCommon loadRegions:parent_region_id initData:@"Location"];
     categoryData = [BWCommon getDataInfo:@"category"];
     
     //NSLog(@"%@",categoryData);
@@ -140,6 +169,34 @@ NSMutableArray *filterData;
     
 }
 
+
+
+-(void) locationManager:(CLLocationManager *)manager didUpdateLocations:(NSArray *)locations{
+    
+    CLLocation *newLocation = [locations lastObject];
+    CLLocation *oldLocation;
+    if (locations.count > 1)
+    {
+        oldLocation = [locations objectAtIndex:locations.count-2];
+    }
+    else
+    {
+        oldLocation = nil;
+    }
+    
+    _location = newLocation;
+    
+    NSLog(@"didUpdateToLocation %@ from %@", newLocation, oldLocation);
+    
+    // 停止位置更新
+    //[self.manager stopUpdatingLocation];
+}
+
+- (void)locationManager:(CLLocationManager *)manager didFailWithError:(NSError *)error
+{
+    NSLog(@"%@",error);
+}
+
 - (void) headerRefreshing{
     
     self.gpage = 1;
@@ -182,6 +239,9 @@ NSMutableArray *filterData;
     [postData setValue:[NSString stringWithFormat:@"%ld",self.cid] forKey:@"cid"];
     [postData setValue:self.o forKey:@"o"];
     [postData setValue:[NSString stringWithFormat:@"%ld",self.ot] forKey:@"ot"];
+    
+    [postData setValue:[NSString stringWithFormat:@"%f",_location.coordinate.longitude] forKey:@"lng"];
+    [postData setValue:[NSString stringWithFormat:@"%f",_location.coordinate.latitude] forKey:@"lat"];
   
     NSLog(@"%@",url);
     //load data
@@ -205,6 +265,8 @@ NSMutableArray *filterData;
                 [dataArray addObjectsFromArray:[[data objectForKey:@"lists"] mutableCopy]];
                 
             }
+            
+            has_data = [dataArray count] > 0  || page >1 ? YES : NO;
             
             NSLog(@"%@",dataArray);
             
@@ -261,7 +323,7 @@ NSMutableArray *filterData;
         return [provinceData count];
     }
     else if(column == 1) {
-        return [categoryData count];
+        return [categoryData count] + 5;
     }
     else if(column == 2) {
         return [filterData count];
@@ -282,7 +344,10 @@ NSMutableArray *filterData;
         //return [[provinceData allValues] objectAtIndex:[indexPath row]];
     }
     else if(indexPath.column == 1){
-        
+        //NSLog(@"titleForRowAtIndexPath %ld",(long)[indexPath row]);
+        if ([indexPath row] >=[categoryData count] ) {
+            return @"";
+        }
         return [[categoryData objectAtIndex:[indexPath row]] objectForKey:@"cat_name"];
     }
     else if (indexPath.column == 2){
@@ -305,7 +370,7 @@ NSMutableArray *filterData;
         return [cityData count];
     }
     else if(column == 1){
-        
+        NSLog(@"numberOfItemsInRow %ld",(long)row);
         subCategoryData = [self subCategory:row];
         return [subCategoryData count];
     }
@@ -330,6 +395,7 @@ NSMutableArray *filterData;
     else if(indexPath.column == 1){
         //subCategoryData = [[categoryData objectAtIndex:indexPath.row] objectForKey:@"childrens"];
         subCategoryData = [self subCategory:indexPath.row];
+        NSLog(@"title For Items %@",subCategoryData);
         return [[subCategoryData objectAtIndex:indexPath.item] objectForKey:@"cat_name"];
     }
     return nil;
@@ -356,9 +422,15 @@ NSMutableArray *filterData;
         }
     }
     else if (indexPath.column == 1){
+        NSLog(@"item2 %ld",indexPath.item);
+        NSLog(@"row2 %ld",indexPath.row);
         if (indexPath.item >= 0){
+
             //subCategoryData = [[categoryData objectAtIndex:indexPath.row] objectForKey:@"childrens"];
             subCategoryData = [self subCategory:indexPath.row];
+            //NSLog(@"subCategoryData %@",subCategoryData);
+            //NSLog(@"item %ld",indexPath.item);
+            //NSLog(@"row %ld",indexPath.row);
             self.cid = [[[subCategoryData objectAtIndex:indexPath.item] objectForKey:@"cid"] integerValue];
 
             [self refreshingData:1 callback:^{}];
@@ -389,11 +461,16 @@ NSMutableArray *filterData;
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
     
+    if (!has_data)
+        return 1;
+
     return [dataArray count];
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
 {
+    if (!has_data)
+        return 100;
     
     ShopTableViewFrame *vf = self.statusFrames[indexPath.row];
     
@@ -402,6 +479,43 @@ NSMutableArray *filterData;
 
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
+    
+    static NSString *identifier = @"cellNone";
+    
+    if (!has_data)
+    {
+        UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:identifier];
+        
+        tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
+        
+        if (cell == nil) {
+            
+            cell = [[UITableViewCell alloc]initWithStyle:UITableViewCellStyleDefault reuseIdentifier:identifier];
+            //[cell.textLabel setText:@"No result found"];
+            //[cell.textLabel setFont:[UIFont systemFontOfSize:14]];
+            //[cell.textLabel setTextAlignment:NSTextAlignmentCenter];
+            
+            UILabel *noResult = [[UILabel alloc] initWithFrame:CGRectMake((size.width - 240)/2, 30, 120, 20)];
+            [noResult setText:@"No result found"];
+            [noResult setFont:[UIFont systemFontOfSize:14]];
+            [noResult setTextAlignment:NSTextAlignmentCenter];
+            [cell.contentView addSubview:noResult];
+            
+            UIButton *addMerchant = [[UIButton alloc] initWithFrame:CGRectMake((size.width - 240)/2+120, 30, 120, 20)];
+            [addMerchant setTitle:@"Add Merchant >>" forState:UIControlStateNormal];
+            [addMerchant setTitleColor:[BWCommon getRedColor] forState:UIControlStateNormal];
+            //[addMerchant.layer setCornerRadius:5.0f];
+            [addMerchant.titleLabel setFont:[UIFont systemFontOfSize:14]];
+            //[addMerchant.layer setBorderWidth:1.0f];
+            //[addMerchant.layer setBorderColor:[BWCommon getRedColor].CGColor];
+            [cell.contentView addSubview:addMerchant];
+            [addMerchant addTarget:self action:@selector(addMerchantTouched:) forControlEvents:UIControlEventTouchUpInside];
+            
+            
+        }
+        
+        return cell;
+    }
     
     ShopTableViewCell *cell = [ShopTableViewCell cellWithTableView:tableView];
     
@@ -412,11 +526,44 @@ NSMutableArray *filterData;
     return cell;
 }
 
+-(void) addMerchantTouched: (UIButton *)sender{
+
+    
+    BOOL isLoggedIn = [BWCommon isLoggedIn];
+    
+    if (!isLoggedIn) {
+        
+        __weak ShopViewController *weakSelf = self;
+        
+        UIViewController *viewController = [self.parentViewController.storyboard instantiateViewControllerWithIdentifier:@"loginView"];
+        
+        UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:viewController];
+        
+        [self presentViewController:navigationController animated:YES completion:^{
+            [weakSelf.tableView reloadData];
+        }];
+        
+        return;
+    }
+    
+    AddMerchantViewController *viewController = [[AddMerchantViewController alloc] init];
+    
+    [self.navigationController pushViewController:viewController animated:YES];
+
+}
+
 - (NSArray *) subCategory:(NSInteger) row
 {
     NSMutableArray *category = [[NSMutableArray alloc] init];
+    
+    if(row >= [categoryData count])
+        row = 0;
+    
+    NSDictionary *pObj = [categoryData objectAtIndex:row];
+    [category addObject:pObj];
+
     NSArray *pCategory = [[categoryData objectAtIndex:row] objectForKey:@"childrens"];
-    NSLog(@"-!!!!--%@",categoryData);
+    //NSLog(@"-!!!!--%@",categoryData);
     
     for (NSInteger i=0;i<pCategory.count;i++){
         NSArray *childs = [[pCategory objectAtIndex:i] objectForKey:@"childrens"];

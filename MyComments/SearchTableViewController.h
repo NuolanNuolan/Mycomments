@@ -8,10 +8,16 @@
 
 #import <UIKit/UIKit.h>
 #import "ShopDelegate.h"
+#import "DetailDelegate.h"
 
 @interface SearchTableViewController : UITableViewController
+<UISearchResultsUpdating,
+UISearchBarDelegate
+>
 {
 }
 
 @property (nonatomic,assign) id<ShopDelegate> delegate;
+
+@property (nonatomic, strong) UISearchController *searchController;
 @end

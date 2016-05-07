@@ -20,6 +20,9 @@
 @property (nonatomic,strong) UITextField *website;
 @property (nonatomic,strong) UITextField *openingTime;
 @property (nonatomic,strong) UITextField *spendingPerHead;
+@property (nonatomic,strong) UIButton *btnHalal;
+@property (nonatomic,strong) UIButton *btnWifi;
+@property (nonatomic,strong) UIButton *btnPs;
 
 @property (nonatomic, weak) UIButton *photoButton;
 
@@ -149,13 +152,40 @@ CGSize size;
     self.openingTime = openingTime;
     
     h+=70;
-    UITextField *spendingPerHead = [self createTextField:@"" Title:@"Spending per Head"];
-    spendingPerHead.frame = CGRectMake(15,h,size.width-30,50);
-    [sclView addSubview:spendingPerHead];
-    spendingPerHead.delegate = self;
-    self.spendingPerHead = spendingPerHead;
     
-    h+=70;
+    UILabel *tags = [[UILabel alloc] initWithFrame:CGRectMake(30, h, 40, 30)];
+    [tags setText:@"Tags"];
+    [sclView addSubview:tags];
+    [tags setTextColor:[BWCommon getRGBColor:0x666666]];
+    
+    UIButton *btnHalal = [UIButton buttonWithType:UIButtonTypeCustom];
+    btnHalal.frame = CGRectMake(100, h, 27, 27);
+    [btnHalal setBackgroundImage:[UIImage imageNamed:@"halal.gif"] forState:UIControlStateNormal];
+    [btnHalal setBackgroundImage:[UIImage imageNamed:@"halal_gray.gif"] forState:UIControlStateSelected];
+    [btnHalal addTarget:self action:@selector(tagsTouched:) forControlEvents:UIControlEventTouchUpInside];
+    [sclView addSubview:btnHalal];
+    self.btnHalal = btnHalal;
+    
+    UIButton *btnWifi = [UIButton buttonWithType:UIButtonTypeCustom];
+    btnWifi.frame = CGRectMake(140, h, 27, 27);
+    [btnWifi setBackgroundImage:[UIImage imageNamed:@"wifi.gif"] forState:UIControlStateNormal];
+    [btnWifi setBackgroundImage:[UIImage imageNamed:@"wifi_gray.gif"] forState:UIControlStateSelected];
+    [btnWifi addTarget:self action:@selector(tagsTouched:) forControlEvents:UIControlEventTouchUpInside];
+    [sclView addSubview:btnWifi];
+    self.btnWifi = btnWifi;
+
+    
+    UIButton *btnPs = [UIButton buttonWithType:UIButtonTypeCustom];
+    btnPs.frame = CGRectMake(180, h, 27, 27);
+    [btnPs setBackgroundImage:[UIImage imageNamed:@"ps.gif"] forState:UIControlStateNormal];
+    [btnPs setBackgroundImage:[UIImage imageNamed:@"ps_gray.gif"] forState:UIControlStateSelected];
+    [btnPs addTarget:self action:@selector(tagsTouched:) forControlEvents:UIControlEventTouchUpInside];
+    [sclView addSubview:btnPs];
+    self.btnPs = btnPs;
+
+    
+    
+    h+=60;
     
     UIButton *photoButton = [[UIButton alloc] initWithFrame:CGRectMake(15, h, 80, 80)];
     [photoButton setBackgroundImage:[UIImage imageNamed:@"btn_add_photo.png"] forState:UIControlStateNormal];
@@ -177,8 +207,33 @@ CGSize size;
     [btnSubmit addTarget:self action:@selector(submitTouched:) forControlEvents:UIControlEventTouchUpInside];
     [sclView addSubview:btnSubmit];
 
-
+    
+    // tap for dismissing keyboard
+    UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc]
+                                   initWithTarget:self
+                                   action:@selector(dismissKeyboard)];
+    [self.view addGestureRecognizer:tap];
+    // very important make delegate useful
+    tap.delegate = self;
+    
+    
 }
+
+-(void) tagsTouched:(UIButton *) sender{
+    
+    if(sender.selected){
+        sender.selected = NO;
+    }else{
+        sender.selected = YES;
+    }
+}
+
+// tap dismiss keyboard
+-(void)dismissKeyboard {
+    [self.view endEditing:YES];
+    //[self.password resignFirstResponder];
+}
+
 - (UITextField *) createTextField:(NSString *)image Title:(NSString *) title{
     
     UITextField * field = [[UITextField alloc] init];
@@ -239,6 +294,25 @@ CGSize size;
 -(void) submitTouched:(UIButton *) sender{
     
     UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Tips" message:@"" delegate:self cancelButtonTitle:@"Ok" otherButtonTitles:nil];
+    
+    if([self.name.text isEqualToString:@""]){
+        [alert setMessage:@"Please input merchant name"];
+        [alert show];
+        return;
+    }
+    
+    if(cid==0){
+        [alert setMessage:@"Please select category"];
+        [alert show];
+        return;
+    }
+    
+    if(region_id==0){
+        [alert setMessage:@"Please select location"];
+        [alert show];
+        return;
+    }
+    
 
     hud = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
     hud.delegate=self;
@@ -247,15 +321,30 @@ CGSize size;
     
     NSString *url =  [api_url stringByAppendingString:@"addShop"];
     
+    NSMutableArray *tags = [[NSMutableArray alloc] init];
+    if(self.btnHalal.selected){
+        [tags addObject:@"halal"];
+    }
+    if(self.btnWifi.selected){
+        [tags addObject:@"wifi"];
+    }
+    if(self.btnPs.selected){
+        [tags addObject:@"delivery"];
+    }
+    
     NSMutableDictionary *postData = [[NSMutableDictionary alloc] init];
     [postData setValue:self.name.text forKey:@"name"];
     [postData setValue:[NSString stringWithFormat:@"%ld",cid] forKey:@"cid"];
     [postData setValue:[NSString stringWithFormat:@"%ld",region_id] forKey:@"region_id"];
     [postData setValue:self.openingTime.text forKey:@"opening_hours"];
     [postData setValue:self.tel.text forKey:@"tel"];
-    [postData setValue:self.spendingPerHead.text forKey:@"price"];
+    //[postData setValue:self.spendingPerHead.text forKey:@"price"];
     [postData setValue:imgurl forKey:@"original_image"];
     [postData setValue:[BWCommon getUserInfo:@"username"] forKey:@"username"];
+    [postData setValue:[tags componentsJoinedByString:@","] forKey:@"my_tags"];
+    
+    [postData setValue:self.website.text forKey:@"website"];
+    [postData setValue:self.address.text forKey:@"address"];
     
     
     
@@ -296,7 +385,22 @@ CGSize size;
     [menu showInView:self.view];
 }
 
-
+- (UIView *)pickerView:(UIPickerView *)pickerView viewForRow:(NSInteger)row forComponent:(NSInteger)component reusingView:(UIView *)view{
+    UILabel* pickerLabel = (UILabel*)view;
+    if (!pickerLabel){
+        pickerLabel = [[UILabel alloc] init];
+        // Setup label properties - frame, font, colors etc
+        //adjustsFontSizeToFitWidth property to YES
+        //pickerLabel.minimumFontSize = 8.;
+        pickerLabel.adjustsFontSizeToFitWidth = YES;
+        //[pickerLabel setTextAlignment:UITextAlignmentLeft];
+        [pickerLabel setBackgroundColor:[UIColor clearColor]];
+        [pickerLabel setFont:[UIFont boldSystemFontOfSize:15]];
+    }
+    // Fill the label text here
+    pickerLabel.text=[self pickerView:pickerView titleForRow:row forComponent:component];
+    return pickerLabel;
+}
 
 - (NSInteger) numberOfComponentsInPickerView:(UIPickerView *)pickerView{
     

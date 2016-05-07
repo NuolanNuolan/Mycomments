@@ -19,6 +19,7 @@
 
 // 名称
 @property (nonatomic, weak) UILabel *nameLabel;
+@property (nonatomic,weak) UIImageView *avatarImage;
 
 @property (nonatomic, weak) UILabel *priceLabel;
 @property (nonatomic, weak) UILabel *usernameLabel;
@@ -48,13 +49,13 @@
 
 - (void) layoutSubviews{
     [super layoutSubviews];
-    CGRect rect;
-    if(self.hasName)
+    //CGRect rect;
+    /*if(self.hasName)
         rect = CGRectMake(10, 40, 50, 50);
     else
         rect = CGRectMake(10, 14, 50, 50);
 
-    self.imageView.frame = rect;
+    self.imageView.frame = rect;*/
 }
 
 + (instancetype)cellWithTableView:(UITableView *)tableView {
@@ -75,6 +76,9 @@
     if (self) {
         // 让自定义Cell和系统的cell一样, 一创建出来就拥有一些子控件提供给我们使用
         
+        UIImageView *avatarImage = [[UIImageView alloc] init];
+        self.avatarImage = avatarImage;
+        [self.contentView addSubview:avatarImage];
         
         UILabel *nameLabel = [[UILabel alloc] init];
         nameLabel.font = NJNameFont;
@@ -167,7 +171,7 @@
     
     NSString *avatar_url = [data objectForKey:@"avatar"];
     avatar_url = [NSString stringWithFormat:@"%@/%@",[BWCommon getBaseInfo:@"site_url"],avatar_url];
-    [self.imageView sd_setImageWithURL:[NSURL URLWithString:avatar_url] placeholderImage:[UIImage imageNamed:@"noavatar_small.png"] options:SDWebImageCacheMemoryOnly];
+    [self.avatarImage sd_setImageWithURL:[NSURL URLWithString:avatar_url] placeholderImage:[UIImage imageNamed:@"noavatar_small.png"] options:SDWebImageCacheMemoryOnly];
     
     NSInteger rate = [[data objectForKey:@"rate"] integerValue];
     
@@ -193,7 +197,7 @@
     self.layer.borderColor = [[UIColor whiteColor] CGColor];
     //self.layer.borderWidth=1.0;
     
-    self.imageView.frame = self.viewFrame.avatarF;
+    self.avatarImage.frame = self.viewFrame.avatarF;
     self.nameLabel.frame = self.viewFrame.nameF;
     self.priceLabel.frame = self.viewFrame.priceF;
     self.rateView.frame = self.viewFrame.rateF;

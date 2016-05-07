@@ -7,7 +7,12 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "MapDelegate.h"
+#import <GoogleMaps/GoogleMaps.h>
 
 @interface MapViewController : UIViewController
+<MapDelegate,
+GMSMapViewDelegate
+>
 
 @end

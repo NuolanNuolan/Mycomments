@@ -22,4 +22,6 @@ UITextViewDelegate
     MBProgressHUD *hud;
 }
 
+@property (nonatomic, assign) NSUInteger sid;
+
 @end

@@ -43,7 +43,8 @@
         self.nameF = CGRectMake(nameX, nameY, nameSize.width, nameSize.height);
         
         usernameY = nameY+nameSize.height + paddingY;
-        avatarY = nameY + nameSize.height;
+        //avatarY = nameY + nameSize.height;
+        avatarY = usernameY;
 
     }
     else

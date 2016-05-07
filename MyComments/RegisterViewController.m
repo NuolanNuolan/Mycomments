@@ -10,6 +10,7 @@
 #import "BWCommon.h"
 #import "AFNetworkTool.h"
 #import "Register2ViewController.h"
+#import "TermsViewController.h"
 
 @interface RegisterViewController ()
 
@@ -56,6 +57,7 @@ CGSize size;
     [sclView addSubview:tipsLabel];
     
     username = [self createTextField:@"label_email" Title:@"Your Phone Number"];
+    //username.placeholder = @"Startwith country code";
     username.frame = CGRectMake(15,50,size.width-30,50);
     [sclView addSubview:username];
     username.delegate = self;
@@ -63,20 +65,36 @@ CGSize size;
     
     [sclView addSubview:username];
     
-    UISwitch *agree = [[UISwitch alloc] initWithFrame:CGRectMake(15, 110, 80, 50)];
+    UILabel *phoneLabel = [[UILabel alloc] initWithFrame:CGRectMake(15, 95, size.width, 30)];
+    
+    [sclView addSubview:phoneLabel];
+    [phoneLabel setText:@"Start with country code."];
+    [phoneLabel setFont:[UIFont systemFontOfSize:14]];
+    [phoneLabel setTextColor:[BWCommon getRGBColor:0x888888]];
+    
+    UISwitch *agree = [[UISwitch alloc] initWithFrame:CGRectMake(15, 130, 80, 50)];
     
     [agree setOn:YES];
     [agree addTarget:self action:@selector(switchAction:) forControlEvents:UIControlEventValueChanged];
     [sclView addSubview:agree];
     
-    UILabel *agreeTips = [[UILabel alloc] initWithFrame:CGRectMake(70, 115, size.width-85, 20)];
-    [agreeTips setText:@"Agree terms and condition."];
-    [agreeTips setTextColor:[BWCommon getRGBColor:0x888888]];
-    [sclView addSubview:agreeTips];
+    //UILabel *agreeTips = [[UILabel alloc] initWithFrame:CGRectMake(70, 115, size.width-85, 20)];
+    //[agreeTips setText:@"Agree terms and condition."];
+    //[agreeTips setTextColor:[BWCommon getRGBColor:0x888888]];
+    //[sclView addSubview:agreeTips];
+    
+    UIButton *btnAgreeTips = [[UIButton alloc] initWithFrame:CGRectMake(70, 135, size.width-85, 20)];
+    [btnAgreeTips setTitle:@"Agree terms and condition." forState:UIControlStateNormal];
+    [btnAgreeTips setTitleColor:[BWCommon getRGBColor:0x888888] forState:UIControlStateNormal];
+    [btnAgreeTips.titleLabel setTextAlignment:NSTextAlignmentLeft];
+    [sclView addSubview:btnAgreeTips];
+    
+    [btnAgreeTips addTarget:self action:@selector(termsTouched:) forControlEvents:UIControlEventTouchUpInside];
+    
     
     
     UIButton *btnNext = [UIButton buttonWithType:UIButtonTypeRoundedRect];
-    btnNext.frame = CGRectMake(15 , 160, size.width-30, 50);
+    btnNext.frame = CGRectMake(15 , 180, size.width-30, 50);
     [btnNext.layer setMasksToBounds:YES];
     [btnNext.layer setCornerRadius:5.0];
     btnNext.backgroundColor =[BWCommon getRGBColor:0xff0000];
@@ -86,7 +104,24 @@ CGSize size;
     [btnNext setTitle:@"Next step" forState:UIControlStateNormal];
     [btnNext addTarget:self action:@selector(nextTouched:) forControlEvents:UIControlEventTouchUpInside];
     [sclView addSubview:btnNext];
+    
+    //email address admin@mycomments.com.my
+    
+    UILabel *labelEmail = [[UILabel alloc] initWithFrame:CGRectMake(0, size.height * 0.8, size.width, 20)];
+    
+    [labelEmail setText:@"admin@mycomments.com.my"];
+    [labelEmail setFont:[UIFont systemFontOfSize:14]];
+    [labelEmail setTextAlignment:NSTextAlignmentCenter];
+    [labelEmail setTextColor:[BWCommon getRGBColor:0x666666]];
+    [sclView addSubview:labelEmail];
 
+
+}
+- (void) termsTouched: (UIButton *) sender{
+    
+    TermsViewController*termsVC=[[TermsViewController alloc]init];
+   
+    [self.navigationController pushViewController:termsVC animated:YES];
 }
 
 - (void) nextTouched: (UIButton *)sender{

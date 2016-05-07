@@ -44,7 +44,7 @@
     [self.navigationController.navigationBar setBarTintColor:[BWCommon getRedColor]];
     [self.navigationController.navigationBar setTitleTextAttributes:[NSDictionary dictionaryWithObjectsAndKeys:
                                                                      [UIColor whiteColor], NSForegroundColorAttributeName, nil]];
-    self.navigationItem.title = @"MyComments";
+    self.navigationItem.title = @"Latest Comments";
     
     UIBarButtonItem *backItem=[[UIBarButtonItem alloc]init];
     backItem.title=@"";

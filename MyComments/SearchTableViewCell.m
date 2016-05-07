@@ -23,10 +23,10 @@
 - (void) layoutSubviews{
     [super layoutSubviews];
 
-    self.imageView.frame = CGRectMake(10, 10, 40, 40);
+    self.imageView.frame = CGRectMake(10, 10, 60, 60);
 
     CGRect tmpFrame = self.textLabel.frame;
-    tmpFrame.origin.x = 60;
+    tmpFrame.origin.x = 80;
     
     self.textLabel.frame = tmpFrame;
     

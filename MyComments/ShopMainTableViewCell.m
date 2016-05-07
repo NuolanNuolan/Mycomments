@@ -29,6 +29,8 @@
 @property (nonatomic,weak) UIImageView *wifiView;
 @property (nonatomic,weak) UIImageView *psView;
 
+@property (nonatomic,weak) UILabel *photoNumberLabel;
+
 @end
 
 @implementation ShopMainTableViewCell
@@ -77,13 +79,26 @@
         self.mainImage = mainImage;
         [self.contentView addSubview:mainImage];
         
+        UILabel *photoNumberLabel = [[UILabel alloc] init];
+        self.photoNumberLabel = photoNumberLabel;
+        
+        [photoNumberLabel setFont:[UIFont systemFontOfSize:12]];
+        [photoNumberLabel setTextColor:[BWCommon getRGBColor:0x333333]];
+        [photoNumberLabel setBackgroundColor:[UIColor whiteColor]];
+        
+        photoNumberLabel.layer.cornerRadius = 10.0f;
+        photoNumberLabel.layer.masksToBounds = YES;
+        [photoNumberLabel setTextAlignment:NSTextAlignmentCenter];
+        [photoNumberLabel setAlpha:0.6f];
+        [self.contentView addSubview:photoNumberLabel];
+        
         UIButton *imageButton = [UIButton buttonWithType:UIButtonTypeRoundedRect];
 
-        [imageButton.titleLabel setFont:[UIFont systemFontOfSize:12]];
-        [imageButton setTitleColor:[BWCommon getRGBColor:0x333333] forState:UIControlStateNormal];
-        imageButton.layer.cornerRadius = 10.0f;
-        [imageButton setBackgroundColor:[UIColor whiteColor]];
-        [imageButton setAlpha:0.6f];
+        //[imageButton.titleLabel setFont:[UIFont systemFontOfSize:12]];
+        //[imageButton setTitleColor:[BWCommon getRGBColor:0x333333] forState:UIControlStateNormal];
+        //imageButton.layer.cornerRadius = 10.0f;
+        //[imageButton setBackgroundColor:[UIColor whiteColor]];
+        //[imageButton setAlpha:0.6f];
         
         self.imageButton = imageButton;
         
@@ -189,14 +204,15 @@
     [self.mainImage sd_setImageWithURL:[NSURL URLWithString:image_url] placeholderImage:[UIImage imageNamed:@"appicon.png"] options:SDWebImageCacheMemoryOnly];
     
     //[imageButton setBackgroundColor:[UIColor clearColor]];
-    [self.imageButton setTitle:[data objectForKey:@"photo_number"] forState:UIControlStateNormal];
+    [self.photoNumberLabel setText:[data objectForKey:@"photo_number"]];
+    //[self.imageButton setTitle:[data objectForKey:@"photo_number"] forState:UIControlStateNormal];
     self.imageButton.tag = [[data objectForKey:@"sid"] integerValue];
     
     self.nameLabel.text = [data objectForKey:@"name"];
     
     NSInteger rate = [[data objectForKey:@"rate"] integerValue];
     
-    [self.rateView setImage:[UIImage imageNamed:[NSString stringWithFormat:@"comment_star_%ld.png",rate]]];
+    [self.rateView setImage:[UIImage imageNamed:[NSString stringWithFormat:@"comment_star_%ld.png",(long)rate]]];
     
     self.priceLabel.text = [NSString stringWithFormat:@"RM %@",[data objectForKey:@"price"] ];
     
@@ -210,7 +226,8 @@
 
     self.nameLabel.frame = self.viewFrame.nameF;
     self.mainImage.frame = self.viewFrame.imageF;
-    self.imageButton.frame = self.viewFrame.imageNumF;
+    self.imageButton.frame = self.viewFrame.imageF;
+    self.photoNumberLabel.frame = self.viewFrame.imageNumF;
     self.rateView.frame = self.viewFrame.rateF;
     self.priceLabel.frame = self.viewFrame.priceF;
     self.rate1View.frame = self.viewFrame.rate1F;

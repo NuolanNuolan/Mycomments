@@ -47,7 +47,7 @@
     
     CGFloat tagX = rateX;
     CGFloat tagY = rateY +rateH + paddingY;
-    CGSize tagSize = [self sizeWithString:[data objectForKey:@"tags"] font:NJTextFont maxSize:CGSizeMake(200, MAXFLOAT)];
+    CGSize tagSize = [self sizeWithString:[data objectForKey:@"tags"] font:NJTextFont maxSize:CGSizeMake(size.width-170, MAXFLOAT)];
     
     self.tagF = CGRectMake(tagX, tagY, tagSize.width, tagSize.height);
 
@@ -55,7 +55,7 @@
     self.cellHeight =  MAX(90+paddingY*2, tagY + tagSize.height+paddingY);
     
     CGFloat distanceX = size.width - paddingY - 100;
-    CGFloat distanceY = self.cellHeight - 30;
+    CGFloat distanceY = self.cellHeight - 20;
     self.distanceF = CGRectMake(distanceX, distanceY, 100, 20);
 }
 

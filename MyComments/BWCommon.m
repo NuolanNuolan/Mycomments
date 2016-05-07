@@ -97,9 +97,9 @@
 
 +(void) setCommonData{
     //如果地区不存在 则重新加载
-    if ([self getDataInfo:@"popular_city"] != nil) {
-        return;
-    }
+    //if ([self getDataInfo:@"popular_city"] != nil) {
+    //    return;
+    //}
     
     NSString *api_url = [self getBaseInfo:@"api_url"];
     
@@ -161,8 +161,15 @@
     NSMutableArray * data = [[NSMutableArray alloc] init];
     if(![name isEqualToString:@""])
     {
-        NSDictionary *item = [[NSDictionary alloc] initWithObjectsAndKeys:name,@"region_name",0,@"region_id", nil];
-        [data addObject:item];
+        if([name isEqualToString:@"All"]){
+            NSDictionary *item = [[NSDictionary alloc] initWithObjectsAndKeys:name,@"region_name",0,@"region_id", nil];
+            [data addObject:item];
+        }else{
+            NSDictionary *item = [[NSDictionary alloc] initWithObjectsAndKeys:name,@"region_name",0,@"region_id", nil];
+            [data addObject:item];
+        }
+        
+        
     }
     for (int i=0;i<[regions count];i++){
         NSDictionary *item = [[NSDictionary alloc] initWithDictionary:[regions objectAtIndex:i]];

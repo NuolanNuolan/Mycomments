@@ -15,7 +15,10 @@
 
 @interface HomeTableViewController : UITableViewController
 <MBProgressHUDDelegate,
-CLLocationManagerDelegate>
+CLLocationManagerDelegate
+//UISearchBarDelegate,
+//UISearchResultsUpdating>
+>
 {
     MBProgressHUD *hud;
 }
@@ -27,4 +30,5 @@ CLLocationManagerDelegate>
 @property (nonatomic,assign) id<DetailDelegate> detailDelegate;
 @property (nonatomic,strong) CLLocationManager *manager;
 
+//@property (nonatomic, strong) UISearchController *searchController;
 @end

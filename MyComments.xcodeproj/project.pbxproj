@@ -10,6 +10,15 @@
 		32205AD61B52B2C200308481 /* UserTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 32205AD51B52B2C200308481 /* UserTableViewController.m */; };
 		32205ADA1B52B5E500308481 /* UserTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 32205AD91B52B5E500308481 /* UserTableViewCell.m */; };
 		32205ADD1B52B60800308481 /* UserTableViewFrame.m in Sources */ = {isa = PBXBuildFile; fileRef = 32205ADC1B52B60800308481 /* UserTableViewFrame.m */; };
+		3239EA6C1C9EF3990073CC6E /* TermsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 3239EA6B1C9EF3990073CC6E /* TermsViewController.m */; };
+		3239EA711C9F95F50073CC6E /* ForgetStep1ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 3239EA701C9F95F50073CC6E /* ForgetStep1ViewController.m */; };
+		3239EA741C9F97D70073CC6E /* ForgetStep2ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 3239EA731C9F97D70073CC6E /* ForgetStep2ViewController.m */; };
+		3239EA771C9F98DD0073CC6E /* ForgetStep3ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 3239EA761C9F98DD0073CC6E /* ForgetStep3ViewController.m */; };
+		3239EA7B1C9FA5C70073CC6E /* ps_gray.gif in Resources */ = {isa = PBXBuildFile; fileRef = 3239EA781C9FA5C70073CC6E /* ps_gray.gif */; };
+		3239EA7C1C9FA5C70073CC6E /* wifi_gray.gif in Resources */ = {isa = PBXBuildFile; fileRef = 3239EA791C9FA5C70073CC6E /* wifi_gray.gif */; };
+		3239EA7D1C9FA5C70073CC6E /* halal_gray.gif in Resources */ = {isa = PBXBuildFile; fileRef = 3239EA7A1C9FA5C70073CC6E /* halal_gray.gif */; };
+		323C42361C55284F00EF97A1 /* PhotoCollectionViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 323C42351C55284F00EF97A1 /* PhotoCollectionViewCell.m */; };
+		323C42391C70BCB600EF97A1 /* SearchResultsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 323C42381C70BCB600EF97A1 /* SearchResultsViewController.m */; };
 		32410A781B9DDAEC007960FF /* AvatarTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 32410A771B9DDAEC007960FF /* AvatarTableViewCell.m */; };
 		32410A7C1B9DDBB0007960FF /* AvatarTableViewFrame.m in Sources */ = {isa = PBXBuildFile; fileRef = 32410A7B1B9DDBB0007960FF /* AvatarTableViewFrame.m */; };
 		32410A801B9F224B007960FF /* SearchTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 32410A7F1B9F224B007960FF /* SearchTableViewCell.m */; };
@@ -24,6 +33,10 @@
 		32410AAB1BA2E9EC007960FF /* Default@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 32410AA61BA2E9EC007960FF /* Default@2x.png */; };
 		32410AB11BA32018007960FF /* PhotoViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 32410AB01BA32018007960FF /* PhotoViewController.m */; };
 		32410AB31BAF0B11007960FF /* CoreLocation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 32410AB21BAF0B11007960FF /* CoreLocation.framework */; };
+		32704F671C53D542006A08B3 /* icon-point.png in Resources */ = {isa = PBXBuildFile; fileRef = 32704F661C53D542006A08B3 /* icon-point.png */; };
+		32704F6A1C53DC82006A08B3 /* ImageBrowser.m in Sources */ = {isa = PBXBuildFile; fileRef = 32704F691C53DC82006A08B3 /* ImageBrowser.m */; };
+		32704F6D1C53E2F3006A08B3 /* MyPhotoViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 32704F6C1C53E2F3006A08B3 /* MyPhotoViewController.m */; };
+		32704F701C53E472006A08B3 /* MyShopViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 32704F6F1C53E472006A08B3 /* MyShopViewController.m */; };
 		327272EF1B47B8AC00A00EF4 /* ShopViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 327272EE1B47B8AC00A00EF4 /* ShopViewController.m */; };
 		327272F21B47C4B300A00EF4 /* ShopDetailViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 327272F11B47C4B300A00EF4 /* ShopDetailViewController.m */; };
 		327272F51B47D08F00A00EF4 /* ShopMainTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 327272F41B47D08F00A00EF4 /* ShopMainTableViewCell.m */; };
@@ -150,6 +163,10 @@
 		329B305E1B458315005BAC74 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 329B305D1B458315005BAC74 /* Images.xcassets */; };
 		329B30611B458315005BAC74 /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = 329B305F1B458315005BAC74 /* LaunchScreen.xib */; };
 		329B306D1B458315005BAC74 /* MyCommentsTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 329B306C1B458315005BAC74 /* MyCommentsTests.m */; };
+		32A338231C53522D00DAD3EC /* navbar_map@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 32A338221C53522C00DAD3EC /* navbar_map@2x.png */; };
+		32A338261C53553D00DAD3EC /* icon-query.png in Resources */ = {isa = PBXBuildFile; fileRef = 32A338241C53553D00DAD3EC /* icon-query.png */; };
+		32A338271C53553D00DAD3EC /* icon-query@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 32A338251C53553D00DAD3EC /* icon-query@2x.png */; };
+		32A3382D1C53AB0D00DAD3EC /* HomeMapViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 32A3382C1C53AB0D00DAD3EC /* HomeMapViewController.m */; };
 		32AE9DBA1BF87B5E005C1B6B /* AddCommentViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 32AE9DB91BF87B5E005C1B6B /* AddCommentViewController.m */; };
 		32C705571BB7C82800F17631 /* libstdc++.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 32C705561BB7C82800F17631 /* libstdc++.tbd */; };
 		32C705591BB7C83600F17631 /* libz.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 32C705581BB7C83600F17631 /* libz.tbd */; };
@@ -209,6 +226,22 @@
 		32205AD91B52B5E500308481 /* UserTableViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UserTableViewCell.m; sourceTree = "<group>"; };
 		32205ADB1B52B5F700308481 /* UserTableViewFrame.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UserTableViewFrame.h; sourceTree = "<group>"; };
 		32205ADC1B52B60800308481 /* UserTableViewFrame.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UserTableViewFrame.m; sourceTree = "<group>"; };
+		32345CD81C3AAA6700EA28E1 /* MapDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MapDelegate.h; sourceTree = "<group>"; };
+		3239EA6A1C9EF3990073CC6E /* TermsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TermsViewController.h; sourceTree = "<group>"; };
+		3239EA6B1C9EF3990073CC6E /* TermsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TermsViewController.m; sourceTree = "<group>"; };
+		3239EA6F1C9F95F50073CC6E /* ForgetStep1ViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ForgetStep1ViewController.h; sourceTree = "<group>"; };
+		3239EA701C9F95F50073CC6E /* ForgetStep1ViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ForgetStep1ViewController.m; sourceTree = "<group>"; };
+		3239EA721C9F97D70073CC6E /* ForgetStep2ViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ForgetStep2ViewController.h; sourceTree = "<group>"; };
+		3239EA731C9F97D70073CC6E /* ForgetStep2ViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ForgetStep2ViewController.m; sourceTree = "<group>"; };
+		3239EA751C9F98DD0073CC6E /* ForgetStep3ViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ForgetStep3ViewController.h; sourceTree = "<group>"; };
+		3239EA761C9F98DD0073CC6E /* ForgetStep3ViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ForgetStep3ViewController.m; sourceTree = "<group>"; };
+		3239EA781C9FA5C70073CC6E /* ps_gray.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; path = ps_gray.gif; sourceTree = "<group>"; };
+		3239EA791C9FA5C70073CC6E /* wifi_gray.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; path = wifi_gray.gif; sourceTree = "<group>"; };
+		3239EA7A1C9FA5C70073CC6E /* halal_gray.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; path = halal_gray.gif; sourceTree = "<group>"; };
+		323C42341C55284F00EF97A1 /* PhotoCollectionViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PhotoCollectionViewCell.h; sourceTree = "<group>"; };
+		323C42351C55284F00EF97A1 /* PhotoCollectionViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PhotoCollectionViewCell.m; sourceTree = "<group>"; };
+		323C42371C70BCB600EF97A1 /* SearchResultsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SearchResultsViewController.h; sourceTree = "<group>"; };
+		323C42381C70BCB600EF97A1 /* SearchResultsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SearchResultsViewController.m; sourceTree = "<group>"; };
 		32410A771B9DDAEC007960FF /* AvatarTableViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AvatarTableViewCell.m; sourceTree = "<group>"; };
 		32410A791B9DDAFC007960FF /* AvatarTableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AvatarTableViewCell.h; sourceTree = "<group>"; };
 		32410A7A1B9DDBA2007960FF /* AvatarTableViewFrame.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AvatarTableViewFrame.h; sourceTree = "<group>"; };
@@ -231,6 +264,13 @@
 		32410AAF1BA32018007960FF /* PhotoViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PhotoViewController.h; sourceTree = "<group>"; };
 		32410AB01BA32018007960FF /* PhotoViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PhotoViewController.m; sourceTree = "<group>"; };
 		32410AB21BAF0B11007960FF /* CoreLocation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreLocation.framework; path = System/Library/Frameworks/CoreLocation.framework; sourceTree = SDKROOT; };
+		32704F661C53D542006A08B3 /* icon-point.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "icon-point.png"; path = "assets/icon-point.png"; sourceTree = "<group>"; };
+		32704F681C53DC44006A08B3 /* ImageBrowser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ImageBrowser.h; sourceTree = "<group>"; };
+		32704F691C53DC82006A08B3 /* ImageBrowser.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ImageBrowser.m; sourceTree = "<group>"; };
+		32704F6B1C53E2F3006A08B3 /* MyPhotoViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MyPhotoViewController.h; sourceTree = "<group>"; };
+		32704F6C1C53E2F3006A08B3 /* MyPhotoViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MyPhotoViewController.m; sourceTree = "<group>"; };
+		32704F6E1C53E472006A08B3 /* MyShopViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MyShopViewController.h; sourceTree = "<group>"; };
+		32704F6F1C53E472006A08B3 /* MyShopViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MyShopViewController.m; sourceTree = "<group>"; };
 		327272ED1B47B8AC00A00EF4 /* ShopViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ShopViewController.h; sourceTree = "<group>"; };
 		327272EE1B47B8AC00A00EF4 /* ShopViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ShopViewController.m; sourceTree = "<group>"; };
 		327272F01B47C4B300A00EF4 /* ShopDetailViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ShopDetailViewController.h; sourceTree = "<group>"; };
@@ -382,6 +422,11 @@
 		329B30661B458315005BAC74 /* MyCommentsTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = MyCommentsTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		329B306B1B458315005BAC74 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		329B306C1B458315005BAC74 /* MyCommentsTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = MyCommentsTests.m; sourceTree = "<group>"; };
+		32A338221C53522C00DAD3EC /* navbar_map@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "navbar_map@2x.png"; sourceTree = "<group>"; };
+		32A338241C53553D00DAD3EC /* icon-query.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "icon-query.png"; sourceTree = "<group>"; };
+		32A338251C53553D00DAD3EC /* icon-query@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "icon-query@2x.png"; sourceTree = "<group>"; };
+		32A3382B1C53AB0D00DAD3EC /* HomeMapViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HomeMapViewController.h; sourceTree = "<group>"; };
+		32A3382C1C53AB0D00DAD3EC /* HomeMapViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HomeMapViewController.m; sourceTree = "<group>"; };
 		32AE9DB81BF87B5E005C1B6B /* AddCommentViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AddCommentViewController.h; sourceTree = "<group>"; };
 		32AE9DB91BF87B5E005C1B6B /* AddCommentViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AddCommentViewController.m; sourceTree = "<group>"; };
 		32C705561BB7C82800F17631 /* libstdc++.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = "libstdc++.tbd"; path = "usr/lib/libstdc++.tbd"; sourceTree = SDKROOT; };
@@ -506,6 +551,25 @@
 			name = User;
 			sourceTree = "<group>";
 		};
+		3239EA6E1C9F95C70073CC6E /* Account */ = {
+			isa = PBXGroup;
+			children = (
+				32410A911BA1C303007960FF /* LoginViewController.h */,
+				32410A921BA1C303007960FF /* LoginViewController.m */,
+				32410A941BA1D0B1007960FF /* RegisterViewController.h */,
+				32410A951BA1D0B1007960FF /* RegisterViewController.m */,
+				32C705DB1BB83A5100F17631 /* Register2ViewController.h */,
+				32C705DC1BB83A5100F17631 /* Register2ViewController.m */,
+				3239EA6F1C9F95F50073CC6E /* ForgetStep1ViewController.h */,
+				3239EA701C9F95F50073CC6E /* ForgetStep1ViewController.m */,
+				3239EA721C9F97D70073CC6E /* ForgetStep2ViewController.h */,
+				3239EA731C9F97D70073CC6E /* ForgetStep2ViewController.m */,
+				3239EA751C9F98DD0073CC6E /* ForgetStep3ViewController.h */,
+				3239EA761C9F98DD0073CC6E /* ForgetStep3ViewController.m */,
+			);
+			name = Account;
+			sourceTree = "<group>";
+		};
 		32410A7D1B9F2233007960FF /* Search */ = {
 			isa = PBXGroup;
 			children = (
@@ -515,9 +579,24 @@
 			name = Search;
 			sourceTree = "<group>";
 		};
+		32704F711C53E47F006A08B3 /* My */ = {
+			isa = PBXGroup;
+			children = (
+				32205AD41B52B2C200308481 /* UserTableViewController.h */,
+				32205AD51B52B2C200308481 /* UserTableViewController.m */,
+				32704F6B1C53E2F3006A08B3 /* MyPhotoViewController.h */,
+				32704F6C1C53E2F3006A08B3 /* MyPhotoViewController.m */,
+				32704F6E1C53E472006A08B3 /* MyShopViewController.h */,
+				32704F6F1C53E472006A08B3 /* MyShopViewController.m */,
+			);
+			name = My;
+			sourceTree = "<group>";
+		};
 		327732DB1B4588C0005504C5 /* Controller */ = {
 			isa = PBXGroup;
 			children = (
+				3239EA6E1C9F95C70073CC6E /* Account */,
+				32704F711C53E47F006A08B3 /* My */,
 				3277339A1B458984005504C5 /* HomeTableViewController.h */,
 				3277339B1B458984005504C5 /* HomeTableViewController.m */,
 				3277339D1B4589FF005504C5 /* SearchTableViewController.h */,
@@ -532,22 +611,20 @@
 				3288FB161B4830B200906965 /* CommentViewController.m */,
 				3288FB181B4AD21E00906965 /* MapViewController.h */,
 				3288FB191B4AD21E00906965 /* MapViewController.m */,
-				32205AD41B52B2C200308481 /* UserTableViewController.h */,
-				32205AD51B52B2C200308481 /* UserTableViewController.m */,
+				32A3382B1C53AB0D00DAD3EC /* HomeMapViewController.h */,
+				32A3382C1C53AB0D00DAD3EC /* HomeMapViewController.m */,
 				32410A8E1BA08068007960FF /* HomeSearchDisplayController.h */,
 				32410A8F1BA08068007960FF /* HomeSearchDisplayController.m */,
-				32410A911BA1C303007960FF /* LoginViewController.h */,
-				32410A921BA1C303007960FF /* LoginViewController.m */,
-				32410A941BA1D0B1007960FF /* RegisterViewController.h */,
-				32410A951BA1D0B1007960FF /* RegisterViewController.m */,
 				32AE9DB81BF87B5E005C1B6B /* AddCommentViewController.h */,
 				32AE9DB91BF87B5E005C1B6B /* AddCommentViewController.m */,
 				32C705DE1BB8442000F17631 /* AddMerchantViewController.h */,
 				32C705DF1BB8442000F17631 /* AddMerchantViewController.m */,
-				32C705DB1BB83A5100F17631 /* Register2ViewController.h */,
-				32C705DC1BB83A5100F17631 /* Register2ViewController.m */,
 				32410AAF1BA32018007960FF /* PhotoViewController.h */,
 				32410AB01BA32018007960FF /* PhotoViewController.m */,
+				323C42371C70BCB600EF97A1 /* SearchResultsViewController.h */,
+				323C42381C70BCB600EF97A1 /* SearchResultsViewController.m */,
+				3239EA6A1C9EF3990073CC6E /* TermsViewController.h */,
+				3239EA6B1C9EF3990073CC6E /* TermsViewController.m */,
 			);
 			name = Controller;
 			sourceTree = "<group>";
@@ -555,6 +632,13 @@
 		327732DC1B4588C7005504C5 /* assets */ = {
 			isa = PBXGroup;
 			children = (
+				3239EA781C9FA5C70073CC6E /* ps_gray.gif */,
+				3239EA791C9FA5C70073CC6E /* wifi_gray.gif */,
+				3239EA7A1C9FA5C70073CC6E /* halal_gray.gif */,
+				32704F661C53D542006A08B3 /* icon-point.png */,
+				32A338241C53553D00DAD3EC /* icon-query.png */,
+				32A338251C53553D00DAD3EC /* icon-query@2x.png */,
+				32A338221C53522C00DAD3EC /* navbar_map@2x.png */,
 				32F877AF1BF8856600CC9C3A /* btn_add_photo.png */,
 				32F877B01BF8856600CC9C3A /* btn_star_evaluation_normal.png */,
 				32F877B11BF8856600CC9C3A /* btn_star_evaluation_press.png */,
@@ -696,6 +780,8 @@
 				329A4B691B469A5B006F30C3 /* AFNetworkTool.m */,
 				329A4B6A1B469A5B006F30C3 /* BWCommon.h */,
 				329A4B6B1B469A5B006F30C3 /* BWCommon.m */,
+				32704F681C53DC44006A08B3 /* ImageBrowser.h */,
+				32704F691C53DC82006A08B3 /* ImageBrowser.m */,
 			);
 			name = lib;
 			sourceTree = "<group>";
@@ -723,6 +809,8 @@
 				327272F41B47D08F00A00EF4 /* ShopMainTableViewCell.m */,
 				327272F61B47D70200A00EF4 /* ShopMainTableViewFrame.h */,
 				327272F71B47D74E00A00EF4 /* ShopMainTableViewFrame.m */,
+				323C42341C55284F00EF97A1 /* PhotoCollectionViewCell.h */,
+				323C42351C55284F00EF97A1 /* PhotoCollectionViewCell.m */,
 			);
 			name = Shop;
 			sourceTree = "<group>";
@@ -775,6 +863,7 @@
 				329B304D1B458314005BAC74 /* Supporting Files */,
 				3288FB061B46E83000906965 /* DetailDelegate.h */,
 				3288FB071B46ED8700906965 /* ShopDelegate.h */,
+				32345CD81C3AAA6700EA28E1 /* MapDelegate.h */,
 			);
 			path = MyComments;
 			sourceTree = "<group>";
@@ -1001,6 +1090,7 @@
 				327733841B45890C005504C5 /* menu_search.png in Resources */,
 				3277334C1B45890C005504C5 /* comment_star_5.png in Resources */,
 				3277338C1B45890C005504C5 /* navi.png in Resources */,
+				32704F671C53D542006A08B3 /* icon-point.png in Resources */,
 				327273001B47EA2400A00EF4 /* detail-location.png in Resources */,
 				3277338F1B45890C005504C5 /* ps.gif in Resources */,
 				327733931B45890C005504C5 /* Thumbs.db in Resources */,
@@ -1013,6 +1103,7 @@
 				327733701B45890C005504C5 /* line.png in Resources */,
 				327733581B45890C005504C5 /* detail_view.png in Resources */,
 				3277337A1B45890C005504C5 /* member_comments.png in Resources */,
+				3239EA7B1C9FA5C70073CC6E /* ps_gray.gif in Resources */,
 				32C705DA1BB7D4C800F17631 /* shareImg.png in Resources */,
 				327733411B45890C005504C5 /* btn_close.png in Resources */,
 				32CAE78A1BF2550600B130A7 /* icons-my-huaji-4.png in Resources */,
@@ -1025,6 +1116,7 @@
 				327733661B45890C005504C5 /* halal.gif in Resources */,
 				327733881B45890C005504C5 /* navbar_map.png in Resources */,
 				3277337D1B45890C005504C5 /* menu_comment.gif in Resources */,
+				32A338261C53553D00DAD3EC /* icon-query.png in Resources */,
 				327733781B45890C005504C5 /* member_bg2.png in Resources */,
 				327733921B45890C005504C5 /* facebook.png in Resources */,
 				329A4B7D1B46C801006F30C3 /* appicon.png in Resources */,
@@ -1037,7 +1129,9 @@
 				327733971B45890C005504C5 /* Thumbs.db in Resources */,
 				327733821B45890C005504C5 /* menu_my.png in Resources */,
 				32F877B31BF8856600CC9C3A /* btn_add_photo.png in Resources */,
+				32A338231C53522D00DAD3EC /* navbar_map@2x.png in Resources */,
 				329B30611B458315005BAC74 /* LaunchScreen.xib in Resources */,
+				3239EA7C1C9FA5C70073CC6E /* wifi_gray.gif in Resources */,
 				327733731B45890C005504C5 /* loading.gif in Resources */,
 				3277337C1B45890C005504C5 /* member_photos.png in Resources */,
 				3277335C1B45890C005504C5 /* grade_1.png in Resources */,
@@ -1106,7 +1200,9 @@
 				327733421B45890C005504C5 /* btn_collection.png in Resources */,
 				3277334D1B45890C005504C5 /* default.png in Resources */,
 				32410AA71BA2E9EC007960FF /* Default-568h@2x.png in Resources */,
+				32A338271C53553D00DAD3EC /* icon-query@2x.png in Resources */,
 				32410AAA1BA2E9EC007960FF /* Default.png in Resources */,
+				3239EA7D1C9FA5C70073CC6E /* halal_gray.gif in Resources */,
 				327733531B45890C005504C5 /* detail_details.png in Resources */,
 				32410AA91BA2E9EC007960FF /* Default-Portrait.png in Resources */,
 				327733991B45890C005504C5 /* wifi.gif in Resources */,
@@ -1179,13 +1275,18 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				3239EA6C1C9EF3990073CC6E /* TermsViewController.m in Sources */,
 				32410A931BA1C303007960FF /* LoginViewController.m in Sources */,
 				3288FB171B4830B200906965 /* CommentViewController.m in Sources */,
 				327272F81B47D74E00A00EF4 /* ShopMainTableViewFrame.m in Sources */,
+				32704F6A1C53DC82006A08B3 /* ImageBrowser.m in Sources */,
+				3239EA711C9F95F50073CC6E /* ForgetStep1ViewController.m in Sources */,
 				329B30531B458314005BAC74 /* AppDelegate.m in Sources */,
 				3277339C1B458984005504C5 /* HomeTableViewController.m in Sources */,
 				329B30501B458314005BAC74 /* main.m in Sources */,
 				32205ADD1B52B60800308481 /* UserTableViewFrame.m in Sources */,
+				323C42391C70BCB600EF97A1 /* SearchResultsViewController.m in Sources */,
+				32A3382D1C53AB0D00DAD3EC /* HomeMapViewController.m in Sources */,
 				327272F51B47D08F00A00EF4 /* ShopMainTableViewCell.m in Sources */,
 				327272F21B47C4B300A00EF4 /* ShopDetailViewController.m in Sources */,
 				3288FB1A1B4AD21E00906965 /* MapViewController.m in Sources */,
@@ -1196,15 +1297,20 @@
 				32410A801B9F224B007960FF /* SearchTableViewCell.m in Sources */,
 				329A4B821B46CECC006F30C3 /* BWSectionView.m in Sources */,
 				32AE9DBA1BF87B5E005C1B6B /* AddCommentViewController.m in Sources */,
+				3239EA771C9F98DD0073CC6E /* ForgetStep3ViewController.m in Sources */,
 				32C705E01BB8442000F17631 /* AddMerchantViewController.m in Sources */,
 				329A4B711B46A5BD006F30C3 /* CategoryTableViewCell.m in Sources */,
+				323C42361C55284F00EF97A1 /* PhotoCollectionViewCell.m in Sources */,
+				32704F6D1C53E2F3006A08B3 /* MyPhotoViewController.m in Sources */,
 				327272EF1B47B8AC00A00EF4 /* ShopViewController.m in Sources */,
+				32704F701C53E472006A08B3 /* MyShopViewController.m in Sources */,
 				3288FB141B48167F00906965 /* CommentMainTableViewFrame.m in Sources */,
 				329A4B6D1B469A5B006F30C3 /* BWCommon.m in Sources */,
 				32205ADA1B52B5E500308481 /* UserTableViewCell.m in Sources */,
 				329A4B6C1B469A5B006F30C3 /* AFNetworkTool.m in Sources */,
 				3288FB0B1B479DC000906965 /* ShopTableViewCell.m in Sources */,
 				32410A8D1BA0756D007960FF /* RegionTableViewController.m in Sources */,
+				3239EA741C9F97D70073CC6E /* ForgetStep2ViewController.m in Sources */,
 				32410A901BA08068007960FF /* HomeSearchDisplayController.m in Sources */,
 				3277339F1B4589FF005504C5 /* SearchTableViewController.m in Sources */,
 				329A4B7A1B46BB42006F30C3 /* CommentTableViewFrame.m in Sources */,

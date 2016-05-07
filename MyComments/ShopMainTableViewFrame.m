@@ -92,13 +92,13 @@
     CGFloat rate1Y = priceY + 20;
     CGFloat rate1H = 20;
     CGFloat rate1W = size.width - paddingY*3 - imageW;
-    self.rate1F = CGRectMake(rate1X, rate1Y, rate1W, rate1H);
+    self.rate1F = CGRectMake(rate1X, rate1Y, rate1W, rate1H-3);
     
     CGFloat rate2Y = rate1Y + rate1H;
-    self.rate2F = CGRectMake(rate1X, rate2Y,rate1W, rate1H);
+    self.rate2F = CGRectMake(rate1X, rate2Y,rate1W, rate1H-3);
     
     CGFloat rate3Y = rate2Y + rate1H;
-    self.rate3F = CGRectMake(rate1X, rate3Y,rate1W, rate1H);
+    self.rate3F = CGRectMake(rate1X, rate3Y,rate1W, rate1H-3);
     
     self.cellHeight =  nameY + nameSize.height+paddingY + 90 + paddingY;
 

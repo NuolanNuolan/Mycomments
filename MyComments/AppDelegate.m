@@ -38,7 +38,7 @@
           activePlatforms:@[
                             @(SSDKPlatformTypeFacebook),
                             @(SSDKPlatformTypeTwitter),
-                            @(SSDKPlatformTypeSinaWeibo),
+                            //@(SSDKPlatformTypeSinaWeibo),
                             @(SSDKPlatformTypeWechat)]
                  onImport:^(SSDKPlatformType platformType)
      {

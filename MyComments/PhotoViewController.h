@@ -9,12 +9,15 @@
 #import <UIKit/UIKit.h>
 #import "MBProgressHUD.h"
 #import "UIImageView+WebCache.h"
+#import "MWPhotoBrowser.h"
+#import "MJRefresh.h"
 
 @interface PhotoViewController : UIViewController
 <
 UICollectionViewDataSource,
 UICollectionViewDelegate,
 UICollectionViewDelegateFlowLayout,
+MWPhotoBrowserDelegate,
 MBProgressHUDDelegate
 >
 {
@@ -25,5 +28,7 @@ MBProgressHUDDelegate
 @property (nonatomic, strong) UICollectionView *myCollectionView;
 @property (nonatomic) NSInteger sid;
 @property (nonatomic) NSString *shop_name;
+
+@property (nonatomic,strong) MWPhotoBrowser *browser;
 
 @end

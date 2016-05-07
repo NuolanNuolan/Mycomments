@@ -10,14 +10,21 @@
 #import "SearchTableViewCell.h"
 #import "BWCommon.h"
 #import "ShopViewController.h"
+#import "SearchResultsViewController.h"
+#import "AFNetworkTool.h"
 
 @interface SearchTableViewController ()
 
 @property (nonatomic,retain) NSMutableArray *list;
 
+//searchResult
+@property (nonatomic, strong) NSMutableArray *searchResults;
+
 @end
 
 @implementation SearchTableViewController
+
+CGSize size;
 
 - (void)viewDidLoad {
     [super viewDidLoad];
@@ -46,6 +53,31 @@
     backItem.image=[UIImage imageNamed:@""];
     self.navigationItem.backBarButtonItem=backItem;
     
+    UIView *middleView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, size.width - 140, 30)];
+    UIButton *searchButton = [[UIButton alloc] initWithFrame:CGRectMake(0, 0, size.width - 140, 30)];
+    //[searchButton setBackgroundImage:[UIImage imageNamed:@"navbar_search"] forState:UIControlStateNormal];
+    
+    [searchButton setBackgroundColor:[UIColor whiteColor]];
+    [searchButton.layer setCornerRadius:8.0f];
+    [searchButton setTitle:@"Search for shop name" forState:UIControlStateNormal];
+    [searchButton setTitleColor:[BWCommon getRGBColor:0x999999] forState:UIControlStateNormal ];
+    [searchButton.titleLabel setFont:[UIFont systemFontOfSize:12]];
+    
+    UIImageView *iconQuery = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"icon-query"]];
+    [searchButton addSubview:iconQuery];
+    
+    CGRect qRect = iconQuery.frame;
+    qRect.origin.x = 10;
+    qRect.origin.y = 5;
+    iconQuery.frame = qRect;
+    
+    
+    
+    [searchButton addTarget:self action:@selector(searchTouched:) forControlEvents:UIControlEventTouchUpInside];
+    
+    [middleView addSubview:searchButton];
+    [self.navigationItem setTitleView:middleView];
+    
     
     self.list = [[NSMutableArray alloc] initWithCapacity:3];
     [self.list addObject:[self createRow:@"Restaurant" icon:@"home_restaurant_icon"]];
@@ -54,6 +86,71 @@
     
     UIView *v = [[UIView alloc] initWithFrame:CGRectZero];
     [self.tableView setTableFooterView:v];
+}
+
+
+-(void) searchTouched: (UIButton *) sender{
+    
+    
+    SearchResultsViewController *resultTableViewController = [[SearchResultsViewController alloc] initWithStyle:UITableViewStylePlain];
+    
+    UISearchController *searchController = [[UISearchController alloc] initWithSearchResultsController:resultTableViewController];
+    
+    self.searchController = searchController;
+    self.searchController.searchResultsUpdater = self;
+    self.searchController.hidesNavigationBarDuringPresentation = NO;
+    
+    [self presentViewController:searchController animated:YES completion:nil];
+}
+
+
+-(void) updateSearchResultsForSearchController:(UISearchController *)searchController{
+    //获取搜索字符串
+    NSString * searchString = searchController.searchBar.text;
+    //根据输入的字符串找到和之匹配的字符串
+    //[self updateFilteredContent:searchString];
+    
+    if (searchController.searchResultsController) {
+        NSString *url =  [[BWCommon getBaseInfo:@"api_url"] stringByAppendingString:@"search"];
+        
+        NSMutableDictionary *postData = [[NSMutableDictionary alloc] init];
+        
+        [postData setValue:searchString forKey:@"q"];
+        NSLog(@"%@",url);
+        //load data
+        [AFNetworkTool postJSONWithUrl:url parameters:postData success:^(id responseObject) {
+            
+            NSInteger code = [[responseObject objectForKey:@"code"] integerValue];
+            //[hud removeFromSuperview];
+            if(code == 200)
+            {
+                NSMutableDictionary *data = [responseObject objectForKey:@"data"];
+                
+                // 在查询之前需要清理或者初始化数组：懒加载
+                if (self.searchResults != nil) {
+                    [self.searchResults removeAllObjects];
+                }
+                
+                self.searchResults = [[data objectForKey:@"lists"] mutableCopy];
+                
+                //获取UISearchController的searchResultsController
+                SearchResultsViewController * resultsVC = (SearchResultsViewController *)searchController.searchResultsController;
+                //将符合条件的数据赋值给searchResultsController
+                resultsVC.searchResults = self.searchResults;
+                [resultsVC.tableView reloadData];
+            }
+            else
+            {
+                NSLog(@"%@",[responseObject objectForKey:@"error"]);
+            }
+            
+        } fail:^{
+            //[hud removeFromSuperview];
+            NSLog(@"请求失败");
+        }];
+        
+        
+    }
 }
 
 - (NSDictionary *) createRow:(NSString *) title  icon: (NSString *) icon{
@@ -104,7 +201,7 @@
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    return 60;
+    return 80;
 }
 
 - (void) tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath{

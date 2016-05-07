@@ -144,6 +144,7 @@ CGSize size;
     NSDictionary *drow = [[[dataArray objectAtIndex:indexPath.section] objectForKey:@"childrens"] objectAtIndex:indexPath.row];
     
     [BWCommon setUserInfo:@"region_id" value:[drow objectForKey:@"region_id" ]];
+    [BWCommon setUserInfo:@"parent_region_id" value:[drow objectForKey:@"parent_id" ]];
     [BWCommon setUserInfo:@"region_name" value:[drow objectForKey:@"region_name" ]];
     
     [self.navigationController popViewControllerAnimated:YES];

@@ -10,6 +10,7 @@
 #import "BWCommon.h"
 #import "AFNetworkTool.h"
 #import "RegisterViewController.h"
+#import "ForgetStep1ViewController.h"
 
 @interface LoginViewController ()
 
@@ -62,7 +63,7 @@ CGSize size;
     sclView.contentSize = CGSizeMake(size.width, size.height);
     [self.view addSubview:sclView];
     
-    username = [self createTextField:@"label_email" Title:@"Cellphone/Username/Email"];
+    username = [self createTextField:@"label_email" Title:@"Cellphone/Username"];
     username.frame = CGRectMake(15,20,size.width-30,50);
     [sclView addSubview:username];
     username.delegate = self;
@@ -80,6 +81,7 @@ CGSize size;
     [forgetButton setTitleColor:[BWCommon getRGBColor:0x111111] forState:UIControlStateNormal];
     [forgetButton.titleLabel setTextAlignment:NSTextAlignmentRight];
     [forgetButton.titleLabel setFont:[UIFont systemFontOfSize:15]];
+    [forgetButton addTarget:self action:@selector(forgetTouched:) forControlEvents:UIControlEventTouchUpInside];
     
     [sclView addSubview:forgetButton];
     
@@ -96,12 +98,33 @@ CGSize size;
     [btnLogin addTarget:self action:@selector(loginTouched:) forControlEvents:UIControlEventTouchUpInside];
     [sclView addSubview:btnLogin];
     
-    UIButton *facebookButton = [[UIButton alloc] initWithFrame:CGRectMake(size.width - 45, 250, 30, 30)];
+    /*UIButton *facebookButton = [[UIButton alloc] initWithFrame:CGRectMake(size.width - 45, 250, 30, 30)];
     [facebookButton setBackgroundImage:[UIImage imageNamed:@"facebook"] forState:UIControlStateNormal];
     
-    [sclView addSubview:facebookButton];
+    [sclView addSubview:facebookButton];*/
+    
+    
+    // tap for dismissing keyboard
+    UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc]
+                                   initWithTarget:self
+                                   action:@selector(dismissKeyboard)];
+    [self.view addGestureRecognizer:tap];
+    // very important make delegate useful
+    tap.delegate = self;
 
     
+}
+
+-(void) forgetTouched:(UIButton *) sender{
+    
+    ForgetStep1ViewController *forgetVC = [[ForgetStep1ViewController alloc] init];
+    [self.navigationController pushViewController:forgetVC animated:YES];
+}
+
+// tap dismiss keyboard
+-(void)dismissKeyboard {
+    [self.view endEditing:YES];
+    //[self.password resignFirstResponder];
 }
 
 
@@ -124,7 +147,7 @@ CGSize size;
 - (void) closeTouched:(UIBarButtonItem *) sender{
 
     [self dismissViewControllerAnimated:YES completion:^{
-        
+       
     }];
 }
 
@@ -179,7 +202,7 @@ CGSize size;
         
         
         if (code != 200) {
-            [alert setMessage:[responseObject objectForKey:@"msg"]];
+            [alert setMessage:[responseObject objectForKey:@"error"]];
             [alert show];
         }
         else
@@ -187,11 +210,13 @@ CGSize size;
             NSDictionary *user = [responseObject objectForKey:@"msg"];
             [BWCommon setUserInfo:@"uid" value:[user objectForKey:@"uid"]];
             [BWCommon setUserInfo:@"username" value:[user objectForKey:@"username"]];
+            [BWCommon setUserInfo:@"need_refresh" value:@"1"];
             
             //同步用户信息
             [BWCommon syncUserInfo];
             
             [self dismissViewControllerAnimated:YES completion:^{
+                
             }];
         }
         
@@ -205,6 +230,20 @@ CGSize size;
     
     
 }
+
+- (BOOL)textFieldShouldReturn:(UITextField *)textField
+{
+    [textField resignFirstResponder];
+    return YES;
+}
+
+// 点击隐藏键盘
+- (void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event
+{
+    [super touchesBegan:touches withEvent:event];
+    [self.view endEditing:YES];
+}
+
 
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];

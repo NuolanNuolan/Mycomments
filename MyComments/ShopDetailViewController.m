@@ -17,6 +17,7 @@
 #import "PhotoViewController.h"
 #import "AddMerchantViewController.h"
 #import "AddCommentViewController.h"
+#import "MapViewController.h"
 
 #import <ShareSDK/ShareSDK.h>
 #import <ShareSDKExtension/SSEShareHelper.h>
@@ -53,6 +54,9 @@ CGSize detailSize;
 CGSize tagSize;
 
 CGSize size;
+
+NSInteger uploaded_number = 0;
+NSInteger uploading_number = 0;
 
 - (void)viewDidLoad {
     [super viewDidLoad];
@@ -189,6 +193,7 @@ CGSize size;
     }
     
     AddCommentViewController *viewController = [[AddCommentViewController alloc] init];
+    viewController.sid = self.sid;
     
     [self.navigationController pushViewController:viewController animated:YES];
     
@@ -475,7 +480,6 @@ CGSize size;
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
-
     
     if (indexPath.section == 0) {
         ShopMainTableViewCell *cell = [ShopMainTableViewCell cellWithTableView:tableView];
@@ -492,15 +496,15 @@ CGSize size;
         [cell.likeButton addTarget:self action:@selector(likeTouched:) forControlEvents:UIControlEventTouchUpInside];
         return cell;
     }
-    
+
     UITableViewCell * cell = [tableView dequeueReusableCellWithIdentifier:@"cell1"];
-        
+
     if (cell == nil) {
         cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:@"cell1"];
     }
     cell.textLabel.numberOfLines = 0;
     cell.textLabel.font = NJNameFont;
-    
+
     //address
     if(indexPath.section == 1){
         cell.textLabel.text = [[shopDict objectForKey:@"shop"] objectForKey:@"address"];
@@ -554,15 +558,65 @@ CGSize size;
 
 -(void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath{
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
-    if(indexPath.section == 2){
+    
+    if(indexPath.section == 1){
+        MapViewController *mapView = [[MapViewController alloc] init];
+        self.mapDelegate = mapView;
+        [self.navigationController pushViewController:mapView animated:YES];
+        
+        [self.mapDelegate setValue:shopDict];
+        
+    }else if(indexPath.section == 2){
         
         NSString *number = [[shopDict objectForKey:@"shop"] objectForKey:@"tel"];
-        NSString *num = [[NSString alloc] initWithFormat:@"tel://%@",number];
+        number = [number stringByReplacingOccurrencesOfString:@" " withString:@""];
+        number = [number stringByReplacingOccurrencesOfString:@"-" withString:@""];
         
-        //UIWebView * callWebview = [[UIWebView alloc] init];
-        //[callWebview loadRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:num]]];
-        //[self.view addSubview:callWebview];
-        [[UIApplication sharedApplication] openURL:[NSURL URLWithString:num]];
+        //process more numbers
+        NSArray *numbers =  [number componentsSeparatedByString:@"/"];
+        
+        if([numbers count] == 1){
+            NSString *number = [NSString stringWithFormat:@"+%@",numbers[0]];
+            NSString *num = [[NSString alloc] initWithFormat:@"tel://%@",number];
+            //NSLog(@"%@",num);
+            //num = @"tel://18621320482";
+            [[UIApplication sharedApplication] openURL:[NSURL URLWithString:num]];
+        }
+        else{
+            UIAlertController *alert = [UIAlertController alertControllerWithTitle:@"Choose one number to call." message:@"" preferredStyle:UIAlertControllerStyleActionSheet];
+            
+            for(int i=0;i<numbers.count;i++){
+                
+                NSString *number = [NSString stringWithFormat:@"+%@",numbers[i]];
+                //NSString *num = [[NSString alloc] initWithFormat:@"tel://%@",number];
+                
+                UIAlertAction *numberAction = [UIAlertAction actionWithTitle:number style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
+                    
+                    NSString *num = [[NSString alloc] initWithFormat:@"tel://%@",action.title];
+                    [[UIApplication sharedApplication] openURL:[NSURL URLWithString:num]];
+                
+                }];
+                [alert addAction:numberAction];
+            }
+            
+            UIAlertAction *cancelAction = [UIAlertAction actionWithTitle:@"Cancel" style:UIAlertActionStyleCancel handler:^(UIAlertAction * _Nonnull action) {
+                
+            }];
+            
+            [alert addAction:cancelAction];
+            
+            [self presentViewController:alert animated:YES completion:^{
+                
+            }];
+        }
+        
+        
+        
+    }
+    else if(indexPath.section == 3){
+    
+        NSString *site = [[shopDict objectForKey:@"shop"] objectForKey:@"website"];
+        [[UIApplication sharedApplication] openURL:[NSURL URLWithString:site]];
     }
 }
 
@@ -594,7 +648,7 @@ CGSize size;
     
     NSMutableDictionary *postData = [[NSMutableDictionary alloc] init];
     
-    [postData setValue:[NSString stringWithFormat:@"%ld",sid] forKey:@"sid"];
+    [postData setValue:[NSString stringWithFormat:@"%ld",(unsigned long)sid] forKey:@"sid"];
     
     NSLog(@"%@",url);
     //load data
@@ -675,6 +729,7 @@ CGSize size;
     self.sid = detailValue;
 }
 
+
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];
     // Dispose of any resources that can be recreated.
@@ -683,6 +738,24 @@ CGSize size;
 
 
 -(void) uploadTouched:(UIButton *)sender{
+    
+    BOOL isLoggedIn = [BWCommon isLoggedIn];
+    
+    if (!isLoggedIn) {
+        
+        __weak ShopDetailViewController *weakSelf = self;
+        
+        UIViewController *viewController = [self.parentViewController.storyboard instantiateViewControllerWithIdentifier:@"loginView"];
+        
+        UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:viewController];
+        
+        [self presentViewController:navigationController animated:YES completion:^{
+            [weakSelf.tableView reloadData];
+        }];
+        
+        return;
+    }
+
     
     UIActionSheet *menu=[[UIActionSheet alloc] initWithTitle:@"Add Photo" delegate:self cancelButtonTitle:@"Cancel" destructiveButtonTitle:nil otherButtonTitles:@"Camera",@"Photo Gallery", nil];
     menu.actionSheetStyle=UIActionSheetStyleBlackTranslucent;
@@ -717,13 +790,30 @@ CGSize size;
 }
 //从相册里找
 - (void) pickImage{
-    UIImagePickerController *ipc=[[UIImagePickerController alloc] init];
+    
+    QBImagePickerController *imagePickerController = [QBImagePickerController new];
+    imagePickerController.delegate = self;
+    imagePickerController.allowsMultipleSelection = YES;
+    imagePickerController.maximumNumberOfSelection = 5;
+    imagePickerController.prompt = @"Maximum 5 photos";
+    imagePickerController.minimumNumberOfSelection = 1;
+    imagePickerController.assetCollectionSubtypes = @[
+                                                      @(PHAssetCollectionSubtypeSmartAlbumUserLibrary), // Camera Roll
+                                                      @(PHAssetCollectionSubtypeAlbumMyPhotoStream), // My Photo Stream
+                                                      @(PHAssetCollectionSubtypeSmartAlbumPanoramas), // Panoramas
+                                                      @(PHAssetCollectionSubtypeSmartAlbumVideos), // Videos
+                                                      @(PHAssetCollectionSubtypeSmartAlbumBursts) // Bursts
+                                                      ];
+    
+    [self presentViewController:imagePickerController animated:YES completion:NULL];
+    
+   /* UIImagePickerController *ipc=[[UIImagePickerController alloc] init];
     ipc.sourceType=UIImagePickerControllerSourceTypePhotoLibrary;
     ipc.delegate = self;
     ipc.allowsEditing=NO;
     
     [self presentViewController:ipc animated:YES completion:^{
-    }];
+    }];*/
     
 }
 
@@ -732,7 +822,7 @@ CGSize size;
     UIImage *img=[info objectForKey:@"UIImagePickerControllerOriginalImage"];
     
     if(picker.sourceType==UIImagePickerControllerSourceTypeCamera){
-        //UIImageWriteToSavedPhotosAlbum(img,nil,nil,nil);
+        UIImageWriteToSavedPhotosAlbum(img,nil,nil,nil);
     }
     
     int y = (arc4random() % 1001) + 9000;
@@ -750,84 +840,160 @@ CGSize size;
     hud = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
     hud.delegate=self;
     
-    /*UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"提示" message:@"" delegate:self cancelButtonTitle:@"Ok" otherButtonTitles:nil];
+    UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"提示" message:@"" delegate:self cancelButtonTitle:@"Ok" otherButtonTitles:nil];
     
     
-    NSString *api_url = @"http://hj.s10.baiwei.org/member/register/upload_img";
+    NSString *api_url = [[BWCommon getBaseInfo:@"api_url"] stringByAppendingString:@"photo"];
     
-    NSDictionary *postData = @{@"password":[BWCommon getUserInfo:@"password"],@"uniqueid":[BWCommon getUserInfo:@"uid"]};
+    NSMutableDictionary *postData = [[NSMutableDictionary alloc] init];
+    
+    [postData setValue:[NSString stringWithFormat:@"%ld",(unsigned long)self.sid] forKey:@"sid"];
+    [postData setValue:[BWCommon getUserInfo:@"username"] forKey:@"username"];
+    
+    //NSDictionary *postData = @{@"username":[BWCommon getUserInfo:@"username"]};
     
     
     [AFNetworkTool postUploadWithUrl:api_url fileUrl:fileUrl parameters:postData success:^(id responseObject) {
         
-        NSInteger errNo = [[responseObject objectForKey:@"errno"] integerValue];
+        NSLog(@"%@",responseObject);
+        NSInteger code = [[responseObject objectForKey:@"code"] integerValue];
         
         [hud removeFromSuperview];
         
         NSLog(@"%@",responseObject);
-        if (errNo > 0) {
-            [alert setMessage:[responseObject objectForKey:@"error"]];
+        if (code != 200) {
+            [alert setMessage:[responseObject objectForKey:@"msg"]];
             [alert show];
         }
         else
         {
-            NSString *imgurl = [[responseObject objectForKey:@"data"] objectForKey:@"imgurl"];
-            NSString *imgview = [[responseObject objectForKey:@"data"] objectForKey:@"imgview"];
-            
-            //图片获取的token
-            NSString *timestamp = [NSString stringWithFormat:@"%ld", (long)[[NSDate date] timeIntervalSince1970] ];
-            NSString *uid = [BWCommon getUserInfo:@"uid"];
-            
-            //NSLog(@"uniqueid:%@",uid);
-            
-            NSString *str = [NSString stringWithFormat:@"register/display_cert_image/%@/%@",timestamp,[BWCommon md5:uid]];
-            
-            
-            //init token
-            NSString *token = [BWCommon md5:str];
-            
-            NSString *nimgview = [[NSString alloc] init];
-            nimgview = [imgview stringByReplacingOccurrencesOfString:@"http://www.huaji.com/" withString:@"http://hj.s10.baiwei.org/"];
-            nimgview = [NSString stringWithFormat:@"%@?token=%@&time=%@&uid=%@",nimgview,token,timestamp,uid];
-            NSURL *dataurl = [NSURL URLWithString:nimgview];
-            
-            NSLog(@"%@",dataurl);
-            
-            NSData* ndata = [NSData dataWithContentsOfURL:dataurl];
-            
-            //NSLog(@"%@",ndata);
-            //[self.testImage sd_setImageWithURL:dataurl];
-            
-            if(photo_type==1){
-                face_pic = imgurl;
-                
-                [self.photo1Button setBackgroundImage:[UIImage imageWithData:ndata] forState:UIControlStateNormal];
-            }
-            else if(photo_type==2){
-                back_pic = imgurl;
-                
-                [self.photo2Button setBackgroundImage:[UIImage imageWithData:ndata] forState:UIControlStateNormal];
-            }
-            
-            NSLog(@"%@",imgurl);
+            [alert setMessage:@"Successfully post a photo!"];
+            [alert show];
         }
         
     } fail:^{
         
         [hud removeFromSuperview];
         
-        [alert setMessage:@"请求超时，请稍候重试"];
+        [alert setMessage:@"Timeout,please try again."];
         [alert show];
         
-        NSLog(@"请求失败");
+        NSLog(@"faild");
     }];
-    */
+    
     
     [self dismissViewControllerAnimated:YES completion:^{
         
     }];
     
 }
+
+- (void) uploadFinished{
+    
+    if(uploading_number<=0){
+        [hud removeFromSuperview];
+        UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"" message:[NSString stringWithFormat:@"Successfully post %ld photos",uploaded_number] delegate:nil cancelButtonTitle:@"Ok" otherButtonTitles: nil];
+        [alert show];
+        
+    }
+}
+
+- (void) qb_imagePickerController:(QBImagePickerController *)imagePickerController didFinishPickingAssets:(NSArray *)assets{
+    
+    NSMutableDictionary *postData = [[NSMutableDictionary alloc] init];
+    
+    [postData setValue:[NSString stringWithFormat:@"%ld",(unsigned long)self.sid] forKey:@"sid"];
+    [postData setValue:[BWCommon getUserInfo:@"username"] forKey:@"username"];
+    
+    uploading_number = [assets count];
+    uploaded_number = 0;
+    
+    if(uploading_number>0){
+        hud = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
+        hud.delegate=self;
+    }
+    
+    NSLog(@"%ld",uploading_number);
+    for (PHAsset *asset in assets) {
+        //NSLog(@"%@",asset);
+        
+        
+        
+        PHImageRequestOptions * imageRequestOptions = [[PHImageRequestOptions alloc] init];
+        imageRequestOptions.synchronous = YES;
+        [[PHImageManager defaultManager]
+         requestImageDataForAsset:asset
+         options:imageRequestOptions
+         resultHandler:^(NSData *imageData, NSString *dataUTI,
+                         UIImageOrientation orientation,
+                         NSDictionary *info)
+         {
+             //NSLog(@"info = %@", info);
+             if ([info objectForKey:@"PHImageFileURLKey"]) {
+                 
+                 //临时存储图片后上传
+                 int y = (arc4random() % 1001) + 9000;
+                 
+                 NSString *fileName = [NSString stringWithFormat:@"%d%@",y,@".jpg"];
+                 
+                 NSArray* paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
+                 NSString* documentsDirectory = [paths objectAtIndex:0];
+                 // Now we get the full path to the file
+                 NSString* fullPathToFile = [documentsDirectory stringByAppendingPathComponent:fileName];
+                 // and then we write it out
+                 [imageData writeToFile:fullPathToFile atomically:NO];
+
+                 NSString *fullFileName = [[self documentFolderPath] stringByAppendingPathComponent:fileName];
+                 
+                 NSURL *fileUrl = [[NSURL alloc] initFileURLWithPath:fullFileName];
+                 //临时存储后的文件地址
+                 
+                 NSString *api_url = [[BWCommon getBaseInfo:@"api_url"] stringByAppendingString:@"photo"];
+
+
+                 [AFNetworkTool postUploadWithUrl:api_url fileUrl:fileUrl parameters:postData success:^(id responseObject) {
+                     
+                     //NSLog(@"%@",responseObject);
+                     NSInteger code = [[responseObject objectForKey:@"code"] integerValue];
+                     
+                     //[hud removeFromSuperview];
+                     
+                     NSLog(@"%@",responseObject);
+                     if (code != 200) {
+
+                     }
+                     else
+                     {
+                         uploaded_number ++;
+                     }
+
+                     uploading_number--;
+                     
+                     [self uploadFinished];
+                     
+                 } fail:^{
+                     
+                     //[hud removeFromSuperview];
+                     NSLog(@"faild");
+                     uploading_number--;
+                     
+                     [self uploadFinished];
+                 }];
+
+                 
+             }
+         }];
+    }
+    
+    [self dismissViewControllerAnimated:YES completion:NULL];
+}
+
+
+- (void)qb_imagePickerControllerDidCancel:(QBImagePickerController *)imagePickerController {
+    
+    [self dismissViewControllerAnimated:YES completion:NULL];
+}
+
 
 - (NSString *)documentFolderPath
 {

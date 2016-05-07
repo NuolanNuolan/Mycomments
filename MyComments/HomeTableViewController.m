@@ -13,8 +13,8 @@
 #import "ShopViewController.h"
 #import "ShopDetailViewController.h"
 #import "RegionTableViewController.h"
-#import "HomeSearchDisplayController.h"
-#import "MapViewController.h"
+//#import "SearchResultsViewController.h"
+#import "HomeMapViewController.h"
 #import "BWSectionView.h"
 #import "AFNetworkTool.h"
 
@@ -24,6 +24,9 @@
 @property (nonatomic,strong) UIBarButtonItem *cityItem;
 @property (nonatomic,strong) UIButton *cityItemButton;
 @property (nonatomic,strong) NSString *region_id;
+
+//searchResult
+//@property (nonatomic, strong) NSMutableArray *searchResults;
 
 @end
 
@@ -70,6 +73,9 @@ CGSize size;
     NSString *city_name = [BWCommon getUserInfo:@"region_name"];
     if(city_name)
     {
+        //if ([city_name length] > 10)
+        //  city_name =[NSString stringWithFormat:@"%@...",[city_name substringToIndex:10]];
+        
         [self.cityItemButton setTitle:city_name forState:UIControlStateNormal];
     }
     
@@ -102,15 +108,13 @@ CGSize size;
     
     self.navigationItem.rightBarButtonItem = mapItem;
     
-    UIView *middleView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 200, 30)];
-    UIButton *searchButton = [[UIButton alloc] initWithFrame:CGRectMake(0, 0, 200, 30)];
-    [searchButton setBackgroundImage:[UIImage imageNamed:@"navbar_search"] forState:UIControlStateNormal];
     
-    [searchButton addTarget:self action:@selector(searchTouched:) forControlEvents:UIControlEventTouchUpInside];
     
     //cityButton
-    self.cityItemButton = [[UIButton alloc] initWithFrame:CGRectMake(0, 0, 50, 30)];
+    self.cityItemButton = [[UIButton alloc] initWithFrame:CGRectMake(0, 0, 200, 30)];
     [self.cityItemButton.titleLabel setTextColor:[UIColor whiteColor]];
+    [self.cityItemButton.titleLabel setTextAlignment:NSTextAlignmentLeft];
+    self.cityItemButton.titleLabel.lineBreakMode = 0;
     
     //UIImage *arrowIcon = [UIImage imageNamed:@"navbar_arrow"];
     //UIImageView *arrowIconView = [[UIImageView alloc] initWithImage:arrowIcon];
@@ -121,7 +125,7 @@ CGSize size;
     //self.cityItem = [[UIBarButtonItem alloc] initWithTitle:@"All" style:UIBarButtonItemStylePlain target:self action:@selector(regionTouched:)];
     
 
-    self.cityItem = [[UIBarButtonItem alloc] initWithCustomView:self.cityItemButton];
+    //self.cityItem = [[UIBarButtonItem alloc] initWithCustomView:self.cityItemButton];
     
     //[cityButton.titleLabel setText:@"All"];
     [self.cityItemButton setTitle:@"All" forState:UIControlStateNormal];
@@ -136,13 +140,18 @@ CGSize size;
     //[self.cityItem setTitleTextAttributes:[NSDictionary
       //      dictionaryWithObjectsAndKeys:[UIFont systemFontOfSize:12], NSFontAttributeName,nil] forState:UIControlStateNormal];
 
-    [self.navigationItem setLeftBarButtonItem:self.cityItem];
+    [self.navigationItem setTitleView:self.cityItemButton];
+    
+    /*UISearchBar *searchBar = [[UISearchBar alloc] initWithFrame:CGRectMake(0, 0,size.width-140,30)];
+    searchBar.tag = 10001;
+    searchBar.delegate = self;
+    searchBar.placeholder = @"Search for shop name";
+    */
+    //[self.view addSubview:searchBar];
+   // [middleView addSubview:searchButton];
     
     
-    [middleView addSubview:searchButton];
-    
-    
-    [self.navigationItem setTitleView:middleView];
+   // [self.navigationItem setTitleView:middleView];
     
     UIBarButtonItem *backItem=[[UIBarButtonItem alloc]init];
     backItem.title=@"";
@@ -169,6 +178,13 @@ CGSize size;
     
     [self.tableView.footer setTitle:@"" forState:MJRefreshFooterStateIdle];
 
+    
+    
+    [self.tableView.header setTitle:@"Pull down to refresh" forState:MJRefreshHeaderStateIdle];
+    [self.tableView.header setTitle:@"Release to refresh" forState:MJRefreshHeaderStatePulling];
+    [self.tableView.header setTitle:@"Loading ..." forState:MJRefreshHeaderStateRefreshing];
+    
+    [self.tableView.footer setTitle:@"" forState:MJRefreshFooterStateIdle];
 }
 
 
@@ -184,6 +200,41 @@ CGSize size;
     {
         oldLocation = nil;
     }
+    
+    NSString *url = [NSString stringWithFormat:@"http://maps.googleapis.com/maps/api/geocode/json?latlng=%f,%f&sensor=true",newLocation.coordinate.latitude,newLocation.coordinate.longitude];
+    
+    [AFNetworkTool JSONDataWithUrl:url success:^(id json) {
+        
+        //NSDictionary *dict = [NSDictionary alloc]
+        NSArray *results = [json objectForKey:@"results"];
+        
+        //NSArray *address_components = [results[0] objectForKey:@"address_components"];
+        
+        /*for(NSInteger i=0;i<[address_components count];i++){
+            NSDictionary *address=[address_components objectAtIndex:i];
+            //判断是否是政治实体名称
+            //if(address.types[0] == 'locality'){
+            var long_name=address.long_name;
+            //查询是否存在此地区
+            for(var j=0;j<list.length;j++){
+                if(list[j].region_name == long_name){
+                    //当前城市
+                    //Ti.App.Properties.setString('city',long_name);
+                    //Ti.App.Properties.setString('city_id',list[j].region_id);
+                    
+                    loadLastedComments(1,list[j].region_id);
+                    refreshCity();
+                    return true;
+                }
+            }
+            //Ti.API.info(i);
+            //}
+        }*/
+        NSLog(@"%@",results);
+    } fail:^{
+        
+    }];
+    
     NSLog(@"didUpdateToLocation %@ from %@", newLocation, oldLocation);
     
     // 停止位置更新
@@ -194,13 +245,8 @@ CGSize size;
 {
     NSLog(@"%@",error);
 }
-
--(void) searchTouched: (UIButton *) sender{
-
-}
-
 - (void) mapTouched:(id) sender{
-    MapViewController *mapView = [[MapViewController alloc] init];
+    HomeMapViewController *mapView = [[HomeMapViewController alloc] init];
     mapView.hidesBottomBarWhenPushed = YES;
     
     [self.navigationController pushViewController:mapView animated:YES];
@@ -379,7 +425,7 @@ CGSize size;
         restaurant.frame = CGRectMake(spadding, 10, swidth, swidth);
         restaurant.tag = 2;
         [cell addSubview:restaurant];
-        UIButton *lifestyle = [self createButton:self Selector:@selector(categoryTouched:) Image:@"home_life_style_icon.png" Title:@"Life & Style"];
+        UIButton *lifestyle = [self createButton:self Selector:@selector(categoryTouched:) Image:@"home_life_style_icon.png" Title:@"Life&Style"];
         lifestyle.tag = 3;
         lifestyle.frame = CGRectMake(spadding*2 + swidth, 10, swidth, swidth);
         [cell addSubview:lifestyle];
@@ -397,8 +443,8 @@ CGSize size;
             NSString *title = [popularCityArray[i] objectForKey:@"region_name"];
             UIButton *b1 = [self createCityButton:self Selector:@selector(cityTouched:) Title:title];
             b1.tag = [[popularCityArray[i] objectForKey:@"region_id"] integerValue];
-            CGSize bsize = [BWCommon sizeWithString:title font:[UIFont systemFontOfSize:14] maxSize:CGSizeMake(160,MAXFLOAT)];
-            CGFloat bwidth = bsize.width + 22;
+            CGSize bsize = [BWCommon sizeWithString:title font:[UIFont systemFontOfSize:12] maxSize:CGSizeMake(160,MAXFLOAT)];
+            CGFloat bwidth = bsize.width + 18;
             if(bx+ bwidth > size.width){
                 by += 34;
                 bx = 8;
@@ -412,6 +458,7 @@ CGSize size;
             
             bx += bwidth-1;
             [cell addSubview:b1];
+            
         }
     }
         
@@ -470,7 +517,7 @@ CGSize size;
     UIImage *newImage = [UIImage imageNamed: image];
     [button setBackgroundImage:newImage forState:UIControlStateNormal];
     [button setTitle:title forState:UIControlStateNormal];
-    button.titleLabel.font=[UIFont systemFontOfSize:14.0];
+    button.titleLabel.font=[UIFont systemFontOfSize:12.0];
     
     [button setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
     button.contentVerticalAlignment = UIControlContentVerticalAlignmentBottom;
@@ -485,7 +532,7 @@ CGSize size;
     UIButton * button = [UIButton buttonWithType:UIButtonTypeCustom];
     
     [button setTitle:title forState:UIControlStateNormal];
-    button.titleLabel.font=[UIFont systemFontOfSize:14.0];
+    button.titleLabel.font=[UIFont systemFontOfSize:12.0];
     button.layer.borderWidth = 1.0f;
     button.layer.borderColor = [BWCommon getBorderColor].CGColor;
     
