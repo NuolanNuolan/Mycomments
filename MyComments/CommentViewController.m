@@ -340,6 +340,7 @@
 
     NSInteger sid = [[[dataArray objectAtIndex:cid] objectForKey:@"sid"] integerValue];
         MYLOG(@"cid是%ld",(long)sid);
+    MYLOG(@"我的UID是%@",[BWCommon getUserInfo:@"uid"]);
 //    [dataArray removeObjectAtIndex:cid];
 //    [_tableView reloadData];
 }
