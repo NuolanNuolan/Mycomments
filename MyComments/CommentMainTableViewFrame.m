@@ -80,6 +80,10 @@
     CGFloat likeY = commentY + commentSize.height + paddingY;
     self.likeF = CGRectMake(likeX, likeY, 70, 15);
     
+    CGFloat removeX = likeX + paddingX + 60;
+    CGFloat removeY = commentY + commentSize.height + paddingY;
+    self.removeF = CGRectMake(removeX, removeY, 80, 15);
+    
     CGFloat dateX = size.width - paddingY - 100;
     CGFloat dateY = likeY;
     self.dateF = CGRectMake(dateX, dateY, 100, 20);

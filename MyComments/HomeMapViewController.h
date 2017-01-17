@@ -8,8 +8,11 @@
 
 #import <UIKit/UIKit.h>
 #import <GoogleMaps/GoogleMaps.h>
+#import "AFNetworkTool.h"
 
 @interface HomeMapViewController : UIViewController
 <GMSMapViewDelegate>
+
+@property (nonatomic,retain) NSMutableArray *dataArray;
 
 @end

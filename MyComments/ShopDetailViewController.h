@@ -12,6 +12,7 @@
 #import "MJRefresh.h"
 #import "MapDelegate.h"
 #import "QBImagePickerController.h"
+#import "MemberDelegate.h"
 
 @interface ShopDetailViewController : UIViewController
 <UITableViewDataSource,
@@ -33,5 +34,9 @@ MBProgressHUDDelegate>
 @property (nonatomic,assign) id<MapDelegate> mapDelegate;
 
 @property (nonatomic,strong) UITableView *tableView;
+
+@property (nonatomic,assign) id<MemberDelegate> memberDelegate;
+
+@property (nonatomic,assign) BOOL  isPresentview;
 
 @end

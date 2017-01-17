@@ -17,7 +17,7 @@
 @interface ShopViewController ()
 
 @property (nonatomic, strong) NSArray *statusFrames;
-
+@property (nonatomic, assign) BOOL isone;
 @property (nonatomic,assign) NSInteger region_id;
 @property (nonatomic,assign) NSInteger cid;
 @property (nonatomic,assign) NSInteger gpage;
@@ -69,7 +69,7 @@ CGSize size;
     
     CGRect rect = [[UIScreen mainScreen] bounds];
     size = rect.size;
-    
+    self.isone =YES;
     has_data = YES;
     
     self.view.backgroundColor = [UIColor whiteColor];
@@ -98,7 +98,7 @@ CGSize size;
     if([CLLocationManager locationServicesEnabled]){
         [self.manager startUpdatingLocation];
     }else{
-        NSLog(@"Please enable location service.");
+        MYLOG(@"Please enable location service.");
     }
     
     
@@ -109,20 +109,27 @@ CGSize size;
     self.tableView = tableView;
     self.tableView.delegate = self;
     self.tableView.dataSource = self;
-    
+    self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
+    self.tableView.showsVerticalScrollIndicator = NO;
     UIView *v = [[UIView alloc] initWithFrame:CGRectZero];
     [self.tableView setTableFooterView:v];
     
     //[BWCommon setUserInfo:@"parent_region_id" value:[drow objectForKey:@"parent_id" ]];
     NSInteger parent_region_id = [[BWCommon getUserInfo:@"parent_region_id"] integerValue];
+    //init data
+    [BWCommon setUserInfo:@"" value:@"parent_region_id"];
+    
+    MYLOG(@"parent_region_id: %ld",parent_region_id);
     
     if(parent_region_id<=0){
         parent_region_id = 1;
     }
+    
+    
     provinceData = [BWCommon loadRegions:parent_region_id initData:@"Location"];
     categoryData = [BWCommon getDataInfo:@"category"];
     
-    //NSLog(@"%@",categoryData);
+    //MYLOG(@"%@",categoryData);
     
     //Default, Rate Descending , Rate Ascending, Price Ascending, Price Descending,Nearest
     
@@ -134,7 +141,7 @@ CGSize size;
     [filterData addObject:[[NSDictionary alloc] initWithObjectsAndKeys:@"Price Descending",@"name",@"price",@"o",@"2",@"ot", nil]];
     [filterData addObject:[[NSDictionary alloc] initWithObjectsAndKeys:@"Nearest",@"name",@"nearest",@"o",@"2",@"ot", nil]];
     
-    //NSLog(@"%@",filterData);
+    //MYLOG(@"%@",filterData);
     
     
     // 添加下拉菜单
@@ -147,15 +154,20 @@ CGSize size;
     self.menu.delegate = self;
     self.menu.dataSource = self;
     
+    //self.menu.remainMenuTitle = YES;
+    
     
     [self.view addSubview:self.menu];
+    
+    [self selectDefaultMenu];
+    
     
     //初始化
     self.o = @"";
     self.ot = 0;
     
     self.gpage = 1;
-    [self refreshingData:self.gpage callback:^{}];
+//    [self refreshingData:self.gpage callback:^{}];
     
     [self.tableView addLegendHeaderWithRefreshingTarget:self refreshingAction:@selector(headerRefreshing)];
     
@@ -166,10 +178,49 @@ CGSize size;
     [self.tableView.header setTitle:@"Loading ..." forState:MJRefreshHeaderStateRefreshing];
     
     [self.tableView.footer setTitle:@"" forState:MJRefreshFooterStateIdle];
+    [self.tableView.footer setTitle:@"Loading ..." forState:MJRefreshFooterStateRefreshing];
+    [self.tableView.footer setTitle:@"No more merchants." forState:MJRefreshFooterStateNoMoreData];
     
 }
 
 
+-(void) selectDefaultMenu{
+    
+    if(self.region_id)
+    {
+        for(int i=0;i<[provinceData count];i++){
+            if( [provinceData[i][@"region_id"] integerValue] == self.region_id )
+            {
+                DOPIndexPath *indexPath = [DOPIndexPath indexPathWithCol:0 row:i];
+                [self.menu selectIndexPath:indexPath];
+                break;
+            }
+        }
+    }
+    
+    if(self.cid)
+    {
+        for(int i=0;i<[categoryData count];i++){
+            if( [categoryData[i][@"cid"] integerValue] == self.cid )
+            {
+                DOPIndexPath *indexPath = [DOPIndexPath indexPathWithCol:1 row:i];
+                [self.menu selectIndexPath:indexPath];
+                break;
+            }
+        }
+    }
+    
+    if(![self.region_name isEqualToString:@""]){
+        [self.navigationItem setTitle:self.region_name];
+    }
+    else{
+        NSString *region_name = [BWCommon getUserInfo:@"region_name"];
+        if(region_name)
+        {
+            [self.navigationItem setTitle:region_name];
+        }
+    }
+}
 
 -(void) locationManager:(CLLocationManager *)manager didUpdateLocations:(NSArray *)locations{
     
@@ -185,22 +236,33 @@ CGSize size;
     }
     
     _location = newLocation;
+    NSTimeInterval locationAge = -[newLocation.timestamp timeIntervalSinceNow];
     
-    NSLog(@"didUpdateToLocation %@ from %@", newLocation, oldLocation);
+    if (locationAge > 1.0){//如果调用已经一次，不再执行
+
+        return;
+    }else{
+    
+        MYLOG(@"我执行了几次?");
+        [self refreshingData:self.gpage callback:^{}];
+    }
+    
+    MYLOG(@"didUpdateToLocation %@ from %@", newLocation, oldLocation);
     
     // 停止位置更新
-    //[self.manager stopUpdatingLocation];
+    [self.manager stopUpdatingLocation];
 }
 
 - (void)locationManager:(CLLocationManager *)manager didFailWithError:(NSError *)error
 {
-    NSLog(@"%@",error);
+    MYLOG(@"%@",error);
 }
 
 - (void) headerRefreshing{
-    
+    @weakify(self);
     self.gpage = 1;
     [self refreshingData:self.gpage callback:^{
+        @strongify(self);
         [self.tableView.header endRefreshing];
     }];
     
@@ -208,27 +270,33 @@ CGSize size;
 
 - (void )footerRereshing{
     
-    [self refreshingData:++self.gpage callback:^{
-        [self.tableView.footer endRefreshing];
-    }];
+//    [self refreshingData:++self.gpage callback:^{
+//        [self.tableView.footer endRefreshing];
+//    }];
+    [self refreshingData:++self.gpage callback:nil];
 }
 
 
 - (void) setValue:(NSUInteger)region_id cid:(NSUInteger)cid region_name:(NSString *)region_name cat_name:(NSString *)cat_name{
     
-    self.region_id = region_id;
+    
     self.cid = cid;
     self.region_name = region_name;
     self.cat_name = cat_name;
+    
+    if(region_id<=0){
+        region_id = [[BWCommon getUserInfo:@"region_id"] integerValue];
+    }
+    
+    self.region_id = region_id;
 }
 
 
 - (void) refreshingData:(NSUInteger)page callback:(void(^)()) callback
 {
     
-    hud = [BWCommon getHUD];
+    [MBProgressHUD showMessage:@"" toView:self.view];
     //hud.mode = MBProgressHUDModeCustomView;
-    hud.delegate=self;
     
     NSString *url =  [[BWCommon getBaseInfo:@"api_url"] stringByAppendingString:@"search"];
     
@@ -242,15 +310,15 @@ CGSize size;
     
     [postData setValue:[NSString stringWithFormat:@"%f",_location.coordinate.longitude] forKey:@"lng"];
     [postData setValue:[NSString stringWithFormat:@"%f",_location.coordinate.latitude] forKey:@"lat"];
-  
-    NSLog(@"%@",url);
+    
+    MYLOG(@"这是我要上传的数据%@",postData);
     //load data
     
     [AFNetworkTool postJSONWithUrl:url parameters:postData success:^(id responseObject) {
         
         NSInteger code = [[responseObject objectForKey:@"code"] integerValue];
         
-        [hud removeFromSuperview];
+        [MBProgressHUD hideHUDForView:self.view];
         if(code == 200)
         {
             NSMutableDictionary *data = [responseObject objectForKey:@"data"];
@@ -262,15 +330,33 @@ CGSize size;
             }
             else
             {
-                [dataArray addObjectsFromArray:[[data objectForKey:@"lists"] mutableCopy]];
+//                [dataArray addObjectsFromArray:[[data objectForKey:@"lists"] mutableCopy]];
+                NSArray *FootArr_Load =[[data objectForKey:@"lists"] mutableCopy];
+                
+                if (FootArr_Load.count==0) {
+                    
+                    [self.tableView.footer noticeNoMoreData];
+                    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+                        [self.tableView.footer resetNoMoreData];
+                    });
+                    
+                }else{
+                    
+                    [dataArray addObjectsFromArray:FootArr_Load];
+                    if ([self.o isEqualToString:@"nearest"]) {
+                        //对距离进行排序
+                        [self OrderbyDistance:dataArray];
+                    }
+                    [self.tableView.footer endRefreshing];
+                }
                 
             }
             
             has_data = [dataArray count] > 0  || page >1 ? YES : NO;
             
-            NSLog(@"%@",dataArray);
+            MYLOG(@"%@",dataArray);
             
-            self.tableView.footer.hidden = (dataArray.count <=0) ? YES : NO;
+//            self.tableView.footer.hidden = (dataArray.count <=0) ? YES : NO;
             
             self.statusFrames = nil;
             [self.tableView setHidden:NO];
@@ -284,12 +370,12 @@ CGSize size;
         }
         else
         {
-            NSLog(@"%@",[responseObject objectForKey:@"error"]);
+            MYLOG(@"%@",[responseObject objectForKey:@"error"]);
         }
         
     } fail:^{
-        [hud removeFromSuperview];
-        NSLog(@"请求失败");
+        [MBProgressHUD hideHUDForView:self.view];
+        MYLOG(@"请求失败");
     }];
     
     
@@ -297,15 +383,18 @@ CGSize size;
 
 - (void) tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath{
     
+    if (dataArray.count<1) {
+        return;
+    }
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
     ShopDetailViewController *viewController = [[ShopDetailViewController alloc] init];
     self.detailDelegate = viewController;
     viewController.hidesBottomBarWhenPushed = YES;
-        
+    
     [self.navigationController pushViewController:viewController animated:YES];
     NSInteger sid = [[[dataArray objectAtIndex:[indexPath row]] objectForKey:@"sid"] integerValue];
     [self.detailDelegate setValue:sid];
-
+    
 }
 
 
@@ -344,13 +433,14 @@ CGSize size;
         //return [[provinceData allValues] objectAtIndex:[indexPath row]];
     }
     else if(indexPath.column == 1){
-        //NSLog(@"titleForRowAtIndexPath %ld",(long)[indexPath row]);
+        //MYLOG(@"titleForRowAtIndexPath %ld",(long)[indexPath row]);
         if ([indexPath row] >=[categoryData count] ) {
             return @"";
         }
         return [[categoryData objectAtIndex:[indexPath row]] objectForKey:@"cat_name"];
     }
     else if (indexPath.column == 2){
+        
         return [[filterData objectAtIndex:[indexPath row]] objectForKey:@"name"];
     }
     
@@ -365,12 +455,12 @@ CGSize size;
         NSUInteger parent_id =[[[provinceData objectAtIndex:row] objectForKey:@"region_id"]
                                integerValue];
         
-        cityData = [BWCommon loadRegions:parent_id initData:@""];
-        NSLog(@"%@",cityData);
+        cityData = [BWCommon loadRegions:parent_id initData:@"All"];
+        MYLOG(@"%@",cityData);
         return [cityData count];
     }
     else if(column == 1){
-        NSLog(@"numberOfItemsInRow %ld",(long)row);
+        MYLOG(@"numberOfItemsInRow %ld",(long)row);
         subCategoryData = [self subCategory:row];
         return [subCategoryData count];
     }
@@ -387,7 +477,7 @@ CGSize size;
         NSUInteger parent_id =[[[provinceData objectAtIndex:indexPath.row] objectForKey:@"region_id"]
                                integerValue];
         
-        cityData = [BWCommon loadRegions:parent_id initData:@""];
+        cityData = [BWCommon loadRegions:parent_id initData:@"All"];
         
         return [[cityData objectAtIndex:indexPath.item] objectForKey:@"region_name"];
         
@@ -395,55 +485,89 @@ CGSize size;
     else if(indexPath.column == 1){
         //subCategoryData = [[categoryData objectAtIndex:indexPath.row] objectForKey:@"childrens"];
         subCategoryData = [self subCategory:indexPath.row];
-        NSLog(@"title For Items %@",subCategoryData);
+        MYLOG(@"title For Items %@",subCategoryData);
         return [[subCategoryData objectAtIndex:indexPath.item] objectForKey:@"cat_name"];
     }
     return nil;
     
 }
+
+-(NSString *) menu:(DOPDropDownMenu *)menu detailTextForItemsInRowAtIndexPath:(DOPIndexPath *)indexPath{
+    return @"";
+}
+
+
 -(void) menu:(DOPDropDownMenu *)menu didSelectRowAtIndexPath:(DOPIndexPath *)indexPath{
     
+    if (self.isone) {
+        self.isone=NO;
+        return;
+    }
     if(indexPath.column == 0){
         
-        NSLog(@"item %ld",indexPath.item);
-        NSLog(@"row %ld",indexPath.row);
+        MYLOG(@"item %ld",indexPath.item);
+        MYLOG(@"row %ld",indexPath.row);
         
         if (indexPath.item >= 0){
             NSUInteger parent_id =[[[provinceData objectAtIndex:indexPath.row] objectForKey:@"region_id"]
                                    integerValue];
-            cityData = [BWCommon loadRegions:parent_id initData:@""];
-            self.region_id = [[[cityData objectAtIndex:indexPath.item] objectForKey:@"region_id"] integerValue];
-            [self refreshingData:1 callback:^{}];
-        }
-        
-        if(indexPath.row == 0){
-            self.region_id = 0;
-            [self refreshingData:1 callback:^{}];
+            cityData = [BWCommon loadRegions:parent_id initData:@"All"];
+            
+            if(indexPath.item == 0){
+                self.region_id = parent_id;
+                DOPIndexPath *dopIndexPath = [DOPIndexPath indexPathWithCol:0 row:indexPath.row];
+                //[menu titleForRowAtIndexPath:dopIndexPath];
+                [menu selectIndexPath:dopIndexPath];
+            }else{
+                self.region_id = [[[cityData objectAtIndex:indexPath.item] objectForKey:@"region_id"] integerValue];
+                [self refreshingData:1 callback:^{}];
+            }
+
+        }else if (indexPath.item==-1){
+            NSUInteger parent_id =[[[provinceData objectAtIndex:indexPath.row] objectForKey:@"region_id"]
+                                   integerValue];
+                self.region_id = parent_id;
+                [self refreshingData:1 callback:^{}];
+            
         }
     }
     else if (indexPath.column == 1){
-        NSLog(@"item2 %ld",indexPath.item);
-        NSLog(@"row2 %ld",indexPath.row);
+        MYLOG(@"item2 %ld",indexPath.item);
+        MYLOG(@"row2 %ld",indexPath.row);
         if (indexPath.item >= 0){
-
+            
             //subCategoryData = [[categoryData objectAtIndex:indexPath.row] objectForKey:@"childrens"];
             subCategoryData = [self subCategory:indexPath.row];
-            //NSLog(@"subCategoryData %@",subCategoryData);
-            //NSLog(@"item %ld",indexPath.item);
-            //NSLog(@"row %ld",indexPath.row);
+            //MYLOG(@"subCategoryData %@",subCategoryData);
+            //MYLOG(@"item %ld",indexPath.item);
+            //MYLOG(@"row %ld",indexPath.row);
+            MYLOG(@"%@",[subCategoryData objectAtIndex:indexPath.item]);
             self.cid = [[[subCategoryData objectAtIndex:indexPath.item] objectForKey:@"cid"] integerValue];
-
+            MYLOG(@"这是我的这是我的这是我的这是我的这是我的这是我的这是我的这是我的cid%ld",(long)self.cid);
             [self refreshingData:1 callback:^{}];
         }
-
+        
     }
     else if(indexPath.column == 2){
-        
+        MYLOG(@"第三个菜单栏%ld",(long)indexPath.row);
         self.o = [[filterData objectAtIndex:indexPath.row] objectForKey:@"o"];
         self.ot = [[[filterData objectAtIndex:indexPath.row] objectForKey:@"ot"] integerValue];
         
         [self refreshingData:1 callback:^{}];
     }
+}
+
+- (NSIndexPath *)menu:(DOPDropDownMenu *)menu willSelectRowAtIndexPath:(DOPIndexPath *)indexPath{
+    
+    if(indexPath.column == 1){
+        
+        //MYLOG(@"indexPath: row:%ld item: %ld",(long)indexPath.row,(long)indexPath.item);
+        //if(indexPath.row >= [categoryData count] && indexPath.item<=0)
+        //    return nil;
+        
+    }
+    NSIndexPath *ip = [NSIndexPath indexPathForRow:indexPath.row inSection:indexPath.column];
+    return ip;
 }
 
 //DOP Dropdown menu end.
@@ -463,7 +587,7 @@ CGSize size;
     
     if (!has_data)
         return 1;
-
+    
     return [dataArray count];
 }
 
@@ -525,9 +649,17 @@ CGSize size;
     
     return cell;
 }
-
+//对请求回来的数组进行距离排序
+-(void)OrderbyDistance:(NSMutableArray *)array
+{
+    //这里类似KVO的读取属性的方法，直接从字符串读取对象属性，注意不要写错
+    NSSortDescriptor *sortDescriptor = [NSSortDescriptor sortDescriptorWithKey:@"distance" ascending:YES];
+    //这个数组保存的是排序好的对象
+    NSArray *tempArray = [array sortedArrayUsingDescriptors:[NSArray arrayWithObject:sortDescriptor]];
+    dataArray = [NSMutableArray arrayWithArray:tempArray];
+}
 -(void) addMerchantTouched: (UIButton *)sender{
-
+    
     
     BOOL isLoggedIn = [BWCommon isLoggedIn];
     
@@ -535,7 +667,7 @@ CGSize size;
         
         __weak ShopViewController *weakSelf = self;
         
-        UIViewController *viewController = [self.parentViewController.storyboard instantiateViewControllerWithIdentifier:@"loginView"];
+        UIViewController *viewController = [[UIStoryboard storyboardWithName:@"Main" bundle:nil]instantiateViewControllerWithIdentifier:@"loginView"];
         
         UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:viewController];
         
@@ -549,7 +681,7 @@ CGSize size;
     AddMerchantViewController *viewController = [[AddMerchantViewController alloc] init];
     
     [self.navigationController pushViewController:viewController animated:YES];
-
+    
 }
 
 - (NSArray *) subCategory:(NSInteger) row
@@ -561,9 +693,9 @@ CGSize size;
     
     NSDictionary *pObj = [categoryData objectAtIndex:row];
     [category addObject:pObj];
-
+    
     NSArray *pCategory = [[categoryData objectAtIndex:row] objectForKey:@"childrens"];
-    //NSLog(@"-!!!!--%@",categoryData);
+    //MYLOG(@"-!!!!--%@",categoryData);
     
     for (NSInteger i=0;i<pCategory.count;i++){
         NSArray *childs = [[pCategory objectAtIndex:i] objectForKey:@"childrens"];

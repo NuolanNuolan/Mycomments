@@ -7,6 +7,7 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "QBImagePickerController.h"
 #import "MBProgressHUD.h"
 
 @interface AddMerchantViewController : UIViewController
@@ -18,6 +19,7 @@ MBProgressHUDDelegate,
 UITextFieldDelegate,
 UIGestureRecognizerDelegate,
 UIPickerViewDataSource,
+QBImagePickerControllerDelegate,
 UIPickerViewDelegate
 >
 {

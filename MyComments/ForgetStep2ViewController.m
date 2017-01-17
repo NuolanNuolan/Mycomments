@@ -124,7 +124,7 @@ UITextField *code;
     [AFNetworkTool postJSONWithUrl:url parameters:postData success:^(id responseObject) {
         
         
-        NSLog(@"%@",responseObject);
+        MYLOG(@"%@",responseObject);
         
         [hud removeFromSuperview];
         NSInteger code = [[responseObject objectForKey:@"code"] integerValue];
@@ -147,7 +147,7 @@ UITextField *code;
         [alert setMessage:@"Network connection timeout."];
         [alert show];
         
-        NSLog(@"请求失败");
+        MYLOG(@"请求失败");
     }];
     
 }

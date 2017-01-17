@@ -3,8 +3,8 @@
 <plist version="1.0">
 <dict>
 	<key>site_url</key>
-	<string>http://mycomments.s10.baiwei.org</string>
+	<string>http://www.mycomments.com.my</string>
 	<key>api_url</key>
-	<string>http://mycomments.s10.baiwei.org/default/app/</string>
+	<string>http://www.mycomments.com.my/default/app/</string>
 </dict>
 </plist>

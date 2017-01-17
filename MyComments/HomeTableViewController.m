@@ -14,6 +14,7 @@
 #import "ShopDetailViewController.h"
 #import "RegionTableViewController.h"
 //#import "SearchResultsViewController.h"
+#import "MemberTableViewController.h"
 #import "HomeMapViewController.h"
 #import "BWSectionView.h"
 #import "AFNetworkTool.h"
@@ -21,6 +22,7 @@
 @interface HomeTableViewController ()
 @property (nonatomic, strong) NSArray *statusFrames;
 @property (nonatomic,assign) NSUInteger gpage;
+@property (nonatomic,strong) NSArray *regions;
 @property (nonatomic,strong) UIBarButtonItem *cityItem;
 @property (nonatomic,strong) UIButton *cityItemButton;
 @property (nonatomic,strong) NSString *region_id;
@@ -37,39 +39,11 @@
 
 CGSize size;
 
-- (void)viewDidLoad {
-    [super viewDidLoad];
-    
-    dataArray = [[NSMutableArray alloc] init];
-    
-    //self.region_id = @"20";
-    
-    // Uncomment the following line to preserve selection between presentations.
-    // self.clearsSelectionOnViewWillAppear = NO;
-    
-    // Uncomment the following line to display an Edit button in the navigation bar for this view controller.
-    // self.navigationItem.rightBarButtonItem = self.editButtonItem;
-    
-    self.manager = [[CLLocationManager alloc] init];
-    self.manager.delegate = self;
-    self.manager.desiredAccuracy = kCLLocationAccuracyNearestTenMeters;
-    self.manager.distanceFilter = 5.0f;
-    
-    if ([self.manager respondsToSelector:@selector(requestWhenInUseAuthorization)]) {
-        [self.manager requestWhenInUseAuthorization];
-        
-    }
-    if([CLLocationManager locationServicesEnabled]){
-        [self.manager startUpdatingLocation];
-    }else{
-        NSLog(@"Please enable location service.");
-    }
-    
-    [self pageLayout];
-}
+NSString *trackViewURL;
+-(void)viewWillAppear:(BOOL)animated
+{
 
--(void) viewDidAppear:(BOOL)animated{
-    
+    MYLOG(@"我是重新刷新页面");
     NSString *city_name = [BWCommon getUserInfo:@"region_name"];
     if(city_name)
     {
@@ -84,21 +58,89 @@ CGSize size;
     
     if(!self.region_id )
     {
-       self.region_id = @"20";
+        self.region_id = @"20";
     }
     
-    NSLog(@"%@",self.region_id);
+    MYLOG(@"%@",self.region_id);
     
     self.gpage = 1;
     
     [self refreshingData:1 callback:^{}];
+}
+- (void)viewDidLoad {
+    [super viewDidLoad];
+    
+    dataArray = [[NSMutableArray alloc] init];
+    //城市数组
+    self.regions = [[NSArray alloc]init];
+    //注册监听通知
+    [self NotifationTableview];
+    //self.region_id = @"20";
+    
+    [self pageLayout];
+
+}
+-(void)NotifationTableview
+{
+    //注册通知
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(TableviewReloaddata:)
+                                                 name:@"Popular_cityNotification"
+                                               object: nil];
+}
+//等到数据处理才去加载数据刷新表格
+-(void)TableviewReloaddata:(NSNotification *)notification
+{
+    if ([notification.object isEqualToString:@"Success"])
+    {
+        
+        popularCityArray = [BWCommon getDataInfo:@"popular_city"];
+        [self.tableView reloadData];
+        
+        self.manager = [[CLLocationManager alloc] init];
+        self.manager.delegate = self;
+        self.manager.desiredAccuracy = kCLLocationAccuracyThreeKilometers;
+        self.manager.distanceFilter = 5.0f;
+        
+        if ([self.manager respondsToSelector:@selector(requestWhenInUseAuthorization)]) {
+            [self.manager requestWhenInUseAuthorization];
+            
+        }
+        if([CLLocationManager locationServicesEnabled]){
+            [self.manager startUpdatingLocation];
+        }else{
+            MYLOG(@"Please enable location service.");
+        }
+
+    }
+    else
+    {
+        
+        self.regions = [BWCommon getUserInfo:@"regions"];
+        self.manager = [[CLLocationManager alloc] init];
+        self.manager.delegate = self;
+        self.manager.desiredAccuracy = kCLLocationAccuracyThreeKilometers;
+        self.manager.distanceFilter = 5.0f;
+        
+        if ([self.manager respondsToSelector:@selector(requestWhenInUseAuthorization)]) {
+            [self.manager requestWhenInUseAuthorization];
+            
+        }
+        if([CLLocationManager locationServicesEnabled]){
+            [self.manager startUpdatingLocation];
+        }else{
+            MYLOG(@"Please enable location service.");
+        }
+
+    }
+    MYLOG(@"刷新了一次表格");
 }
 
 -(void) pageLayout{
     
     CGRect rect = [[UIScreen mainScreen] bounds];
     size = rect.size;
-    
+    self.tableView.showsVerticalScrollIndicator=NO;
     [self.view setBackgroundColor:[UIColor colorWithPatternImage:[UIImage imageNamed:@"bg.gif"]]];
     
     self.navigationController.navigationBar.barStyle = UIStatusBarStyleDefault;
@@ -158,11 +200,9 @@ CGSize size;
     backItem.image=[UIImage imageNamed:@""];
     self.navigationItem.backBarButtonItem=backItem;
 
-    
-    
-    
     popularCityArray = [BWCommon getDataInfo:@"popular_city"];
     
+//    MYLOG(@"popular City Array:%@",popularCityArray);
     //self.gpage = 1;
     
     //[self refreshingData:self.gpage callback:^{}];
@@ -176,17 +216,14 @@ CGSize size;
     
     [self.tableView addLegendFooterWithRefreshingTarget:self refreshingAction:@selector(footerRereshing)];
     
-    [self.tableView.footer setTitle:@"" forState:MJRefreshFooterStateIdle];
-
-    
-    
     [self.tableView.header setTitle:@"Pull down to refresh" forState:MJRefreshHeaderStateIdle];
     [self.tableView.header setTitle:@"Release to refresh" forState:MJRefreshHeaderStatePulling];
     [self.tableView.header setTitle:@"Loading ..." forState:MJRefreshHeaderStateRefreshing];
     
     [self.tableView.footer setTitle:@"" forState:MJRefreshFooterStateIdle];
+    [self.tableView.footer setTitle:@"Loading ..." forState:MJRefreshFooterStateRefreshing];
+    [self.tableView.footer setTitle:@"No more merchants." forState:MJRefreshFooterStateNoMoreData];
 }
-
 
 -(void) locationManager:(CLLocationManager *)manager didUpdateLocations:(NSArray *)locations{
     
@@ -200,50 +237,94 @@ CGSize size;
     {
         oldLocation = nil;
     }
+    NSTimeInterval locationAge = -[newLocation.timestamp timeIntervalSinceNow];
     
-    NSString *url = [NSString stringWithFormat:@"http://maps.googleapis.com/maps/api/geocode/json?latlng=%f,%f&sensor=true",newLocation.coordinate.latitude,newLocation.coordinate.longitude];
-    
-    [AFNetworkTool JSONDataWithUrl:url success:^(id json) {
+    if (locationAge > 1.0){//如果调用已经一次，不再执行
         
-        //NSDictionary *dict = [NSDictionary alloc]
-        NSArray *results = [json objectForKey:@"results"];
+        return;
+    }else{
         
-        //NSArray *address_components = [results[0] objectForKey:@"address_components"];
+        self.regions = [BWCommon getUserInfo:@"regions"];
         
-        /*for(NSInteger i=0;i<[address_components count];i++){
-            NSDictionary *address=[address_components objectAtIndex:i];
-            //判断是否是政治实体名称
-            //if(address.types[0] == 'locality'){
-            var long_name=address.long_name;
-            //查询是否存在此地区
-            for(var j=0;j<list.length;j++){
-                if(list[j].region_name == long_name){
-                    //当前城市
-                    //Ti.App.Properties.setString('city',long_name);
-                    //Ti.App.Properties.setString('city_id',list[j].region_id);
+//        MYLOG(@"regions:%@",self.regions);
+        NSString *url = [NSString stringWithFormat:@"http://maps.googleapis.com/maps/api/geocode/json?latlng=%f,%f&sensor=true",newLocation.coordinate.latitude,newLocation.coordinate.longitude];
+        
+        //NSString *url = [NSString stringWithFormat:@"http://maps.googleapis.com/maps/api/geocode/json?latlng=%f,%f&sensor=true",3.16,101.7];
+        
+        [AFNetworkTool JSONDataWithUrl:url success:^(id json) {
+            
+            //NSDictionary *dict = [NSDictionary alloc]
+            NSArray *results = [json objectForKey:@"results"];
+            
+            if([results count] <=0)
+                return;
+            
+            NSArray *address_components = [results[0] objectForKey:@"address_components"];
+            
+            //MYLOG(@"address_components: %@",address_components);
+            
+            for(NSInteger i=0;i<[address_components count];i++){
+                NSDictionary *address=[address_components objectAtIndex:i];
+                //判断是否是真正实体名称
+                if([address[@"types"][0] isEqual: @"locality"]){
+                    NSString * long_name=address[@"long_name"];
                     
-                    loadLastedComments(1,list[j].region_id);
-                    refreshCity();
-                    return true;
+                    //MYLOG(@"long name:%@",long_name);
+                    
+                    //查询是否存在此地区
+                    for(int j=0;j<[self.regions count];j++){
+                        
+                        if([self.regions[j][@"region_name"] isEqualToString: long_name]){
+                            //当前城市
+                            //Ti.App.Properties.setString('city',long_name);
+                            //Ti.App.Properties.setString('city_id',list[j].region_id);
+                            
+                            //loadLastedComments(1,list[j].region_id);
+                            //refreshCity();
+                            //return true;
+                            
+                            [BWCommon setUserInfo:@"region_name" value:long_name];
+                            [BWCommon setUserInfo:@"gps_region_name" value:long_name];
+                            [BWCommon setUserInfo:@"region_id" value:self.regions[j][@"region_id"]];
+                            self.region_id =self.regions[j][@"region_id"];
+                            [BWCommon setUserInfo:@"gps_region_id" value:self.regions[j][@"region_id"]];
+                            
+                            MYLOG(@"GPS:%@",long_name);
+                            
+                            [self.cityItemButton setTitle:long_name forState:UIControlStateNormal];
+                            [self refreshingData:1 callback:nil];
+                            [self.manager stopUpdatingLocation];
+                            return;
+                        }
+                    }
+                    //Ti.API.info(i);
                 }
             }
-            //Ti.API.info(i);
-            //}
-        }*/
-        NSLog(@"%@",results);
-    } fail:^{
+            //MYLOG(@"%@",results);
+        } fail:^{
+            
+        }];
         
-    }];
-    
-    NSLog(@"didUpdateToLocation %@ from %@", newLocation, oldLocation);
-    
+        MYLOG(@"didUpdateToLocation %@ from %@", newLocation, oldLocation);
+    }
     // 停止位置更新
     [self.manager stopUpdatingLocation];
+
 }
 
 - (void)locationManager:(CLLocationManager *)manager didFailWithError:(NSError *)error
 {
-    NSLog(@"%@",error);
+    MYLOG(@"%@",error);
+    if ([error code] == kCLErrorDenied) {
+        //        CLog(@"访问被拒绝");
+        [MBProgressHUD hideHUDForView:self.view];
+        [MBProgressHUD showError:@"Please enable location service."];
+    }
+    if ([error code] == kCLErrorLocationUnknown) {
+//        CLog(@"无法获取位置信息");
+        [MBProgressHUD hideHUDForView:self.view];
+        [MBProgressHUD showError:@"Unable to get the location."];
+    }
 }
 - (void) mapTouched:(id) sender{
     HomeMapViewController *mapView = [[HomeMapViewController alloc] init];
@@ -255,25 +336,30 @@ CGSize size;
 - (void) headerRefreshing{
     
     self.gpage = 1;
+    @weakify(self);
+    
     [self refreshingData:self.gpage callback:^{
+         @strongify(self);
         [self.tableView.header endRefreshing];
     }];
     
 }
-
 - (void )footerRereshing{
+//    @weakify(self);
+//    [self refreshingData:++self.gpage callback:^{
+//        @strongify(self);
+////        [self.tableView.footer endRefreshing];
+//    }];
     
-    [self refreshingData:++self.gpage callback:^{
-        [self.tableView.footer endRefreshing];
-    }];
+    [self refreshingData:++self.gpage callback:nil];
 }
 
 
 - (void) refreshingData:(NSUInteger)page callback:(void(^)()) callback
 {
     
-    hud = [BWCommon getHUD];
-    hud.delegate=self;
+    //hud = [BWCommon getHUD];
+    //hud.delegate=self;
     
     NSString *url =  [[BWCommon getBaseInfo:@"api_url"] stringByAppendingString:@"LatestComments"];
     
@@ -282,18 +368,18 @@ CGSize size;
     [postData setValue:self.region_id forKey:@"region_id"];
    
 
-    NSLog(@"%@",url);
+    MYLOG(@"%@",url);
     //load data
     
     [AFNetworkTool postJSONWithUrl:url parameters:postData success:^(id responseObject) {
         
         NSInteger code = [[responseObject objectForKey:@"code"] integerValue];
         
-        [hud removeFromSuperview];
+        //[hud removeFromSuperview];
         if(code == 200)
         {
             
-            //NSLog(@"kkkkkk%@",[responseObject objectForKey:@"data"]);
+            //MYLOG(@"kkkkkk%@",[responseObject objectForKey:@"data"]);
             
             
             if([responseObject objectForKey:@"data"])
@@ -307,16 +393,31 @@ CGSize size;
             }
             else
             {
-                [dataArray addObjectsFromArray:[[data objectForKey:@"lists"] mutableCopy]];
+                NSArray *FootArr_Load =[[data objectForKey:@"lists"] mutableCopy];
+                
+                if (FootArr_Load.count==0) {
+                    
+                   [self.tableView.footer noticeNoMoreData];
+                    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+                         [self.tableView.footer resetNoMoreData];
+                    });
+                   
+                    
+                }else{
+                
+                    [dataArray addObjectsFromArray:FootArr_Load];
+                    [self.tableView.footer endRefreshing];
+                }
+
                 
             }
-                
             }
-            
-            
-            self.tableView.footer.hidden = (dataArray.count <=0) ? YES : NO;
-            
-            
+            if (dataArray.count==0) {
+                [self.tableView.footer noticeNoMoreData];
+                dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+                    [self.tableView.footer resetNoMoreData];
+                });
+            }
             self.statusFrames = nil;
             
             [self.tableView setHidden:NO];
@@ -326,16 +427,16 @@ CGSize size;
                 callback();
             }
             
-            //NSLog(@"%@",json);
+            //MYLOG(@"%@",json);
         }
         else
         {
-            NSLog(@"%@",[responseObject objectForKey:@"error"]);
+            MYLOG(@"%@",[responseObject objectForKey:@"error"]);
         }
         
     } fail:^{
-        [hud removeFromSuperview];
-        NSLog(@"请求失败");
+        //[hud removeFromSuperview];
+        MYLOG(@"请求失败");
     }];
     
     
@@ -350,6 +451,7 @@ CGSize size;
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
 
     // Return the number of sections.
+
     return 3;
 }
 
@@ -405,7 +507,11 @@ CGSize size;
     {
         CommentTableViewCell * cell = [CommentTableViewCell cellWithTableView:tableView];
         cell.viewFrame = self.statusFrames[indexPath.row];
+        cell.memberButton.tag = indexPath.row;
         cell.separatorInset = UIEdgeInsetsMake(0, 0, 0, 0);
+        
+        [cell.memberButton addTarget:self action:@selector(memberTouched:) forControlEvents:UIControlEventTouchUpInside];
+        
         return cell;
     
     }
@@ -442,7 +548,7 @@ CGSize size;
             
             NSString *title = [popularCityArray[i] objectForKey:@"region_name"];
             UIButton *b1 = [self createCityButton:self Selector:@selector(cityTouched:) Title:title];
-            b1.tag = [[popularCityArray[i] objectForKey:@"region_id"] integerValue];
+            //b1.tag = [[popularCityArray[i] objectForKey:@"region_id"] integerValue];
             CGSize bsize = [BWCommon sizeWithString:title font:[UIFont systemFontOfSize:12] maxSize:CGSizeMake(160,MAXFLOAT)];
             CGFloat bwidth = bsize.width + 18;
             if(bx+ bwidth > size.width){
@@ -469,6 +575,21 @@ CGSize size;
 
 }
 
+-(void) memberTouched:(UIButton *) sender{
+    
+    NSDictionary *data = [dataArray objectAtIndex:sender.tag];
+    
+    MYLOG(@"member log: %ld",sender.tag);
+    
+    MemberTableViewController *viewController = [[MemberTableViewController alloc] init];
+    self.memberDelegate = viewController;
+    viewController.hidesBottomBarWhenPushed = YES;
+    [self.memberDelegate setValue:[data objectForKey:@"username"]];
+    
+    [self.navigationController pushViewController:viewController animated:YES];
+    
+}
+
 -(void) categoryTouched:(UIButton *)sender{
     
     ShopViewController *viewController = [[ShopViewController alloc] init];
@@ -485,7 +606,8 @@ CGSize size;
     else if(sender.tag == 3){
         cat_name = @"Travel";
     }
-    
+    //clear old region id
+    [BWCommon setUserInfo:@"" value:@"parent_region_id"];
 
     [self.delegate setValue:0 cid:sender.tag region_name:@"" cat_name:sender.titleLabel.text];
     
@@ -495,11 +617,19 @@ CGSize size;
 
 -(void) cityTouched:(UIButton *)sender{
     
+    for (int i=0;i<[popularCityArray count];i++){
+        if([popularCityArray[i][@"region_id"] integerValue] == sender.tag)
+        {
+            [BWCommon setUserInfo:@"parent_region_id" value:popularCityArray[i][@"parent_id"]];
+            break;
+        }
+    }
     ShopViewController *viewController = [[ShopViewController alloc] init];
     self.delegate = viewController;
     viewController.hidesBottomBarWhenPushed = YES;
     
-    [self.delegate setValue:sender.tag cid:0 region_name:@"" cat_name:@""];
+    //MYLOG(@"sender title%@",sender.currentTitle);
+    [self.delegate setValue:sender.tag cid:0 region_name:sender.currentTitle cat_name:@""];
     [self.navigationController pushViewController:viewController animated:YES];
     
 }

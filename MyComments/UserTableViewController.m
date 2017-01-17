@@ -15,16 +15,25 @@
 #import "CommentViewController.h"
 #import "MyPhotoViewController.h"
 #import "MyShopViewController.h"
+#import "MyFansViewController.h"
+#import "MyFollowersViewController.h"
 #import "AFNetworkTool.h"
 
 @interface UserTableViewController ()
+{
+
+    //修改头像
+    UIImagePickerController*_imageVC;
+
+}
 
 @property (nonatomic,strong) NSArray *statusFrames;
 @property (nonatomic,strong) NSArray *avatarFrames;
-
 @property (nonatomic,retain) NSMutableArray *list;
 @property (nonatomic,retain) NSMutableArray *sectionList;
 @property (nonatomic,retain) NSMutableDictionary *baseInfo;
+
+@property (nonatomic, weak) UIButton *photoButton;
 
 @end
 
@@ -35,6 +44,10 @@ CGSize size;
 NSString *fansNumber=@"";
 NSString *follwersNumber = @"";
 NSString *pointsNumber = @"";
+NSString *introduction = @"";
+
+
+NSString *imgurl;
 
 bool loadedData=YES;
 
@@ -48,8 +61,17 @@ bool loadedData=YES;
     // self.navigationItem.rightBarButtonItem = self.editButtonItem;
     [self pagelayout];
 }
+//刷新
+-(void)viewWillAppear:(BOOL)animated
+{
 
--(void) viewDidAppear:(BOOL)animated{
+    BOOL isLoggedIn = [BWCommon isLoggedIn];
+    if (isLoggedIn) {
+       [self loadUserData];
+    }
+    
+}
+-(void)viewDidAppear:(BOOL)animated{
     
     
     if([[BWCommon getUserInfo:@"need_refresh"] isEqualToString:@"1"]){
@@ -83,13 +105,16 @@ bool loadedData=YES;
    // self.list[0] = menu1;
     
     NSMutableArray *menu2 = [[NSMutableArray alloc] init];
-    [menu2 addObject:[self createRow:@"Comments" text:@"" icon:@"member_comments"]];
-    [menu2 addObject:[self createRow:@"Collections" text:@"" icon:@"member_collection"]];
-    [menu2 addObject:[self createRow:@"Photos" text:@"" icon:@"member_photos"]];
+    [menu2 addObject:[self createRow:@"Comments" text:@"0" icon:@"member_comments"]];
+    [menu2 addObject:[self createRow:@"Collections" text:@"0" icon:@"member_collection"]];
+    [menu2 addObject:[self createRow:@"Photos" text:@"0" icon:@"member_photos"]];
     self.list[0] = menu2;
     
     //NSMutableArray *menu3 = [[NSMutableArray alloc] init];
     //[menu3 addObject:[self createRow:@"brucehe3" text:@"" icon:@""]];
+    
+
+    
 
     //self.list[1] = menu3;
     
@@ -118,7 +143,7 @@ bool loadedData=YES;
         
         //__weak UserTableViewController *weakSelf = self;
         
-        UIViewController *viewController = [self.storyboard instantiateViewControllerWithIdentifier:@"loginView"];
+        UIViewController *viewController = [[UIStoryboard storyboardWithName:@"Main" bundle:nil]instantiateViewControllerWithIdentifier:@"loginView"];
         
         UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:viewController];
         
@@ -130,9 +155,6 @@ bool loadedData=YES;
         return;
     }
     
-    hud = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
-    hud.delegate=self;
-    
     NSString *username = [BWCommon getUserInfo:@"username"];
 
     NSString *url =  [NSString stringWithFormat:@"%@user?username=%@",[BWCommon getBaseInfo:@"api_url"],username ];
@@ -140,10 +162,10 @@ bool loadedData=YES;
     [AFNetworkTool JSONDataWithUrl:url success:^(id json) {
         
         loadedData = NO;
-        NSLog(@"%@",json);
+        MYLOG(@"%@",json);
         NSInteger code = [[json objectForKey:@"code"] integerValue];
         
-        [hud removeFromSuperview];
+//        [hud removeFromSuperview];
         if(code == 200)
         {
             NSDictionary *udata = [json objectForKey:@"data"];
@@ -154,6 +176,7 @@ bool loadedData=YES;
             self.baseInfo = [[NSMutableDictionary alloc] initWithObjectsAndKeys:[udata objectForKey:@"username"],@"title",[udata objectForKey:@"email"],@"text",avatar,@"avatar", nil];
             
             self.avatarFrames = nil;
+            self.statusFrames = nil;
             
             
             NSMutableArray *menu2 = [[NSMutableArray alloc] init];
@@ -162,23 +185,30 @@ bool loadedData=YES;
             [menu2 addObject:[self createRow:@"Photos" text:[udata objectForKey:@"photos_count"] icon:@"member_photos"]];
             self.list[0] = menu2;
             
-            follwersNumber = [udata objectForKey:@"followers_count"];
-            fansNumber = [udata objectForKey:@"followings_count"];
+            //MYLOG(@"%@",menu2);
+            
+            fansNumber = [udata objectForKey:@"followers_count"];
+            follwersNumber = [udata objectForKey:@"followings_count"];
             pointsNumber = [udata objectForKey:@"points"];
+            
+            if([[udata objectForKey:@"intro"] isEqual:[NSNull null]])
+                introduction = @"";
+            else
+                introduction = [udata objectForKey:@"intro"];
             
             [self.tableView reloadData];
         
         }
         else
         {
-            UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Tips" message:[json objectForKey:@"data"] delegate:nil cancelButtonTitle:@"Cancel" otherButtonTitles:nil, nil];
+            UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Tips" message:[json objectForKey:@"msg"] delegate:nil cancelButtonTitle:@"Cancel" otherButtonTitles:nil, nil];
             
             [alert show];
             
-            NSLog(@"%@",[json objectForKey:@"data"]);
+            MYLOG(@"%@",[json objectForKey:@"data"]);
         }
     } fail:^{
-        [hud removeFromSuperview];
+//        [hud removeFromSuperview];
     }];
 }
 
@@ -214,6 +244,12 @@ bool loadedData=YES;
         
         cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
         
+        //[cell.contentView addSubview:self.photoButton];
+        
+        self.photoButton = cell.avatarButton;
+        
+        [self.photoButton addTarget:self action:@selector(uploadTouched:) forControlEvents:UIControlEventTouchUpInside];
+        
         if(indexPath.row>0){
             UIImageView *icon = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"user-edit"]];
             [cell.contentView addSubview:icon];
@@ -248,8 +284,9 @@ bool loadedData=YES;
         //if(cell == nil){
             cell = [[UITableViewCell alloc]initWithStyle:UITableViewCellStyleDefault reuseIdentifier:@"cell1"];
         //}
+        cell.selectionStyle = UITableViewCellSelectionStyleNone;
         
-        UIView *fansView = [self createCellView:@"Fans" icon:@"ico-item4-active" number:fansNumber];
+        UIView *fansView = [self createCellView:@"Fans" icon:@"ico-item4-active" number:fansNumber tag:1];
         fansView.frame = CGRectMake(0, 0, size.width/3, 50);
         
         
@@ -257,17 +294,42 @@ bool loadedData=YES;
         
         [cell addSubview:fansView];
         
-        UIView *followsView = [self createCellView:@"Follows" icon:@"ico-item4" number:follwersNumber];
+        UIView *followsView = [self createCellView:@"Follows" icon:@"ico-item4" number:follwersNumber tag:2];
         followsView.frame = CGRectMake(size.width/3, 0, size.width/3, 50);
         
         [BWCommon setRightBorder:followsView color:[BWCommon getRGBColor:0xdddddd]];
         
         [cell addSubview:followsView];
         
-        UIView *pointsView = [self createCellView:@"Points" icon:@"icon-point" number:pointsNumber];
+        UIView *pointsView = [self createCellView:@"Points" icon:@"icon-point2" number:pointsNumber tag:3];
         pointsView.frame = CGRectMake(size.width/3*2, 0, size.width/3, 50);
         
         [cell addSubview:pointsView];
+        
+        UIView *introductView = [[UIView alloc] initWithFrame:CGRectMake(0, 50, size.width, 70)];
+        
+        /*UILabel *titleLabel = [[UILabel alloc] initWithFrame:CGRectMake(5, 0, size.width, 20)];
+        [titleLabel setText:@"Introduction"];
+        [titleLabel setFont:[UIFont systemFontOfSize:14]];
+        [titleLabel setTextColor:[BWCommon getRGBColor:0x333333]];*/
+        
+        [BWCommon setTopBorder:introductView color:[BWCommon getRGBColor:0xdddddd]];
+        //[introductView addSubview:titleLabel];
+        
+        UILabel *introLabel = [[UILabel alloc] initWithFrame:CGRectMake(10, 0, size.width - 20, 70)];
+        [introLabel setText:[NSString stringWithFormat:@"About me:\n%@",introduction]];
+        introLabel.numberOfLines=3;
+        [introLabel setFont:[UIFont systemFontOfSize:12]];
+//        NSMutableAttributedString *attributeStr = [[NSMutableAttributedString alloc] initWithString:introLabel.text];
+//        NSRange hightlightTextRange = [introLabel.text rangeOfString:@"About me:"];
+//        [attributeStr setAttributes:@{NSFontAttributeName:[UIFont systemFontOfSize:12],NSFontAttributeName:[UIFont boldSystemFontOfSize:12]} range:hightlightTextRange];
+//        introLabel.attributedText =attributeStr;
+        
+        [introLabel setTextColor:[BWCommon getRGBColor:0x666666]];
+
+        [introductView addSubview:introLabel];
+        
+        [cell addSubview:introductView];
         
         return cell;
     
@@ -275,19 +337,46 @@ bool loadedData=YES;
     
 }
 
--(UIView *) createCellView:(NSString *) title icon:(NSString *)icon number:(NSString *)number{
+-(void) iconAction: (UIButton *)sender{
+    
+    BOOL isLoggedIn = [BWCommon isLoggedIn];
+    if(!isLoggedIn)
+        return;
+    
+    MYLOG(@"iconAction: %ld",sender.tag);
+    if(sender.tag == 1){
+        MyFansViewController *viewController = [[MyFansViewController alloc] init];
+        [self.navigationController pushViewController:viewController animated:YES];
+    }else if(sender.tag == 2){
+        MyFollowersViewController *viewController = [[MyFollowersViewController alloc] init];
+        [self.navigationController pushViewController:viewController animated:YES];
+    }
+    
+}
+
+-(UIView *) createCellView:(NSString *) title icon:(NSString *)icon number:(NSString *)number tag:(NSInteger) tag{
     
     UIView *cview = [[UIView alloc] init];
     
+    UIButton *btnIcon = [[UIButton alloc] initWithFrame:CGRectMake(0, 0, 120, 30)];
+    
+    [btnIcon setBackgroundColor:[UIColor whiteColor]];
+    
+    [btnIcon addTarget:self action:@selector(iconAction:) forControlEvents:UIControlEventTouchUpInside];
+    btnIcon.tag = tag;
+    
+    
     UIImageView *iconView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:icon]];
     iconView.frame = CGRectMake(15, 10, 20, 20);
-    [cview addSubview:iconView];
+    [btnIcon addSubview:iconView];
     
     UILabel *titleLabel = [[UILabel alloc] initWithFrame:CGRectMake(40, 10, 80, 20)];
     [titleLabel setText:title];
     //[titleLabel setTextAlignment:NSTextAlignmentCenter];
     [titleLabel setFont:[UIFont systemFontOfSize:14]];
-    [cview addSubview:titleLabel];
+    [btnIcon addSubview:titleLabel];
+    
+    [cview addSubview:btnIcon];
     
     UILabel *numberLabel = [[UILabel alloc] initWithFrame:CGRectMake(45, 26, 60, 20)];
     [numberLabel setText:number];
@@ -298,28 +387,13 @@ bool loadedData=YES;
     return cview;
 }
 
--(void) logoutTouched: (UIButton *) sender{
-    
-    [BWCommon logout];
-    self.avatarFrames = nil;
-    //self.statusFrames = nil;
-    self.baseInfo = nil;
-
-    follwersNumber = @"";
-    fansNumber = @"";
-    pointsNumber = @"";
-    //[self loadUserData];
-    [self.tableView reloadData];
-    
-
-}
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
 {
     if(indexPath.section == 0)
         return 80;
     else if(indexPath.section == 1)
-        return 50;
+        return 120;
     return 48;
 }
 
@@ -391,13 +465,21 @@ bool loadedData=YES;
         
         //__weak UserTableViewController *weakSelf = self;
         
-        UIViewController *viewController = [self.storyboard instantiateViewControllerWithIdentifier:@"loginView"];
-        
-        UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:viewController];
-        
-        [self presentViewController:navigationController animated:YES completion:^{
-            //[weakSelf loadUserData];
-        }];
+//        UIViewController *viewController = [self.storyboard instantiateViewControllerWithIdentifier:@"loginView"];
+//        
+//        UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:viewController];
+//        
+//        [self presentViewController:navigationController animated:YES completion:^{
+//            //[weakSelf loadUserData];
+//        }];
+        UIViewController *viewController = [[UIStoryboard storyboardWithName:@"Main" bundle:nil]instantiateViewControllerWithIdentifier:@"loginView"];
+        if (viewController) {
+            UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:viewController];
+            
+            [self presentViewController:navigationController animated:YES completion:^{}];
+            
+        }
+
         
         return;
     }
@@ -408,6 +490,8 @@ bool loadedData=YES;
             CommentViewController *viewController = [[CommentViewController alloc] init];
             viewController.hidesBottomBarWhenPushed = YES;
             viewController.myComments = YES;
+            //是否是自己的评论
+            viewController.ismyComments=YES;
             [self.navigationController pushViewController:viewController animated:YES];
         }else if(indexPath.row == 1){
             MyShopViewController *viewController = [[MyShopViewController alloc] init];
@@ -438,7 +522,7 @@ bool loadedData=YES;
                 // 创建模型
                 UserTableViewFrame *vf = [[UserTableViewFrame alloc] init];
                 vf.data = dict;
-                //NSLog(@"%@",dict);
+                MYLOG(@"%@",dict);
                 [tmp addObject:vf];
             }
             
@@ -469,6 +553,161 @@ bool loadedData=YES;
 
 
 
+- (void) actionSheet:(UIActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex{
+    
+    if(buttonIndex==0){
+        [self snapImage];
+        
+    }else if(buttonIndex==1){
+        [self pickImage];
+    }
+    
+}
+
+//拍照
+- (void) snapImage{
+    
+    MYLOG(@"这里是相机拍照");
+    _imageVC.sourceType=UIImagePickerControllerSourceTypeCamera;
+    [self presentViewController:_imageVC animated:YES completion:nil];
+}
+//从相册里找
+- (void) pickImage{
+    
+    
+    MYLOG(@"这里是相册选择");
+    _imageVC.sourceType=UIImagePickerControllerSourceTypePhotoLibrary;
+    [self presentViewController:_imageVC animated:YES completion:nil];
+}
+
+-(void) imagePickerController:(UIImagePickerController *)picker didFinishPickingMediaWithInfo:(NSDictionary *) info{
+    
+    UIImage *img=info[UIImagePickerControllerEditedImage];
+//    [self.photoButton setBackgroundImage:img forState:UIControlStateNormal];
+    int y = (arc4random() % 1001) + 9000;
+    
+    NSString *fileName = [NSString stringWithFormat:@"%d%@",y,@".jpg"];
+    
+    [self saveImage:img WithName:fileName];
+    
+    NSString *fullFileName = [[self documentFolderPath] stringByAppendingPathComponent:fileName];
+    
+    NSURL *fileUrl = [[NSURL alloc] initFileURLWithPath:fullFileName];
+    MYLOG(@"%@",fileUrl);
+    
+    UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Tips" message:@"" delegate:self cancelButtonTitle:@"Ok" otherButtonTitles:nil];
+    
+    
+    NSString *username = [BWCommon getUserInfo:@"username"];
+    
+    NSString *api_url = [BWCommon getBaseInfo:@"api_url"];
+    
+    NSString *url =  [api_url stringByAppendingString:@"avatar"];
+    
+    NSDictionary *postData = @{@"username":username};
+    [MBProgressHUD showMessage:@"Please wait a moment" toView:self.view];
+    AFHTTPRequestOperationManager *manager = [AFHTTPRequestOperationManager manager];
+    [manager POST:url parameters:postData constructingBodyWithBlock:^(id<AFMultipartFormData> formData) {
+        
+        [formData appendPartWithFileURL:fileUrl name:@"avatar" error:NULL];
+        
+    } success:^(AFHTTPRequestOperation *operation, id responseObject) {
+        //NSInteger code = [[responseObject objectForKey:@"code"] integerValue];
+        
+        if([[responseObject objectForKey:@"error"] isEqualToString:@""])
+        {
+            [MBProgressHUD hideHUDForView:self.view];
+            [self loadUserData];
+            
+        }
+        else
+        {
+            [MBProgressHUD hideHUDForView:self.view];
+            [alert setMessage:[responseObject objectForKey:@"error"]];
+            [alert show];
+            
+        }
+        
+    } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
+//        [hud removeFromSuperview];
+        [MBProgressHUD hideHUDForView:self.view];
+        [alert setMessage:@"Timeout,please try again."];
+        [alert show];
+        
+        MYLOG(@"请求失败");
+    }];
+    
+    
+//    AFHTTPSessionManager*session=[AFHTTPSessionManager manager];
+//    
+//    //NSData *data = UIImagePNGRepresentation(image);
+//    NSData *data = UIImageJPEGRepresentation(img, 0.1);
+//    
+//    NSDateFormatter *formatter = [[NSDateFormatter alloc] init];
+//    // 设置时间格式
+//    formatter.dateFormat = @"yyyyMMddHHmmss";
+//    NSString *strr = [formatter stringFromDate:[NSDate date]];
+//    NSString *HeadfileName = [NSString stringWithFormat:@"%@.jpg", strr];
+//    
+//    [session POST:url parameters:postData constructingBodyWithBlock:^(id<AFMultipartFormData> formData) {
+//        [formData appendPartWithFileData:data name:@"file" fileName:HeadfileName mimeType:@"image/jpeg"];
+//    } success:^(NSURLSessionDataTask *task, id responseObject) {
+//        
+//        MYLOG(@"%@",responseObject);
+//    } failure:^(NSURLSessionDataTask *task, NSError *error) {
+//        MYLOG(@"%@",error);
+//    }];
+    
+    [self dismissViewControllerAnimated:YES completion:^{
+        
+    }];
+}
+
+-(void) uploadTouched:(UIButton *)sender{
+    BOOL isLoggedIn = [BWCommon isLoggedIn];
+    
+    if(!isLoggedIn){
+    
+        return;
+    }
+    UIActionSheet *menu=[[UIActionSheet alloc] initWithTitle:@"Upload Photo" delegate:self cancelButtonTitle:@"Cancel" destructiveButtonTitle:nil otherButtonTitles:@"Camera",@"Photo Gallery", nil];
+    menu.actionSheetStyle=UIActionSheetStyleBlackTranslucent;
+    [menu showInView:self.view];
+    _imageVC=[[UIImagePickerController alloc]init];
+    _imageVC.delegate=self;
+    _imageVC.allowsEditing=YES;
+}
+
+- (NSString *)documentFolderPath
+{
+    return [NSHomeDirectory() stringByAppendingPathComponent:@"Documents"];
+}
+
+-(void) logoutTouched: (UIButton *) sender{
+    
+    [BWCommon logout];
+    self.avatarFrames = nil;
+//    self.statusFrames = nil;
+    self.baseInfo = [[NSMutableDictionary alloc] initWithObjectsAndKeys:@"MyComments",@"title",@"",@"text",@"noavatar_large",@"avatar", nil];
+    follwersNumber = @"";
+    fansNumber = @"";
+    pointsNumber = @"";
+    introduction = @"";
+    
+    [self.tableView reloadData];
+    
+    
+}
+- (void)saveImage:(UIImage *)tempImage WithName:(NSString *)imageName
+{
+    NSData* imageData = UIImageJPEGRepresentation(tempImage,1);
+    NSArray* paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
+    NSString* documentsDirectory = [paths objectAtIndex:0];
+    // Now we get the full path to the file
+    NSString* fullPathToFile = [documentsDirectory stringByAppendingPathComponent:imageName];
+    // and then we write it out
+    [imageData writeToFile:fullPathToFile atomically:NO];
+}
 /*
 #pragma mark - Navigation
 

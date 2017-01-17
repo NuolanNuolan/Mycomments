@@ -24,7 +24,7 @@
     
     // 检测网络连接的单例,网络变化时的回调方法
     [[AFNetworkReachabilityManager sharedManager] setReachabilityStatusChangeBlock:^(AFNetworkReachabilityStatus status) {
-        NSLog(@"%ld", status);
+        MYLOG(@"%ld", status);
     }];
 }
 
@@ -34,13 +34,14 @@
     AFHTTPRequestOperationManager *manager = [AFHTTPRequestOperationManager manager];
     
     NSDictionary *dict = @{@"format": @"json"};
+    url=  [url stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
     // 网络访问是异步的,回调是主线程的,因此程序员不用管在主线程更新UI的事情
     [manager GET:url parameters:dict success:^(AFHTTPRequestOperation *operation, id responseObject) {
         if (success) {
             success(responseObject);
         }
     } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
-        NSLog(@"%@", error);
+        MYLOG(@"%@", error);
         if (fail) {
             fail();
         }
@@ -64,7 +65,7 @@
         }
         
     } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
-        NSLog(@"%@", error);
+        MYLOG(@"%@", error);
         if (fail) {
             fail();
         }
@@ -85,8 +86,8 @@
             success(responseObject);
         }
     } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
-        NSLog(@"operation:%@", operation);
-        NSLog(@"error:%@", error.description);
+        MYLOG(@"operation:%@", operation);
+        MYLOG(@"error:%@", error.description);
         if (fail) {
             fail();
         }
@@ -108,7 +109,7 @@
     
     NSURLSessionDownloadTask *task = [manager downloadTaskWithRequest:request progress:nil destination:^NSURL *(NSURL *targetPath, NSURLResponse *response) {
         // 指定下载文件保存的路径
-        //        NSLog(@"%@ %@", targetPath, response.suggestedFilename);
+        //        MYLOG(@"%@ %@", targetPath, response.suggestedFilename);
         // 将下载文件保存在缓存路径中
         NSString *cacheDir = NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES)[0];
         NSString *path = [cacheDir stringByAppendingPathComponent:response.suggestedFilename];
@@ -117,14 +118,14 @@
 //        NSURL *fileURL1 = [NSURL URLWithString:path];
         NSURL *fileURL = [NSURL fileURLWithPath:path];
         
-//        NSLog(@"== %@ |||| %@", fileURL1, fileURL);
+//        MYLOG(@"== %@ |||| %@", fileURL1, fileURL);
         if (success) {
             success(fileURL);
         }
         
         return fileURL;
     } completionHandler:^(NSURLResponse *response, NSURL *filePath, NSError *error) {
-        NSLog(@"%@ %@", filePath, error);
+        MYLOG(@"%@ %@", filePath, error);
         if (fail) {
             fail();
         }
@@ -188,12 +189,12 @@
     } success:^(AFHTTPRequestOperation *operation, id responseObject) {
 //        NSString *result = [[NSString alloc] initWithData:responseObject encoding:NSUTF8StringEncoding];
 //        
-//        NSLog(@"完成 %@", result);
+//        MYLOG(@"完成 %@", result);
         if (success) {
             success(responseObject);
         }
     } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
-        NSLog(@"错误 %@,%@", error.localizedDescription,urlStr);
+        MYLOG(@"错误 %@,%@", error.localizedDescription,urlStr);
         if (fail) {
             fail();
         }

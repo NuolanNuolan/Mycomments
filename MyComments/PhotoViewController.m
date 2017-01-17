@@ -10,10 +10,19 @@
 #import "AFNetworkTool.h"
 #import "BWCommon.h"
 
+
 @interface PhotoViewController ()
+{
+
+    //图片水印
+    UIImage *image_watermark;
+    //原始图片水印
+    UIImage *original_image_watermark;
+    
+}
 
 @property (nonatomic,assign) NSUInteger gpage;
-
+@property (nonatomic,strong) NSMutableArray *original_image_watermark_Arr;
 @property (nonatomic,retain) UITapGestureRecognizer *tap;
 @property (nonatomic,retain) NSMutableArray *photos;
 
@@ -37,7 +46,7 @@ CGSize size;
 
 - (void)magnifyImage:(UITapGestureRecognizer *) tap
 {
-    NSLog(@"%@",tap);
+    MYLOG(@"%@",tap);
 
     //[ImageBrowser showImage:(UIImageView *)tap.view];//调用方法
 }
@@ -49,7 +58,7 @@ CGSize size;
 
     
     self.photos = [[NSMutableArray alloc] init];
-
+//    _original_image_watermark_Arr = [NSMutableArray arrayWithCapacity:0];
     //self.photoBrowser = [[AGPhotoBrowserView alloc] initWithFrame:CGRectZero];
     
     //self.tap  = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(magnifyImage:)];
@@ -91,17 +100,20 @@ CGSize size;
 
 }
 - (void) headerRefreshing{
-    
+    @weakify(self);
     self.gpage = 1;
     [self refreshingData:self.gpage callback:^{
+        @strongify(self);
         [self.myCollectionView.header endRefreshing];
     }];
     
 }
 
 - (void )footerRereshing{
-    
+    @weakify(self);
+
     [self refreshingData:++self.gpage callback:^{
+            @strongify(self);
         [self.myCollectionView.footer endRefreshing];
     }];
 }
@@ -113,8 +125,14 @@ CGSize size;
 
 - (id <MWPhoto>)photoBrowser:(MWPhotoBrowser *)photoBrowser photoAtIndex:(NSUInteger)index {
     if (index < self.photos.count) {
+//        MWPhoto *photo = [self.photos objectAtIndex:index];
+//        MYLOG(@"%@",photo);
+
+//        photo.underlyingImage = [UIImage imageNamed:@"watermark"];
+//        return photo;
         return [self.photos objectAtIndex:index];
     }
+    
     return nil;
 }
 
@@ -122,9 +140,10 @@ CGSize size;
 - (void) refreshingData:(NSUInteger)page callback:(void(^)()) callback
 {
     
-    hud = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
-
-    hud.delegate=self;
+//    hud = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
+//
+//    hud.delegate=self;
+    [MBProgressHUD showMessage:@"" toView:self.view];
     
     NSString *url =  [[BWCommon getBaseInfo:@"api_url"] stringByAppendingString:@"photos"];
     
@@ -133,14 +152,14 @@ CGSize size;
     [postData setValue:[NSString stringWithFormat:@"%ld",self.sid] forKey:@"sid"];
     [postData setValue:[NSString stringWithFormat:@"%ld",page] forKey:@"page"];
     
-    NSLog(@"%@",url);
+    MYLOG(@"%@",url);
     //load data
     
     [AFNetworkTool postJSONWithUrl:url parameters:postData success:^(id responseObject) {
         
         NSInteger code = [[responseObject objectForKey:@"code"] integerValue];
         
-        [hud removeFromSuperview];
+        [MBProgressHUD hideHUDForView:self.view];
         if(code == 200)
         {
             NSMutableDictionary *data = [responseObject objectForKey:@"data"];
@@ -157,14 +176,15 @@ CGSize size;
             }
             
             self.photos = [[NSMutableArray alloc] init];
-            
+
             for(NSInteger i=0;i<[dataArray count];i++){
                 NSString *image_url = [[dataArray objectAtIndex:i ] objectForKey:@"original_image"];
                 NSString *image_url2 = [NSString stringWithFormat:@"%@/uploadfiles/%@!w640x800.jpg",[BWCommon getBaseInfo:@"site_url"],image_url];
+                
                 [self.photos addObject:[MWPhoto photoWithURL:[NSURL URLWithString:image_url2]]];
             
             }
-            NSLog(@"%@",dataArray);
+            MYLOG(@"%@",dataArray);
             
             [self.myCollectionView reloadData];
             
@@ -175,12 +195,12 @@ CGSize size;
         }
         else
         {
-            NSLog(@"%@",[responseObject objectForKey:@"error"]);
+            MYLOG(@"%@",[responseObject objectForKey:@"error"]);
         }
         
     } fail:^{
-        [hud removeFromSuperview];
-        NSLog(@"请求失败");
+        [MBProgressHUD hideHUDForView:self.view];
+        MYLOG(@"请求失败");
     }];
     
     
@@ -206,7 +226,7 @@ CGSize size;
     //NSInteger imageIndex = indexPath.section * 2 + indexPath.row;
     NSInteger imageIndex = indexPath.row;
     
-    NSLog(@"%ld",imageIndex);
+    MYLOG(@"%ld",imageIndex);
     
     if (imageIndex < [dataArray count])
     {
@@ -226,10 +246,15 @@ CGSize size;
         NSString *image_url = [[dataArray objectAtIndex:imageIndex ] objectForKey:@"original_image"];
     
         NSString *image_url1 = [NSString stringWithFormat:@"%@/uploadfiles/%@!m%ldx%ld.jpg",[BWCommon getBaseInfo:@"site_url"],image_url,width,height ];
-    
-        [imageView sd_setImageWithURL:[NSURL URLWithString:image_url1] placeholderImage:[UIImage imageNamed:@"appicon.png"] options:SDWebImageCacheMemoryOnly];
+        [imageView sd_setImageWithURL:[NSURL URLWithString:image_url1] placeholderImage:[UIImage imageNamed:@"appicon.png"] completed:^(UIImage *image, NSError *error, SDImageCacheType cacheType, NSURL *imageURL) {
+            
+            imageView.image =[self addToImage:image image:[UIImage imageNamed:@"watermark"] withRect:CGMAKE(width-55, height-15, 55, 15)];
+            
+            [cell.contentView addSubview:imageView];
+        }];
         
-        [cell.contentView addSubview:imageView];
+        
+        
         
         UILabel *titleLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, height + 10, width, 20)];
         titleLabel.text = [[dataArray objectAtIndex:imageIndex] objectForKey:@"title"];
@@ -280,7 +305,29 @@ CGSize size;
     
     
 }
+- (UIImage *) addToImage:(UIImage *)img image:(UIImage *)newImage withRect:(CGRect)rect
 
+{
+    
+    int w = img.size.width;
+    
+    int h = img.size.height;
+    
+    UIGraphicsBeginImageContext(img.size);
+    
+    [img drawInRect:CGRectMake(0, 0, w, h)];
+    
+    [newImage drawInRect:rect];
+    
+    UIImage *aimg = UIGraphicsGetImageFromCurrentImageContext();
+    
+    UIGraphicsEndImageContext();
+    
+    
+    
+    return aimg;
+    
+}
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];
     // Dispose of any resources that can be recreated.

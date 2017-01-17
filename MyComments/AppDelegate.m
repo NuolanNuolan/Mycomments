@@ -15,11 +15,12 @@
 
 #import "WeiboSDK.h"
 
-
+//#import "MobClick.h"
 
 @import GoogleMaps;
 
 @interface AppDelegate ()
+@property (nonatomic, strong) NSString *trackViewURL;
 
 @end
 
@@ -29,8 +30,12 @@
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
     // Override point for customization after application launch.
     [BWCommon loadCommonData];
+    //JS热更新  线上
+    [JSPatch startWithAppKey:JsPatchKey];
+    [JSPatch sync];
+    //JS热更新 线下
+//    [JSPatch testScriptInBundle];
     [GMSServices provideAPIKey:@"AIzaSyAmjS-efiXz5xtBYgzRFqDowbZ4KApieEw"];
-    
     
     
     [ShareSDK registerApp:@"59afde02e570"
@@ -38,6 +43,7 @@
           activePlatforms:@[
                             @(SSDKPlatformTypeFacebook),
                             @(SSDKPlatformTypeTwitter),
+                            @(SSDKPlatformTypeWhatsApp),
                             //@(SSDKPlatformTypeSinaWeibo),
                             @(SSDKPlatformTypeWechat)]
                  onImport:^(SSDKPlatformType platformType)
@@ -83,8 +89,49 @@
                  break;
          }
      }];
+    //子线程检查更新
+    [self checkVersion:AppstoreURL];
 
     return YES;
+}
+-(void)checkVersion:(NSString* )appurl
+{
+    
+    [AFNetworkTool postJSONWithUrl:appurl parameters:nil success:^(id responseObject) {
+        NSDictionary* resultDic=responseObject;
+        NSArray* infoArray = [resultDic objectForKey:@"results"];
+        if (infoArray.count>0) {
+            NSDictionary* releaseInfo =[infoArray objectAtIndex:0];
+            NSString* appStoreVersion = [releaseInfo objectForKey:@"version"];
+            //NSString *appStoreVersion = @"1.1";
+            NSDictionary *infoDic = [[NSBundle mainBundle] infoDictionary];
+            NSString *currentVersion = [infoDic objectForKey:@"CFBundleShortVersionString"];
+            //MYLOG(@"version:%f",[currentVersion floatValue]);
+            if ([appStoreVersion floatValue] > [currentVersion floatValue] )
+            {
+                _trackViewURL = [[NSString alloc] initWithString:[releaseInfo objectForKey:@"trackViewUrl"]];
+                NSString* msg =[releaseInfo objectForKey:@"releaseNotes"];
+                
+                
+                UIAlertController *alertControl = [UIAlertController alertControllerWithTitle:@"New Version Tips" message:[NSString stringWithFormat:@"%@%@%@", @"Features",msg, @"\nUpdate Now？"] preferredStyle:UIAlertControllerStyleAlert];
+                [alertControl addAction:[UIAlertAction actionWithTitle:@"Update" style:UIAlertActionStyleDestructive handler:^(UIAlertAction *action) {
+                    // 点击确定按钮的时候, 会调用这个bloc
+                    [[UIApplication sharedApplication] openURL:[NSURL URLWithString:_trackViewURL]];
+                    
+                }]];
+                
+                [alertControl addAction:[UIAlertAction actionWithTitle:@"Later" style:UIAlertActionStyleCancel handler:nil]];
+                [self.window.rootViewController presentViewController:alertControl animated:YES completion:nil];
+
+                
+            }
+            
+        }
+    } fail:^{
+        
+    }];
+    
+    
 }
 
 - (void)applicationWillResignActive:(UIApplication *)application {

@@ -116,7 +116,7 @@ CGSize size;
         NSMutableDictionary *postData = [[NSMutableDictionary alloc] init];
         
         [postData setValue:searchString forKey:@"q"];
-        NSLog(@"%@",url);
+        MYLOG(@"%@",url);
         //load data
         [AFNetworkTool postJSONWithUrl:url parameters:postData success:^(id responseObject) {
             
@@ -141,12 +141,12 @@ CGSize size;
             }
             else
             {
-                NSLog(@"%@",[responseObject objectForKey:@"error"]);
+                MYLOG(@"%@",[responseObject objectForKey:@"error"]);
             }
             
         } fail:^{
             //[hud removeFromSuperview];
-            NSLog(@"请求失败");
+            MYLOG(@"请求失败");
         }];
         
         
@@ -211,7 +211,7 @@ CGSize size;
     ShopViewController *viewController = [[ShopViewController alloc] init];
     //self.detailDelegate = viewController;
     self.delegate = viewController;
-    [self.delegate setValue:0 cid:indexPath.row+1 region_name:@"" cat_name:@""];
+    [self.delegate setValue:0 cid:indexPath.row+2 region_name:@"" cat_name:@""];
     viewController.hidesBottomBarWhenPushed = YES;
     [self.navigationController pushViewController:viewController animated:YES];
 

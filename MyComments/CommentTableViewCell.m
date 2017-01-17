@@ -106,6 +106,10 @@
         self.rateView = rateView;
         [self.contentView addSubview:rateView];
         
+        UIButton *memberButton = [[UIButton alloc] init];
+        self.memberButton = memberButton;
+        [self.contentView addSubview:memberButton];
+        
         
     }
     return self;
@@ -183,6 +187,7 @@
     self.commentLabel.frame = self.viewFrame.commentF;
     self.usernameLabel.frame = self.viewFrame.usernameF;
     
+    self.memberButton.frame = self.viewFrame.avatarF;
 }
 
 

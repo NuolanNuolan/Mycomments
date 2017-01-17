@@ -30,7 +30,7 @@ DOPDropDownMenuDelegate>
 
 @property (nonatomic,retain) NSMutableArray *dataArray;
 @property (nonatomic,strong) UITableView *tableView;
-@property (nonatomic,assign) id<ShopDelegate> delegate;
+//@property (nonatomic,assign) id<ShopDelegate> delegate;
 @property (nonatomic,assign) id<DetailDelegate> detailDelegate;
 
 @property (nonatomic,strong) CLLocationManager *manager;

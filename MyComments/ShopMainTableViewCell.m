@@ -150,6 +150,8 @@
         UIImageView *psView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"ps.gif"]];
         self.psView = psView;
         [self.contentView addSubview:psView];
+        
+        
     }
     return self;
 }
@@ -219,6 +221,13 @@
     self.rate1Label.text = [data objectForKey:@"rate1"];
     self.rate2Label.text = [data objectForKey:@"rate2"];
     self.rate3Label.text = [data objectForKey:@"rate3"];
+    
+    if([[data objectForKey:@"is_closed"] isEqualToString:@"1"])
+    {
+        UIImageView *closedImage = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"closed"]];
+        closedImage.frame = CGRectMake(0, 0, 100, 78);
+        [self.mainImage addSubview:closedImage];
+    }
 }
 
 - (void) settingFrame

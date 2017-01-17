@@ -63,7 +63,7 @@ CGSize size;
     
     NSString *url =  [[BWCommon getBaseInfo:@"api_url"] stringByAppendingString:@"citylistbyprovince"];
 
-    NSLog(@"%@",url);
+    MYLOG(@"%@",url);
     //load data
     
     [AFNetworkTool JSONDataWithUrl:url success:^(id responseObject) {
@@ -74,10 +74,24 @@ CGSize size;
         if(code == 200)
         {
             dataArray = [[responseObject objectForKey:@"data"] mutableCopy];
+            
+            //
+            
+            NSString *gps_region_name = [BWCommon getUserInfo:@"gps_region_name"];
+            NSString *gps_region_id = [BWCommon getUserInfo:@"gps_region_id"];
+            
+            if(![gps_region_name isEqualToString:@""])
+            {
+            NSDictionary *gpsDict = [[NSDictionary alloc] initWithObjectsAndKeys:gps_region_id,@"region_id",gps_region_name,@"region_name",@[],@"childrens", nil];
+            
+            NSDictionary *gpsDict2 = [[NSDictionary alloc] initWithObjectsAndKeys:@"0",@"region_id",@"GPS Location",@"region_name",@[gpsDict],@"childrens", nil];
+            
+            [dataArray insertObject:gpsDict2 atIndex:0];
+            }
 
             //self.tableView.footer.hidden = (dataArray.count <=0) ? YES : NO;
             
-            NSLog(@"city data :%@",[responseObject objectForKey:@"data"]);
+            MYLOG(@"city data :%@",[responseObject objectForKey:@"data"]);
             //self.statusFrames = nil;
             
             [self.tableView setHidden:NO];
@@ -87,16 +101,16 @@ CGSize size;
                 callback();
             }
             
-            //NSLog(@"%@",json);
+            //MYLOG(@"%@",json);
         }
         else
         {
-            NSLog(@"%@",[responseObject objectForKey:@"error"]);
+            MYLOG(@"%@",[responseObject objectForKey:@"error"]);
         }
         
     } fail:^{
         [hud removeFromSuperview];
-        NSLog(@"请求失败");
+        MYLOG(@"请求失败");
     }];
     
     

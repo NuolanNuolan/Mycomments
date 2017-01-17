@@ -12,11 +12,13 @@
 #import "DOPDropDownMenu.h"
 #import "MBProgressHUD.h"
 #import "MJRefresh.h"
+#import "MemberDelegate.h"
 
 @interface MyShopViewController : UIViewController
 <
 UITableViewDataSource,
 UITableViewDelegate,
+MemberDelegate,
 MBProgressHUDDelegate
 >
 {

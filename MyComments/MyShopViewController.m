@@ -18,6 +18,7 @@
 @property (nonatomic, strong) NSArray *statusFrames;
 
 @property (nonatomic,assign) NSUInteger gpage;
+@property (nonatomic,assign) NSString *cusername;
 
 
 @end
@@ -60,7 +61,13 @@ NSMutableArray *filterData;
     [self.navigationController.navigationBar setBarTintColor:[BWCommon getRedColor]];
     [self.navigationController.navigationBar setTitleTextAttributes:[NSDictionary dictionaryWithObjectsAndKeys:
                                                                      [UIColor whiteColor], NSForegroundColorAttributeName, nil]];
-    self.navigationItem.title = @"MyComments";
+    
+    
+    if(self.cusername){
+        self.navigationItem.title = [NSString stringWithFormat:@"%@'s Collections",self.cusername];
+    }else{
+        self.navigationItem.title = @"My Collections";
+    }
     
     UIBarButtonItem *backItem=[[UIBarButtonItem alloc]init];
     backItem.title=@"";
@@ -68,7 +75,7 @@ NSMutableArray *filterData;
     self.navigationItem.backBarButtonItem=backItem;
     
     
-    UITableView *tableView = [[UITableView alloc] initWithFrame:CGRectMake(0, 0, size.width, size.height-42)];
+    UITableView *tableView = [[UITableView alloc] initWithFrame:CGRectMake(0, 0, size.width, size.height)];
     
     [self.view addSubview:tableView];
     
@@ -80,7 +87,7 @@ NSMutableArray *filterData;
     [self.tableView setTableFooterView:v];
     
 
-    //NSLog(@"%@",categoryData);
+    //MYLOG(@"%@",categoryData);
 
     self.gpage = 1;
     [self refreshingData:self.gpage callback:^{}];
@@ -118,6 +125,9 @@ NSMutableArray *filterData;
     
 }
 
+-(void) setValue:(NSString *)usernameValue{
+    self.cusername = usernameValue;
+}
 
 - (void) refreshingData:(NSUInteger)page callback:(void(^)()) callback
 {
@@ -126,13 +136,17 @@ NSMutableArray *filterData;
     //hud.mode = MBProgressHUDModeCustomView;
     hud.delegate=self;
     
-    NSString *url =  [[BWCommon getBaseInfo:@"api_url"] stringByAppendingString:@"search"];
+    NSString *url =  [[BWCommon getBaseInfo:@"api_url"] stringByAppendingString:@"mycollections"];
     
     NSMutableDictionary *postData = [[NSMutableDictionary alloc] init];
     
     [postData setValue:[NSString stringWithFormat:@"%ld",page] forKey:@"page"];
-    [postData setValue:[BWCommon getUserInfo:@"username"] forKey:@"username"];
-
+    
+    if(self.cusername){
+        [postData setValue:self.cusername forKey:@"username"];
+    }else{
+        [postData setValue:[BWCommon getUserInfo:@"username"] forKey:@"username"];
+    }
     
     [AFNetworkTool postJSONWithUrl:url parameters:postData success:^(id responseObject) {
         
@@ -141,7 +155,7 @@ NSMutableArray *filterData;
         [hud removeFromSuperview];
         if(code == 200)
         {
-            NSMutableDictionary *data = [responseObject objectForKey:@"data"];
+            NSMutableDictionary *data = [responseObject objectForKey:@"msg"];
             
             
             if(page == 1)
@@ -154,7 +168,7 @@ NSMutableArray *filterData;
                 
             }
             
-            NSLog(@"%@",dataArray);
+            MYLOG(@"%@",dataArray);
             
             self.tableView.footer.hidden = (dataArray.count <=0) ? YES : NO;
             
@@ -170,12 +184,12 @@ NSMutableArray *filterData;
         }
         else
         {
-            NSLog(@"%@",[responseObject objectForKey:@"error"]);
+            MYLOG(@"%@",[responseObject objectForKey:@"error"]);
         }
         
     } fail:^{
         [hud removeFromSuperview];
-        NSLog(@"请求失败");
+        MYLOG(@"请求失败");
     }];
     
     

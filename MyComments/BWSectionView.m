@@ -24,7 +24,7 @@
 }
 
 - (void)setFrame:(CGRect)frame{
-    NSLog(@"_______ frame = %@",NSStringFromCGRect(frame));
+    MYLOG(@"_______ frame = %@",NSStringFromCGRect(frame));
     
     CGRect sectionRect = [self.tableView rectForSection:self.section];
     CGRect newFrame = CGRectMake(CGRectGetMinX(frame), CGRectGetMinY(sectionRect), CGRectGetWidth(frame), CGRectGetHeight(frame)); [super setFrame:newFrame];

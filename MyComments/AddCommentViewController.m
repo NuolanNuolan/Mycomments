@@ -182,7 +182,7 @@ UILabel *uilabel;
 
 -(void) submitTouched:(UIButton *) sender{
     
-    //NSLog(@"%ld",self.overallRatingStarView.show_star);
+    //MYLOG(@"%ld",self.overallRatingStarView.show_star);
     
     UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Tips" message:@"" delegate:self cancelButtonTitle:@"Ok" otherButtonTitles:nil];
     
@@ -194,7 +194,7 @@ UILabel *uilabel;
         }
     }
     NSString *tags = [selectedTags componentsJoinedByString:@","];
-    //NSLog(@"%@",tags);
+    //MYLOG(@"%@",tags);
     //return;
     
     NSString *commentText = self.commentView.text;
@@ -243,7 +243,7 @@ UILabel *uilabel;
     
     [AFNetworkTool postJSONWithUrl:url parameters:postData success:^(id responseObject) {
         
-        NSLog(@"%@",responseObject);
+        MYLOG(@"%@",responseObject);
         
         [hud removeFromSuperview];
         NSInteger code = [[responseObject objectForKey:@"code"] integerValue];
@@ -266,7 +266,7 @@ UILabel *uilabel;
         [alert setMessage:@"Network connection timeout."];
         [alert show];
         
-        NSLog(@"请求失败");
+        MYLOG(@"请求失败");
     }];
     
 }

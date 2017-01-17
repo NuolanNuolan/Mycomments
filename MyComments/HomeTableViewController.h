@@ -12,6 +12,7 @@
 #import "MJRefresh.h"
 #import "ShopDelegate.h"
 #import "DetailDelegate.h"
+#import "MemberDelegate.h"
 
 @interface HomeTableViewController : UITableViewController
 <MBProgressHUDDelegate,
@@ -29,6 +30,7 @@ CLLocationManagerDelegate
 @property (nonatomic,assign) id<ShopDelegate> delegate;
 @property (nonatomic,assign) id<DetailDelegate> detailDelegate;
 @property (nonatomic,strong) CLLocationManager *manager;
+@property (nonatomic,assign) id<MemberDelegate> memberDelegate;
 
 //@property (nonatomic, strong) UISearchController *searchController;
 @end

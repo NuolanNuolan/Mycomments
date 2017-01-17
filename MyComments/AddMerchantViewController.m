@@ -24,7 +24,12 @@
 @property (nonatomic,strong) UIButton *btnWifi;
 @property (nonatomic,strong) UIButton *btnPs;
 
+@property (nonatomic,strong) UIScrollView *photoView;
+
 @property (nonatomic, weak) UIButton *photoButton;
+
+@property (nonatomic,retain) NSMutableArray * photoArray;
+@property (nonatomic,retain) NSMutableArray * photoDataArray;
 
 @end
 
@@ -46,6 +51,9 @@ NSInteger region_id;
 
 NSMutableArray *selectedCategory;
 NSMutableArray *selectedRegion;
+
+NSInteger muploaded_number = 0;
+NSInteger muploading_number = 0;
 
 CGSize size;
 
@@ -76,6 +84,9 @@ CGSize size;
     sclView.contentSize = CGSizeMake(size.width, 780);
     [self.view addSubview:sclView];
     
+    
+    self.photoArray = [[NSMutableArray alloc] init];
+    self.photoDataArray = [[NSMutableArray alloc] init];
     
     UITextField *name = [self createTextField:@"" Title:@"Merchant Name"];
     name.frame = CGRectMake(15,20,size.width-30,50);
@@ -193,6 +204,17 @@ CGSize size;
     
     self.photoButton = photoButton;
     [photoButton addTarget:self action:@selector(uploadTouched:) forControlEvents:UIControlEventTouchUpInside];
+    
+    
+    UIScrollView *photoView = [[UIScrollView alloc] initWithFrame:CGRectMake(100, h, size.width-120, 80)];
+    photoView.bounces=NO;
+    photoView.showsVerticalScrollIndicator = NO;
+    photoView.contentSize = CGSizeMake(size.width, 80);
+    photoView.scrollEnabled = YES;
+    [sclView addSubview:photoView];
+    
+    self.photoView = photoView;
+
     
     h+=100;
 
@@ -350,7 +372,7 @@ CGSize size;
     
     [AFNetworkTool postJSONWithUrl:url parameters:postData success:^(id responseObject) {
 
-        NSLog(@"%@",responseObject);
+        MYLOG(@"%@",responseObject);
         
         [hud removeFromSuperview];
         NSInteger code = [[responseObject objectForKey:@"code"] integerValue];
@@ -373,7 +395,7 @@ CGSize size;
         [alert setMessage:@"Network connection timeout."];
         [alert show];
         
-        NSLog(@"请求失败");
+        MYLOG(@"请求失败");
     }];
 
 }
@@ -618,13 +640,30 @@ CGSize size;
 }
 //从相册里找
 - (void) pickImage{
+    
+    QBImagePickerController *imagePickerController = [QBImagePickerController new];
+    imagePickerController.delegate = self;
+    imagePickerController.allowsMultipleSelection = YES;
+    imagePickerController.maximumNumberOfSelection = 5;
+    imagePickerController.prompt = @"Maximum 5 photos";
+    imagePickerController.minimumNumberOfSelection = 1;
+    imagePickerController.assetCollectionSubtypes = @[
+                                                      @(PHAssetCollectionSubtypeSmartAlbumUserLibrary), // Camera Roll
+                                                      @(PHAssetCollectionSubtypeAlbumMyPhotoStream), // My Photo Stream
+                                                      @(PHAssetCollectionSubtypeSmartAlbumPanoramas), // Panoramas
+                                                      @(PHAssetCollectionSubtypeSmartAlbumVideos), // Videos
+                                                      @(PHAssetCollectionSubtypeSmartAlbumBursts) // Bursts
+                                                      ];
+    
+    [self presentViewController:imagePickerController animated:YES completion:NULL];
+    /*
     UIImagePickerController *ipc=[[UIImagePickerController alloc] init];
     ipc.sourceType=UIImagePickerControllerSourceTypePhotoLibrary;
     ipc.delegate = self;
     ipc.allowsEditing=NO;
     
     [self presentViewController:ipc animated:YES completion:^{
-    }];
+    }];*/
     
 }
 
@@ -646,7 +685,7 @@ CGSize size;
     
     NSURL *fileUrl = [[NSURL alloc] initFileURLWithPath:fullFileName];
     //NSURL *fileUrl = [[NSBundle mainBundle] URLForResource:fileName withExtension:nil];
-    NSLog(@"%@",fileUrl);
+    MYLOG(@"%@",fileUrl);
     
     hud = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
     hud.delegate=self;
@@ -681,16 +720,16 @@ CGSize size;
             nimgview = [NSString stringWithFormat:@"%@/uploadfiles/%@!m80x80.jpg",[BWCommon getBaseInfo:@"site_url"],imgurl];
             NSURL *dataurl = [NSURL URLWithString:nimgview];
             
-            NSLog(@"%@",dataurl);
+            MYLOG(@"%@",dataurl);
             
             NSData* ndata = [NSData dataWithContentsOfURL:dataurl];
             
-            //NSLog(@"%@",ndata);
+            //MYLOG(@"%@",ndata);
             //[self.testImage sd_setImageWithURL:dataurl];
             
             [self.photoButton setBackgroundImage:[UIImage imageWithData:ndata] forState:UIControlStateNormal];
             
-            NSLog(@"%@",imgurl);
+            MYLOG(@"%@",imgurl);
         }
         
     } fail:^{
@@ -700,7 +739,7 @@ CGSize size;
         [alert setMessage:@"Timeout,please try again."];
         [alert show];
         
-        NSLog(@"请求失败");
+        MYLOG(@"请求失败");
     }];
     
     
@@ -709,6 +748,174 @@ CGSize size;
     }];
     
 }
+
+- (void) uploadFinished{
+    
+    if(muploading_number<=0){
+        [hud removeFromSuperview];
+        UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"" message:[NSString stringWithFormat:@"Successfully post %ld photos",muploaded_number] delegate:nil cancelButtonTitle:@"Ok" otherButtonTitles: nil];
+        [alert show];
+        
+    }
+}
+
+- (void) qb_imagePickerController:(QBImagePickerController *)imagePickerController didFinishPickingAssets:(NSArray *)assets{
+    
+    NSMutableDictionary *postData = [[NSMutableDictionary alloc] init];
+    
+    //[postData setValue:[NSString stringWithFormat:@"%ld",(unsigned long)self.sid] forKey:@"sid"];
+    [postData setValue:[BWCommon getUserInfo:@"username"] forKey:@"username"];
+    
+    muploading_number = [assets count];
+    muploaded_number = 0;
+    
+    if(muploading_number>0){
+        hud = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
+        hud.delegate=self;
+    }
+    
+    MYLOG(@"%ld",muploading_number);
+    for (PHAsset *asset in assets) {
+        //MYLOG(@"%@",asset);
+        
+        
+        
+        PHImageRequestOptions * imageRequestOptions = [[PHImageRequestOptions alloc] init];
+        imageRequestOptions.synchronous = YES;
+        [[PHImageManager defaultManager]
+         requestImageDataForAsset:asset
+         options:imageRequestOptions
+         resultHandler:^(NSData *imageData, NSString *dataUTI,
+                         UIImageOrientation orientation,
+                         NSDictionary *info)
+         {
+             //MYLOG(@"info = %@", info);
+             if ([info objectForKey:@"PHImageFileURLKey"]) {
+                 
+                 //临时存储图片后上传
+                 int y = (arc4random() % 1001) + 9000;
+                 
+                 NSString *fileName = [NSString stringWithFormat:@"%d%@",y,@".jpg"];
+                 
+                 NSArray* paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
+                 NSString* documentsDirectory = [paths objectAtIndex:0];
+                 // Now we get the full path to the file
+                 NSString* fullPathToFile = [documentsDirectory stringByAppendingPathComponent:fileName];
+                 // and then we write it out
+                 [imageData writeToFile:fullPathToFile atomically:NO];
+                 
+                 NSString *fullFileName = [[self documentFolderPath] stringByAppendingPathComponent:fileName];
+                 
+                 NSURL *fileUrl = [[NSURL alloc] initFileURLWithPath:fullFileName];
+                 //临时存储后的文件地址
+                 
+                 NSString *api_url = [[BWCommon getBaseInfo:@"api_url"] stringByAppendingString:@"addshopphoto"];
+                 
+                 
+                 [AFNetworkTool postUploadWithUrl:api_url fileUrl:fileUrl parameters:postData success:^(id responseObject) {
+                     
+                     //MYLOG(@"%@",responseObject);
+                     NSInteger code = [[responseObject objectForKey:@"code"] integerValue];
+                     
+                     //[hud removeFromSuperview];
+                     
+                     
+                     MYLOG(@"%@",responseObject);
+                     if (code != 200) {
+                         
+                     }
+                     else
+                     {
+                         imgurl = [responseObject objectForKey:@"msg"];
+                         
+                         NSString *nimgview = [[NSString alloc] init];
+                         
+                         nimgview = [NSString stringWithFormat:@"%@/uploadfiles/%@!m80x80.jpg",[BWCommon getBaseInfo:@"site_url"],imgurl];
+                         NSURL *dataurl = [NSURL URLWithString:nimgview];
+                         
+                         MYLOG(@"%@",dataurl);
+                         
+                         NSData* ndata = [NSData dataWithContentsOfURL:dataurl];
+                         
+                         [self.photoArray addObject:imgurl];
+                         [self.photoDataArray addObject:ndata];
+                         
+                         [self loadPhotoView];
+                         
+                         
+                         muploaded_number ++;
+                     }
+                     
+                     muploading_number--;
+                     
+                     [self uploadFinished];
+                     
+                 } fail:^{
+                     
+                     //[hud removeFromSuperview];
+                     MYLOG(@"faild");
+                     muploading_number--;
+                     
+                     [self uploadFinished];
+                 }];
+                 
+                 
+             }
+         }];
+    }
+    
+    [self dismissViewControllerAnimated:YES completion:NULL];
+}
+
+
+- (void)qb_imagePickerControllerDidCancel:(QBImagePickerController *)imagePickerController {
+    
+    [self dismissViewControllerAnimated:YES completion:NULL];
+}
+
+
+-(void)loadPhotoView{
+    
+    for(UIView *subView in [self.photoView subviews])
+    {
+        [subView removeFromSuperview];
+        MYLOG(@"%@",subView);
+    }
+    
+    MYLOG(@"photoDataArray count: %ld", [self.photoDataArray count]);
+    
+    for(int i=0;i<self.photoDataArray.count;i++){
+        UIButton *photoButton = [UIButton buttonWithType:UIButtonTypeCustom];
+        photoButton.frame = CGRectMake(85*i, 0, 80, 80);
+        photoButton.tag = i;
+        [photoButton addTarget:self action:@selector(photoRemoveTouched:) forControlEvents:UIControlEventTouchUpInside];
+        [photoButton setBackgroundImage:[UIImage imageWithData:self.photoDataArray[i]] forState:UIControlStateNormal];
+        [self.photoView addSubview:photoButton];
+    }
+    
+}
+
+-(void) photoRemoveTouched:(UIButton *)sender{
+    
+    
+    UIAlertController*alert=[UIAlertController alertControllerWithTitle:@"Remove this photo？" message:nil preferredStyle: UIAlertControllerStyleActionSheet];
+    UIAlertAction*defaultAction=[UIAlertAction actionWithTitle:@"Confirm" style:UIAlertActionStyleDefault handler:^(UIAlertAction*action){
+        
+        [self.photoArray removeObjectAtIndex:sender.tag];
+        [self.photoDataArray removeObjectAtIndex:sender.tag];
+        
+        [self loadPhotoView];
+        
+    }];
+    UIAlertAction*cancel=[UIAlertAction actionWithTitle:@"Cancel" style:UIAlertActionStyleCancel handler:^(UIAlertAction*action)
+                          {}];
+    [alert addAction:cancel];
+    [alert addAction:defaultAction];
+    [self presentViewController:alert animated:YES completion:nil];
+    
+    
+}
+
 
 - (NSString *)documentFolderPath
 {

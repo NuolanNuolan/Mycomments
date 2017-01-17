@@ -16,4 +16,6 @@
 
 + (instancetype)cellWithTableView:(UITableView *)tableView;
 
+@property (nonatomic,weak) UIButton *memberButton;
+
 @end

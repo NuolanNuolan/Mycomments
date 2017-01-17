@@ -131,6 +131,21 @@
         likeButton.titleLabel.font = NJTextFont;
         [likeButton setTitleColor:[UIColor grayColor] forState:UIControlStateNormal];
         
+//        UIButton *removeButton = [[UIButton alloc] init];
+//        self.removeButton = removeButton;
+//        [self.contentView addSubview:removeButton];
+//        
+//        UIImageView *removeIcon = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"icon-close"]];
+//        [removeButton addSubview:removeIcon];
+//        removeIcon.frame = CGRectMake(0, 0, 16, 16);
+//        
+//        removeButton.titleLabel.font = NJTextFont;
+//        [removeButton setTitleColor:[UIColor grayColor] forState:UIControlStateNormal];
+        
+        UIButton *memberButton = [[UIButton alloc] init];
+        self.memberButton = memberButton;
+        [self.contentView addSubview:memberButton];
+        
         
     }
     return self;
@@ -187,6 +202,17 @@
         cid = [[data objectForKey:@"cid"] integerValue];
     }
     self.likeButton.tag = cid;
+    
+    
+//    [self.removeButton setTitle:@"Delete" forState:UIControlStateNormal];
+//    
+//    if([[BWCommon getUserInfo:@"username"] isEqualToString:[data objectForKey:@"username"]])
+//    {
+//    }else{
+//        [self.removeButton setHidden:YES];
+//    }
+    
+    
 }
 /**
  *  设置子控件的frame
@@ -205,6 +231,9 @@
     self.usernameLabel.frame = self.viewFrame.usernameF;
     self.dateLabel.frame = self.viewFrame.dateF;
     self.likeButton.frame = self.viewFrame.likeF;
+//    self.removeButton.frame = self.viewFrame.removeF;
+    
+    self.memberButton.frame = self.viewFrame.avatarF;
     
 }
 

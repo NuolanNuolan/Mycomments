@@ -22,7 +22,7 @@
     
     self.textF = CGRectMake(10, 10, textSize.width, textSize.height);
     
-    self.valueF = CGRectMake(textSize.width + 62, 14, 200, 20);
+    self.valueF = CGRectMake(textSize.width + 70, 15, 200, 20);
 }
 
 

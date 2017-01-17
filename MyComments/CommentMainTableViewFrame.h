@@ -27,6 +27,8 @@
 
 @property (nonatomic,assign) CGRect likeF;
 
+@property (nonatomic,assign) CGRect removeF;
+
 @property (nonatomic, assign) CGRect dateF;
 
 @property (nonatomic, assign) CGFloat cellHeight;

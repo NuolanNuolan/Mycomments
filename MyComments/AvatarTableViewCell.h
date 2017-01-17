@@ -15,7 +15,10 @@
 @property (nonatomic,strong) AvatarTableViewFrame *viewFrame;
 
 @property (nonatomic,retain) UILabel *valueLabel;
-@property (nonatomic,retain) UIImageView *avatarImage;
+@property (nonatomic,retain) UIButton *avatarButton;
+
+//@property (nonatomic, assign) BOOL memberFlag;
+//@property (nonatomic, retain) UIButton *followButton;
 
 + (instancetype)cellWithTableView:(UITableView *)tableView;
 

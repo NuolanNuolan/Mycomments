@@ -18,6 +18,7 @@
 #import "AddMerchantViewController.h"
 #import "AddCommentViewController.h"
 #import "MapViewController.h"
+#import "MemberTableViewController.h"
 
 #import <ShareSDK/ShareSDK.h>
 #import <ShareSDKExtension/SSEShareHelper.h>
@@ -86,6 +87,11 @@ NSInteger uploading_number = 0;
     backItem.title=@"";
     backItem.image=[UIImage imageNamed:@""];
     self.navigationItem.backBarButtonItem=backItem;
+    if (_isPresentview) {
+        UIBarButtonItem *closeItem = [[UIBarButtonItem alloc] initWithTitle:@"Close" style:UIBarButtonItemStylePlain target:self action:@selector(closeTouched:)];
+        
+        self.navigationItem.leftBarButtonItem = closeItem;
+    }
     
     
     _headTitleArray = [[NSArray alloc] initWithObjects:@"",@"Address",@"Tel",@"Website",@"Details",@"Comments", nil];
@@ -98,6 +104,7 @@ NSInteger uploading_number = 0;
     self.tableView = tableView;
     self.tableView.delegate = self;
     self.tableView.dataSource = self;
+    self.tableView.showsVerticalScrollIndicator=NO;
     
     [tableView setHidden:YES];
     
@@ -146,7 +153,12 @@ NSInteger uploading_number = 0;
     
     
 }
-
+- (void) closeTouched:(UIBarButtonItem *) sender{
+    
+    [self dismissViewControllerAnimated:YES completion:^{
+        
+    }];
+}
 - (void) merchantTouched:(UIButton *) sender{
     
     BOOL isLoggedIn = [BWCommon isLoggedIn];
@@ -155,7 +167,7 @@ NSInteger uploading_number = 0;
         
         __weak ShopDetailViewController *weakSelf = self;
         
-        UIViewController *viewController = [self.parentViewController.storyboard instantiateViewControllerWithIdentifier:@"loginView"];
+        UIViewController *viewController = [[UIStoryboard storyboardWithName:@"Main" bundle:nil]instantiateViewControllerWithIdentifier:@"loginView"];
         
         UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:viewController];
         
@@ -181,7 +193,7 @@ NSInteger uploading_number = 0;
         
         __weak ShopDetailViewController *weakSelf = self;
         
-        UIViewController *viewController = [self.parentViewController.storyboard instantiateViewControllerWithIdentifier:@"loginView"];
+        UIViewController *viewController = [[UIStoryboard storyboardWithName:@"Main" bundle:nil]instantiateViewControllerWithIdentifier:@"loginView"];
         
         UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:viewController];
         
@@ -202,14 +214,14 @@ NSInteger uploading_number = 0;
 
 
 -(void) likeTouched:(UIButton *) sender{
-    NSLog(@"%ld",sender.tag);
+    MYLOG(@"%ld",sender.tag);
     BOOL isLoggedIn = [BWCommon isLoggedIn];
     
     if (!isLoggedIn) {
         
         //__weak CommentViewController *weakSelf = self;
         
-        UIViewController *viewController = [self.parentViewController.storyboard instantiateViewControllerWithIdentifier:@"loginView"];
+        UIViewController *viewController = [[UIStoryboard storyboardWithName:@"Main" bundle:nil]instantiateViewControllerWithIdentifier:@"loginView"];
         
         UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:viewController];
         
@@ -230,7 +242,7 @@ NSInteger uploading_number = 0;
     
     [AFNetworkTool postJSONWithUrl:url parameters:@{@"username":username,@"id":[NSString stringWithFormat:@"%ld",cid]} success:^(id responseObject) {
         
-        NSLog(@"%@",responseObject);
+        MYLOG(@"%@",responseObject);
         NSInteger code = [[responseObject objectForKey:@"code"] integerValue];
         
         [hud removeFromSuperview];
@@ -244,7 +256,7 @@ NSInteger uploading_number = 0;
             
             [alert show];
             
-            NSLog(@"%@",[responseObject objectForKey:@"data"]);
+            MYLOG(@"%@",[responseObject objectForKey:@"data"]);
         }
     } fail:^{
         [hud removeFromSuperview];
@@ -283,6 +295,8 @@ NSInteger uploading_number = 0;
                                       title:shop_name
                                        type:SSDKContentTypeAuto];
     
+    [shareParams SSDKSetupWhatsAppParamsByText:[NSString stringWithFormat:@"http://www.mycomments.com.my/shop/%ld",self.sid] image:@[image_url] audio:nil video:nil menuDisplayPoint:CGPointMake(0, 0 ) type:SSDKContentTypeText];
+    
     //1.2、自定义分享平台（非必要）
     NSMutableArray *activePlatforms = [NSMutableArray arrayWithArray:[ShareSDK activePlatforms]];
 
@@ -291,7 +305,7 @@ NSInteger uploading_number = 0;
                              items:activePlatforms
                        shareParams:shareParams
                onShareStateChanged:^(SSDKResponseState state, SSDKPlatformType platformType, NSDictionary *userData, SSDKContentEntity *contentEntity, NSError *error, BOOL end) {
-                   
+                   MYLOG(@"%lu",(unsigned long)platformType);
                    switch (state) {
                            
                        case SSDKResponseStateBegin:
@@ -301,12 +315,14 @@ NSInteger uploading_number = 0;
                        }
                        case SSDKResponseStateSuccess:
                        {
-                           UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Thanks for your sharing"
-                                                                               message:nil
-                                                                              delegate:nil
-                                                                     cancelButtonTitle:@"Ok"
-                                                                     otherButtonTitles:nil];
-                           [alertView show];
+                           if ((unsigned long)platformType!=43) {
+                               UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Thanks for your sharing"
+                                                                                   message:nil
+                                                                                  delegate:nil
+                                                                         cancelButtonTitle:@"Ok"
+                                                                         otherButtonTitles:nil];
+                               [alertView show];
+                           }
                            break;
                        }
                        case SSDKResponseStateFail:
@@ -323,7 +339,12 @@ NSInteger uploading_number = 0;
                        }
                        case SSDKResponseStateCancel:
                        {
-                           
+                           UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Cancel the sharing"
+                                                                               message:nil
+                                                                              delegate:nil
+                                                                     cancelButtonTitle:@"Ok"
+                                                                     otherButtonTitles:nil];
+                           [alertView show];
                            break;
                        }
                        default:
@@ -359,12 +380,12 @@ NSInteger uploading_number = 0;
         {
             UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"System Tips" message:[responseObject objectForKey:@"msg"] delegate:self cancelButtonTitle:@"Ok" otherButtonTitles: nil];
             [alertView show];
-            NSLog(@"%@",[responseObject objectForKey:@"msg"]);
+            MYLOG(@"%@",[responseObject objectForKey:@"msg"]);
         }
         
     } fail:^{
         [hud removeFromSuperview];
-        NSLog(@"请求失败");
+        MYLOG(@"请求失败");
     }];
 
 }
@@ -483,6 +504,7 @@ NSInteger uploading_number = 0;
     
     if (indexPath.section == 0) {
         ShopMainTableViewCell *cell = [ShopMainTableViewCell cellWithTableView:tableView];
+        cell.selectionStyle = UITableViewCellSelectionStyleNone;
         cell.viewFrame = self.shopFrames[0];
 
         [cell.imageButton addTarget:self action:@selector(imageTouched:) forControlEvents:UIControlEventTouchUpInside];
@@ -491,9 +513,13 @@ NSInteger uploading_number = 0;
     
     if(indexPath.section == 5) {
         CommentMainTableViewCell *cell = [CommentMainTableViewCell cellWithTableView:tableView];
+        cell.selectionStyle = UITableViewCellSelectionStyleNone;
         cell.viewFrame = self.statusFrames[indexPath.row];
+        cell.memberButton.tag = indexPath.row;
         cell.separatorInset = UIEdgeInsetsMake(0, 0, 0, 0);
         [cell.likeButton addTarget:self action:@selector(likeTouched:) forControlEvents:UIControlEventTouchUpInside];
+        [cell.memberButton addTarget:self action:@selector(memberTouched:) forControlEvents:UIControlEventTouchUpInside];
+        
         return cell;
     }
 
@@ -504,7 +530,7 @@ NSInteger uploading_number = 0;
     }
     cell.textLabel.numberOfLines = 0;
     cell.textLabel.font = NJNameFont;
-
+    cell.selectionStyle = UITableViewCellSelectionStyleNone;
     //address
     if(indexPath.section == 1){
         cell.textLabel.text = [[shopDict objectForKey:@"shop"] objectForKey:@"address"];
@@ -524,6 +550,7 @@ NSInteger uploading_number = 0;
         
         detailLabel.font = NJNameFont;
         detailLabel.text = [[shopDict objectForKey:@"shop"] objectForKey:@"opening_hours"];
+        detailLabel.numberOfLines=3;
         detailLabel.frame = CGRectMake(10, 10, detailSize.width, detailSize.height);
         [cell.contentView addSubview:detailLabel];
         
@@ -578,7 +605,7 @@ NSInteger uploading_number = 0;
         if([numbers count] == 1){
             NSString *number = [NSString stringWithFormat:@"+%@",numbers[0]];
             NSString *num = [[NSString alloc] initWithFormat:@"tel://%@",number];
-            //NSLog(@"%@",num);
+            //MYLOG(@"%@",num);
             //num = @"tel://18621320482";
             [[UIApplication sharedApplication] openURL:[NSURL URLWithString:num]];
         }
@@ -619,19 +646,55 @@ NSInteger uploading_number = 0;
         [[UIApplication sharedApplication] openURL:[NSURL URLWithString:site]];
     }
 }
-
+/** 确定哪些行的cell可以编辑 (UITableViewDataSource协议中方法). */
+//- (BOOL)tableView:(UITableView *)tableView canEditRowAtIndexPath:(NSIndexPath *)indexPath
+//{
+//    if (indexPath.section==5) {
+//        return YES;
+//    }
+//    
+//    return NO;
+//}
+////
+///** 设置某一行cell的编辑模式 (UITableViewDelegate协议中方法). */
+//- (UITableViewCellEditingStyle)tableView:(UITableView *)tableView editingStyleForRowAtIndexPath:(NSIndexPath *)indexPath
+//{
+//    
+//    return UITableViewCellEditingStyleDelete;
+//}
+//-(NSString *)tableView:(UITableView *)tableView titleForDeleteConfirmationButtonForRowAtIndexPath:(NSIndexPath *)indexPath{
+//    
+//    return @"Delete";
+//    
+//    
+//}
+////
+/////** 提交编辑状态 (UITableViewDataSource协议中方法). */
+//- (void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath
+//{
+//    
+//    if(editingStyle==UITableViewCellEditingStyleDelete)
+//        
+//    {
+//        
+//        MYLOG(@"删除");
+//    }
+//}
 - (void) headerRefreshing{
     
     //self.gpage = 1;
+    @weakify(self);
     [self refreshingData:self.sid callback:^{
+        @strongify(self);
         [self.tableView.header endRefreshing];
     }];
     
 }
 
 - (void )footerRereshing{
-    
+    @weakify(self);
     [self refreshingData:++self.gpage callback:^{
+        @strongify(self);
         [self.tableView.footer endRefreshing];
     }];
 }
@@ -640,9 +703,7 @@ NSInteger uploading_number = 0;
 - (void) refreshingData:(NSUInteger)sid callback:(void(^)()) callback
 {
     
-    hud = [BWCommon getHUD];
-    //hud.mode = MBProgressHUDModeDeterminate;
-    hud.delegate=self;
+    [MBProgressHUD showMessage:@"" toView:self.view];
     
     NSString *url =  [[BWCommon getBaseInfo:@"api_url"] stringByAppendingString:@"detail"];
     
@@ -650,14 +711,14 @@ NSInteger uploading_number = 0;
     
     [postData setValue:[NSString stringWithFormat:@"%ld",(unsigned long)sid] forKey:@"sid"];
     
-    NSLog(@"%@",url);
+    MYLOG(@"%@",url);
     //load data
     
     [AFNetworkTool postJSONWithUrl:url parameters:postData success:^(id responseObject) {
         
         NSInteger code = [[responseObject objectForKey:@"code"] integerValue];
         
-        [hud removeFromSuperview];
+        [MBProgressHUD hideHUDForView:self.view];
         if(code == 200)
         {
             shopDict = [responseObject objectForKey:@"data"];
@@ -665,7 +726,7 @@ NSInteger uploading_number = 0;
             
             dataArray = [[[shopDict objectForKey:@"comments"] objectForKey:@"lists"] mutableCopy];
             
-            NSLog(@"%@",shopDict);
+            MYLOG(@"%@",shopDict);
             
             self.tableView.footer.hidden = (dataArray.count <=0) ? YES : NO;
             
@@ -682,12 +743,12 @@ NSInteger uploading_number = 0;
         }
         else
         {
-            NSLog(@"%@",[responseObject objectForKey:@"error"]);
+            MYLOG(@"%@",[responseObject objectForKey:@"error"]);
         }
         
     } fail:^{
-        [hud removeFromSuperview];
-        NSLog(@"请求失败");
+        [MBProgressHUD hideHUDForView:self.view];
+        MYLOG(@"请求失败");
     }];
     
     
@@ -745,7 +806,7 @@ NSInteger uploading_number = 0;
         
         __weak ShopDetailViewController *weakSelf = self;
         
-        UIViewController *viewController = [self.parentViewController.storyboard instantiateViewControllerWithIdentifier:@"loginView"];
+        UIViewController *viewController = [[UIStoryboard storyboardWithName:@"Main" bundle:nil]instantiateViewControllerWithIdentifier:@"loginView"];
         
         UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:viewController];
         
@@ -835,7 +896,7 @@ NSInteger uploading_number = 0;
     
     NSURL *fileUrl = [[NSURL alloc] initFileURLWithPath:fullFileName];
     //NSURL *fileUrl = [[NSBundle mainBundle] URLForResource:fileName withExtension:nil];
-    NSLog(@"%@",fileUrl);
+    MYLOG(@"%@",fileUrl);
     
     hud = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
     hud.delegate=self;
@@ -855,12 +916,12 @@ NSInteger uploading_number = 0;
     
     [AFNetworkTool postUploadWithUrl:api_url fileUrl:fileUrl parameters:postData success:^(id responseObject) {
         
-        NSLog(@"%@",responseObject);
+        MYLOG(@"%@",responseObject);
         NSInteger code = [[responseObject objectForKey:@"code"] integerValue];
         
         [hud removeFromSuperview];
         
-        NSLog(@"%@",responseObject);
+        MYLOG(@"%@",responseObject);
         if (code != 200) {
             [alert setMessage:[responseObject objectForKey:@"msg"]];
             [alert show];
@@ -878,7 +939,7 @@ NSInteger uploading_number = 0;
         [alert setMessage:@"Timeout,please try again."];
         [alert show];
         
-        NSLog(@"faild");
+        MYLOG(@"faild");
     }];
     
     
@@ -913,9 +974,9 @@ NSInteger uploading_number = 0;
         hud.delegate=self;
     }
     
-    NSLog(@"%ld",uploading_number);
+    MYLOG(@"%ld",uploading_number);
     for (PHAsset *asset in assets) {
-        //NSLog(@"%@",asset);
+        //MYLOG(@"%@",asset);
         
         
         
@@ -928,7 +989,7 @@ NSInteger uploading_number = 0;
                          UIImageOrientation orientation,
                          NSDictionary *info)
          {
-             //NSLog(@"info = %@", info);
+             //MYLOG(@"info = %@", info);
              if ([info objectForKey:@"PHImageFileURLKey"]) {
                  
                  //临时存储图片后上传
@@ -953,12 +1014,12 @@ NSInteger uploading_number = 0;
 
                  [AFNetworkTool postUploadWithUrl:api_url fileUrl:fileUrl parameters:postData success:^(id responseObject) {
                      
-                     //NSLog(@"%@",responseObject);
+                     //MYLOG(@"%@",responseObject);
                      NSInteger code = [[responseObject objectForKey:@"code"] integerValue];
                      
                      //[hud removeFromSuperview];
                      
-                     NSLog(@"%@",responseObject);
+                     MYLOG(@"%@",responseObject);
                      if (code != 200) {
 
                      }
@@ -974,7 +1035,7 @@ NSInteger uploading_number = 0;
                  } fail:^{
                      
                      //[hud removeFromSuperview];
-                     NSLog(@"faild");
+                     MYLOG(@"faild");
                      uploading_number--;
                      
                      [self uploadFinished];
@@ -988,6 +1049,21 @@ NSInteger uploading_number = 0;
     [self dismissViewControllerAnimated:YES completion:NULL];
 }
 
+
+-(void) memberTouched:(UIButton *) sender{
+    
+    NSDictionary *data = [dataArray objectAtIndex:sender.tag];
+    
+    MYLOG(@"member log: %ld",sender.tag);
+    
+    MemberTableViewController *viewController = [[MemberTableViewController alloc] init];
+    self.memberDelegate = viewController;
+    viewController.hidesBottomBarWhenPushed = YES;
+    [self.memberDelegate setValue:[data objectForKey:@"username"]];
+    
+    [self.navigationController pushViewController:viewController animated:YES];
+    
+}
 
 - (void)qb_imagePickerControllerDidCancel:(QBImagePickerController *)imagePickerController {
     

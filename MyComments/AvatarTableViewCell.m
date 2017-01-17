@@ -60,6 +60,8 @@
 
 - (id)initWithStyle:(UITableViewCellStyle)style reuseIdentifier:(NSString *)reuseIdentifier{
     
+    
+    
     self = [super initWithStyle:style reuseIdentifier:reuseIdentifier];
     if (self) {
         
@@ -68,10 +70,12 @@
         self.valueLabel = valueLabel;
         [self.contentView addSubview:valueLabel];
         
-        UIImageView *avatarImage = [[UIImageView alloc] initWithFrame:CGRectMake(15, 15, 50, 50)];
-        [avatarImage.layer setCornerRadius:5.0f];
-        self.avatarImage = avatarImage;
-        [self.contentView addSubview:avatarImage];
+        UIButton *avatarButton = [[UIButton alloc] initWithFrame:CGRectMake(15, 15, 50, 50)];
+        avatarButton.adjustsImageWhenHighlighted=NO;
+        self.avatarButton = avatarButton;
+        [self.contentView addSubview:avatarButton];
+        
+        
     }
     
     return self;
@@ -98,15 +102,12 @@
     
     if([icon isEqualToString:@"noavatar_large"])
     {
-        [self.avatarImage setImage:[UIImage imageNamed:icon]];
+        [self.avatarButton setBackgroundImage:[UIImage imageNamed:icon] forState:UIControlStateNormal];
     }
     else
     {
-        [self.avatarImage sd_setImageWithURL:[NSURL URLWithString:icon] placeholderImage:[UIImage imageNamed:@"noavatar_large"] options:SDWebImageCacheMemoryOnly];
+        [self.avatarButton sd_setBackgroundImageWithURL:[NSURL URLWithString:icon] forState:UIControlStateNormal placeholderImage:[UIImage imageNamed:@"noavatar_large"]];
     }
-    //if(icon != nil)
-    //
-    
     
     self.textLabel.text = [data objectForKey:@"title"];
     self.valueLabel.text = [data objectForKey:@"text"];

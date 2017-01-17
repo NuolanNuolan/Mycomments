@@ -1,0 +1,17 @@
+platform :ios,'8.0'
+target 'MyComments' do
+pod 'AFNetworking', '~> 2.3.1'
+pod 'MBProgressHUD', '~> 0.9.1'
+pod 'MJRefresh', '~> 1.4.6'
+pod 'SDWebImage', '~> 3.7.2'
+pod 'GoogleMaps'
+pod 'BENTagsView', '~> 0.9.0'
+#pod 'DOPDropDownMenu', '~> 0.1.1'
+pod 'DOPDropDownMenu-Enhanced', '~> 1.0.0'
+pod 'MWPhotoBrowser'
+pod 'QBImagePickerController', '~> 3.4.0'
+pod 'UMengAnalytics-NO-IDFA'
+pod 'ReactiveCocoa', '~> 2.5'
+pod 'JSPatchPlatform'
+pod 'WHC_Debuger'
+end

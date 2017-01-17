@@ -7,6 +7,7 @@
 //
 #import "SearchResultsViewController.h"
 #import "ShopDetailViewController.h"
+#import "BWCommon.h"
 
 @interface SearchResultsViewController ()
 
@@ -14,7 +15,6 @@
 
 @implementation SearchResultsViewController
 
-UIWindow* _overlayWindow;
 
 #pragma mark - Table view data source
 
@@ -49,47 +49,18 @@ UIWindow* _overlayWindow;
     
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
     
-    // this will be the UINavigationController that provides the push animation.
-    // its rootViewController is a placeholder that exists so we can actually push and pop
-    UINavigationController* nc = [[UINavigationController alloc] initWithRootViewController: [UIViewController new]];
-    
-    // the overlay window
-    _overlayWindow = [[UIWindow alloc] initWithFrame: self.view.window.frame];
-    _overlayWindow.rootViewController = nc;
-    _overlayWindow.windowLevel = self.view.window.windowLevel+1; // appear over us
-    _overlayWindow.backgroundColor = [UIColor clearColor];
-    [_overlayWindow makeKeyAndVisible];
-    
-    // get this into the next run loop cycle:
     dispatch_async(dispatch_get_main_queue(), ^{
-        
-        //UIViewController* resultDetailViewController = [UIViewController alloc];
-        //resultDetailViewController.title = @"Result Detail";
-        //resultDetailViewController.view.backgroundColor = [UIColor whiteColor];
-        //[nc pushViewController: resultDetailViewController animated: YES];
-        
-        // start looking for popping-to-root:
-        //nc.delegate = self;
-        
+       
         ShopDetailViewController *viewController = [[ShopDetailViewController alloc] init];
         self.detailDelegate = viewController;
-        //viewController.hidesBottomBarWhenPushed = YES;
+        viewController.isPresentview=YES;
         NSInteger sid = [[self.searchResults[indexPath.row] objectForKey:@"sid"] integerValue];
         [self.detailDelegate setValue:sid];
+        UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:viewController];
         
-        [nc pushViewController: viewController animated: YES];
-        nc.delegate = self;
+        [self presentViewController:navigationController animated:YES completion:nil];
     });
 }
 
-- (void) navigationController:(UINavigationController *)navigationController didShowViewController:(UIViewController *)viewController animated:(BOOL)animated
-{
-    // pop to root?  then dismiss our window.
-    if ( navigationController.viewControllers[0] == viewController )
-    {
-        [_overlayWindow resignKeyWindow];
-        _overlayWindow = nil;
-    }
-}
 
 @end

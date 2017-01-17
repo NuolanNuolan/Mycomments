@@ -1,0 +1,92 @@
+PODS:
+  - AFNetworking (2.3.1):
+    - AFNetworking/NSURLConnection (= 2.3.1)
+    - AFNetworking/NSURLSession (= 2.3.1)
+    - AFNetworking/Reachability (= 2.3.1)
+    - AFNetworking/Security (= 2.3.1)
+    - AFNetworking/Serialization (= 2.3.1)
+    - AFNetworking/UIKit (= 2.3.1)
+  - AFNetworking/NSURLConnection (2.3.1):
+    - AFNetworking/Reachability
+    - AFNetworking/Security
+    - AFNetworking/Serialization
+  - AFNetworking/NSURLSession (2.3.1):
+    - AFNetworking/Reachability
+    - AFNetworking/Security
+    - AFNetworking/Serialization
+  - AFNetworking/Reachability (2.3.1)
+  - AFNetworking/Security (2.3.1)
+  - AFNetworking/Serialization (2.3.1)
+  - AFNetworking/UIKit (2.3.1):
+    - AFNetworking/NSURLConnection
+    - AFNetworking/NSURLSession
+  - BENTagsView (0.9.0)
+  - DACircularProgress (2.3.1)
+  - DOPDropDownMenu-Enhanced (1.0.0)
+  - GoogleMaps (2.1.1):
+    - GoogleMaps/Maps (= 2.1.1)
+  - GoogleMaps/Base (2.1.1)
+  - GoogleMaps/Maps (2.1.1):
+    - GoogleMaps/Base
+  - JSPatch (1.1.2):
+    - JSPatch/Core (= 1.1.2)
+  - JSPatch/Core (1.1.2)
+  - JSPatchPlatform (1.6.6):
+    - JSPatchPlatform/Core (= 1.6.6)
+  - JSPatchPlatform/Core (1.6.6):
+    - JSPatch
+  - MBProgressHUD (0.9.2)
+  - MJRefresh (1.4.7)
+  - MWPhotoBrowser (2.1.2):
+    - DACircularProgress (~> 2.3)
+    - MBProgressHUD (~> 0.9)
+    - SDWebImage (!= 3.7.2, ~> 3.7)
+  - QBImagePickerController (3.4.0)
+  - ReactiveCocoa (2.5):
+    - ReactiveCocoa/UI (= 2.5)
+  - ReactiveCocoa/Core (2.5):
+    - ReactiveCocoa/no-arc
+  - ReactiveCocoa/no-arc (2.5)
+  - ReactiveCocoa/UI (2.5):
+    - ReactiveCocoa/Core
+  - SDWebImage (3.7.6):
+    - SDWebImage/Core (= 3.7.6)
+  - SDWebImage/Core (3.7.6)
+  - UMengAnalytics-NO-IDFA (4.1.9)
+  - WHC_Debuger (1.0.1)
+
+DEPENDENCIES:
+  - AFNetworking (~> 2.3.1)
+  - BENTagsView (~> 0.9.0)
+  - DOPDropDownMenu-Enhanced (~> 1.0.0)
+  - GoogleMaps
+  - JSPatchPlatform
+  - MBProgressHUD (~> 0.9.1)
+  - MJRefresh (~> 1.4.6)
+  - MWPhotoBrowser
+  - QBImagePickerController (~> 3.4.0)
+  - ReactiveCocoa (~> 2.5)
+  - SDWebImage (~> 3.7.2)
+  - UMengAnalytics-NO-IDFA
+  - WHC_Debuger
+
+SPEC CHECKSUMS:
+  AFNetworking: 05b9f6e3aa5ac45bc383b4bb108ef338080a26c7
+  BENTagsView: 1a6ade3a65b7e677ea7482c1c08983ab4db532d5
+  DACircularProgress: 4dd437c0fc3da5161cb289e07ac449493d41db71
+  DOPDropDownMenu-Enhanced: 9ec473b16351b5b0b2d6ef87e7f666fe5ff54ad5
+  GoogleMaps: a5b5bbe47734e2443bde781a6aa64e69fdb6d785
+  JSPatch: 741205ebb2e2238c223a436e4c8cf75cf40a345f
+  JSPatchPlatform: 8cc9aaebe21109d5fdfb4500384ddf38ed0990e9
+  MBProgressHUD: 1569cf7ace17a8bac47aabfbb8580a49690386d1
+  MJRefresh: 6b140993028fa30f1fcb88e82925a7c7911415cf
+  MWPhotoBrowser: 5836d7aa041dc05a13de380c246826578adc5ea5
+  QBImagePickerController: d54cf93db6decf26baf6ed3472f336ef35cae022
+  ReactiveCocoa: e2db045570aa97c695e7aa97c2bcab222ae51f4a
+  SDWebImage: c325cf02c30337336b95beff20a13df489ec0ec9
+  UMengAnalytics-NO-IDFA: 985292af177111685325c90c321094172b95d2cb
+  WHC_Debuger: acc42796f3c7af3c9abed74074edbb2746dc35b4
+
+PODFILE CHECKSUM: f9821e798d7369c3f01ad81420e395c164e07fff
+
+COCOAPODS: 1.1.1

@@ -115,10 +115,21 @@
             [udata setObject:[common objectForKey:@"regions"] forKey:@"regions"];
             [udata setObject:[common objectForKey:@"category"] forKey:@"category"];
             [udata synchronize];
+            //请求完了通知刷新表格
+            [[NSNotificationCenter defaultCenter] postNotificationName:@"Popular_cityNotification" object:@"Success"];
+            
+//            [BWCommon saveArrayandNSArray:[common objectForKey:@"popular_city"] andByAppendingPath:@"memeda"];
+//            
+//            NSMutableArray *arrrrr = [BWCommon readArrayByAppendingPath:@"memeda"];
+//            MYLOG(@"%@",arrrrr);
+            
         }
 
     } fail:^{
-        NSLog(@"common data 请求失败");
+        MYLOG(@"common data 请求失败");
+        //如果请求失败了
+        //请求完了通知刷新表格
+        [[NSNotificationCenter defaultCenter] postNotificationName:@"Popular_cityNotification" object:@"Error"];
     }];
     
     
@@ -145,10 +156,13 @@
             NSUserDefaults *udata = [NSUserDefaults standardUserDefaults];
             [udata setObject:regions forKey:@"regions"];
             [udata synchronize];
+            
+
+            
         }
     } fail:^{
         
-        NSLog(@"请求失败");
+        MYLOG(@"请求失败");
     }];
     
     
@@ -252,13 +266,13 @@
         
         NSInteger errNo = [[responseObject objectForKey:@"errno"] integerValue];
         if (errNo == 0) {
-            NSLog(@"%@",[responseObject objectForKey:@"data"]);
+            MYLOG(@"%@",[responseObject objectForKey:@"data"]);
             //NSDictionary *userInfo = [responseObject objectForKey:@"data"];
             [BWCommon setUserInfo:@"link_mobile" value:[[responseObject objectForKey:@"data"] objectForKey:@"link_mobile"] ];
         }
     } fail:^{
         
-        NSLog(@"请求失败");
+        MYLOG(@"请求失败");
     }];
 }
 +(NSMutableDictionary *) getCommonTokenData{
@@ -313,11 +327,11 @@
     //init token
     NSString *token = [self md5:str];
     
-    NSLog(@"%@",[self getUserInfo:@"user_key"]);
-    NSLog(@"%@",timestamp);
-    NSLog(@"%@",str);
-    NSLog(@"%@",token);
-    NSLog(@"%@",seckey);
+    MYLOG(@"%@",[self getUserInfo:@"user_key"]);
+    MYLOG(@"%@",timestamp);
+    MYLOG(@"%@",str);
+    MYLOG(@"%@",token);
+    MYLOG(@"%@",seckey);
     
     [data setValue:[BWCommon getUserInfo:@"hxm_uid"] forKey:@"user_id"];
     [data setValue:timestamp forKey:@"time"];
@@ -417,14 +431,6 @@
     UIImageView *loadingLogo =[[UIImageView alloc] initWithImage:[UIImage imageNamed:@"menu_home"]];
     loadingLogo.frame = CGRectMake(20, 0, 34, 24);
     [loadingView addSubview:loadingLogo];
-    //loadingLogo.frame = CGRectMake(10, 0, 40, 40);
-    /*UILabel *loadingText = [[UILabel alloc] initWithFrame:CGRectMake(0, 65, 60, 20)];
-     [loadingText setTextAlignment:NSTextAlignmentCenter];
-     [loadingText setTextColor:[UIColor whiteColor]];
-     [loadingText setText:@"加载中.."];
-     [loadingText setFont:[UIFont systemFontOfSize:12]];
-     [loadingView addSubview:loadingText];*/
-    
     
     UIActivityIndicatorView *indicator = [[UIActivityIndicatorView alloc]
                                           initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhiteLarge];
@@ -442,6 +448,47 @@
     
     return hud;
 }
++ (void)saveArrayandNSArray:(NSMutableArray *)array andByAppendingPath:(NSString *)name
+{
 
+    //创建json文件 获取根目录
+    NSString * docDir = [NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask,YES) lastObject];
+    NSString * fileName = [docDir stringByAppendingPathComponent:name];
+    if (array) {
+        //字典转二进制
+        NSData *dicData = [NSJSONSerialization dataWithJSONObject:array options:NSJSONWritingPrettyPrinted error:nil];
+        //二进制转字符串
+        NSString *dataStr = [[NSString alloc] initWithData:dicData encoding:NSUTF8StringEncoding];
+        [dataStr writeToFile:fileName atomically:YES encoding:NSUTF8StringEncoding error:nil];
+    }
+}
+//读取
++ (NSMutableArray *)readArrayByAppendingPath:(NSString *)arrayName
+{
 
+    // 拼接路径
+    NSString * docDir = [NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask,YES) lastObject];
+    NSString * fileName = [docDir stringByAppendingPathComponent:arrayName];
+    NSData *jdata = [[NSData alloc] initWithContentsOfFile:fileName];
+    if (jdata) {
+        //反序列化
+        NSArray *array = [NSJSONSerialization JSONObjectWithData:jdata options:0 error:NULL];
+        NSMutableArray *arrayDict=[NSMutableArray array];
+        for (int i=0; i<array.count; i++) {
+            NSDictionary *dict=array[i];
+            [arrayDict addObject:dict];
+        }
+        return arrayDict;
+    }else {
+        MYLOG(@"没有数据。。。");
+        return nil;
+    }
+}
+ //删除本地数组
++(void)removeNSArrayByAppendingPaht:(NSString *)arrayName {
+    NSString *docDir = [NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask,YES) lastObject];
+    NSString * fileName = [docDir stringByAppendingPathComponent:arrayName];
+    NSFileManager *manager=[NSFileManager defaultManager];
+    [manager removeItemAtPath:fileName error:nil];
+}
 @end

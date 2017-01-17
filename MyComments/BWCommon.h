@@ -66,4 +66,11 @@
 
 +(MBProgressHUD *)getHUD;
 
+//文件读写操作
+//保存
++ (void)saveArrayandNSArray:(NSMutableArray *)array andByAppendingPath:(NSString *)name;
+//读取
++ (NSMutableArray *)readArrayByAppendingPath:(NSString *)arrayName;
+//删除
++ (void)removeNSArrayByAppendingPaht:(NSString *)arrayName;
 @end

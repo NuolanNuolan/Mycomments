@@ -10,6 +10,7 @@
 #import "CommentMainTableViewFrame.h"
 #import "CommentMainTableViewCell.h"
 #import "ShopDetailViewController.h"
+#import "MemberTableViewController.h"
 #import "BWCommon.h"
 #import "AFNetworkTool.h"
 
@@ -17,6 +18,7 @@
 
 @property (nonatomic, strong) NSArray *statusFrames;
 @property (nonatomic,assign) NSUInteger gpage;
+@property(nonatomic, assign) NSString *cusername;
 
 @end
 
@@ -97,6 +99,21 @@
 }
 
 
+-(void) memberTouched:(UIButton *) sender{
+    
+    NSDictionary *data = [dataArray objectAtIndex:sender.tag];
+    
+    MYLOG(@"member log: %ld",sender.tag);
+    
+    MemberTableViewController *viewController = [[MemberTableViewController alloc] init];
+    self.memberDelegate = viewController;
+    viewController.hidesBottomBarWhenPushed = YES;
+    [self.memberDelegate setValue:[data objectForKey:@"username"]];
+    
+    [self.navigationController pushViewController:viewController animated:YES];
+    
+}
+
 - (void) refreshingData:(NSUInteger)page callback:(void(^)()) callback
 {
     
@@ -111,11 +128,19 @@
     [postData setValue:[NSString stringWithFormat:@"%ld",page] forKey:@"page"];
     
     if(self.myComments){
-        [postData setValue:[BWCommon getUserInfo:@"username"] forKey:@"username"];
+        if(self.cusername){
+            [postData setValue:self.cusername forKey:@"username"];
+            //是自己的评论
+            if ([self.cusername isEqualToString:[BWCommon getUserInfo:@"username"]]) {
+                _ismyComments = YES;
+            }
+        }else{
+            [postData setValue:[BWCommon getUserInfo:@"username"] forKey:@"username"];
+        }
     }
     //[postData setValue:[NSString stringWithFormat:@"%@",self.OrderInfo_sort] forKey:@"OrderInfo_sort"];
     
-    NSLog(@"%@",url);
+    MYLOG(@"%@",url);
     //load data
     
     [AFNetworkTool postJSONWithUrl:url parameters:postData success:^(id responseObject) {
@@ -138,7 +163,7 @@
                 
             }
             
-            NSLog(@"%@",dataArray);
+            MYLOG(@"%@",dataArray);
             
             self.tableView.footer.hidden = (dataArray.count <=0) ? YES : NO;
             
@@ -154,12 +179,12 @@
         }
         else
         {
-            NSLog(@"%@",[responseObject objectForKey:@"error"]);
+            MYLOG(@"%@",[responseObject objectForKey:@"error"]);
         }
         
     } fail:^{
         [hud removeFromSuperview];
-        NSLog(@"请求失败");
+        MYLOG(@"请求失败");
     }];
     
     
@@ -192,13 +217,19 @@
     
     
     cell.viewFrame = self.statusFrames[indexPath.row];
+    cell.memberButton.tag = indexPath.row;
     cell.hasName = YES;
     cell.separatorInset = UIEdgeInsetsMake(0, 0, 0, 0);
     [cell.likeButton addTarget:self action:@selector(likeTouched:) forControlEvents:UIControlEventTouchUpInside];
     
+    [cell.memberButton addTarget:self action:@selector(memberTouched:) forControlEvents:UIControlEventTouchUpInside];
+    
     if(self.myComments){
         [cell.likeButton setHidden:YES];
     }
+    
+//    [cell.removeButton addTarget:self action:@selector(removeTouched:) forControlEvents:UIControlEventTouchUpInside];
+    
     
     return cell;
 }
@@ -216,16 +247,112 @@
     [self.detailDelegate setValue:sid];
     
 }
+///** TableView 进入或退出编辑状态(TableView 方法). */
+//- (void)setEditing:(BOOL)editing animated:(BOOL)animate
+//{
+//
+//    
+//}
+//
+/** 确定哪些行的cell可以编辑 (UITableViewDataSource协议中方法). */
+- (BOOL)tableView:(UITableView *)tableView canEditRowAtIndexPath:(NSIndexPath *)indexPath
+{
 
--(void) likeTouched:(UIButton *) sender{
-    NSLog(@"%ld",sender.tag);
+    if (_ismyComments) {
+        return YES;
+    }
+    return NO;
+}
+//
+/** 设置某一行cell的编辑模式 (UITableViewDelegate协议中方法). */
+- (UITableViewCellEditingStyle)tableView:(UITableView *)tableView editingStyleForRowAtIndexPath:(NSIndexPath *)indexPath
+{
+
+    return UITableViewCellEditingStyleDelete;
+}
+-(NSString *)tableView:(UITableView *)tableView titleForDeleteConfirmationButtonForRowAtIndexPath:(NSIndexPath *)indexPath{
+    
+    return @"Delete";
+
+    
+}
+//
+///** 提交编辑状态 (UITableViewDataSource协议中方法). */
+- (void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath
+{
+
+    if(editingStyle==UITableViewCellEditingStyleDelete)
+        
+    {
+    
+        MYLOG(@"删除");
+        [self removeTouched:indexPath.row];
+    }
+}
+//
+///** 插入 cell (UITableView 方法). */
+//- (void)insertRowsAtIndexPaths:(NSArray *)indexPaths withRowAnimation:(UITableViewRowAnimation)animation
+//
+///** 删除 cell (UITableView 方法). */
+//- (void)deleteRowsAtIndexPaths:(NSArray *)indexPaths withRowAnimation:(UITableViewRowAnimation)animation
+
+
+
+-(void) removeTouched:(NSInteger ) cid{
+    
     BOOL isLoggedIn = [BWCommon isLoggedIn];
     
     if (!isLoggedIn) {
         
         //__weak CommentViewController *weakSelf = self;
         
-        UIViewController *viewController = [self.parentViewController.storyboard instantiateViewControllerWithIdentifier:@"loginView"];
+        UIViewController *viewController = [[UIStoryboard storyboardWithName:@"Main" bundle:nil]instantiateViewControllerWithIdentifier:@"loginView"];
+        
+        UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:viewController];
+        
+        [self presentViewController:navigationController animated:YES completion:^{
+            //[weakSelf.tableView reloadData];
+        }];
+        
+        return;
+    }
+    
+    
+    
+    UIAlertController*alert=[UIAlertController alertControllerWithTitle:@"System Tips" message:@"Delete confirm?" preferredStyle: UIAlertControllerStyleAlert];
+
+    UIAlertAction*defaultAction=[UIAlertAction actionWithTitle:@"confirm" style:UIAlertActionStyleDefault handler:^(UIAlertAction*action)
+                                 {
+                                     [self deleteCommentPost:cid];
+                                 }];
+    UIAlertAction *cancelAction=[UIAlertAction actionWithTitle:@"cancel" style:UIAlertActionStyleCancel handler:nil];
+    [alert addAction:defaultAction];
+    [alert addAction:cancelAction];
+    
+    [self presentViewController:alert animated:YES completion:nil];
+    
+    
+}
+
+-(void) deleteCommentPost:(NSInteger) cid{
+    
+    
+
+    NSInteger sid = [[[dataArray objectAtIndex:cid] objectForKey:@"sid"] integerValue];
+        MYLOG(@"cid是%ld",(long)sid);
+//    [dataArray removeObjectAtIndex:cid];
+//    [_tableView reloadData];
+}
+
+-(void) likeTouched:(UIButton *) sender{
+    MYLOG(@"%ld",sender.tag);
+    BOOL isLoggedIn = [BWCommon isLoggedIn];
+    
+    if (!isLoggedIn) {
+        
+        //__weak CommentViewController *weakSelf = self;
+        
+        UIViewController *viewController = [[UIStoryboard storyboardWithName:@"Main" bundle:nil]instantiateViewControllerWithIdentifier:@"loginView"];
         
         UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:viewController];
         
@@ -246,7 +373,7 @@
     
     [AFNetworkTool postJSONWithUrl:url parameters:@{@"username":username,@"id":[NSString stringWithFormat:@"%ld",cid]} success:^(id responseObject) {
         
-        NSLog(@"%@",responseObject);
+        MYLOG(@"%@",responseObject);
         NSInteger code = [[responseObject objectForKey:@"code"] integerValue];
         
         [hud removeFromSuperview];
@@ -260,7 +387,7 @@
             
             [alert show];
             
-            NSLog(@"%@",[responseObject objectForKey:@"data"]);
+            MYLOG(@"%@",[responseObject objectForKey:@"data"]);
         }
     } fail:^{
         [hud removeFromSuperview];
@@ -287,6 +414,9 @@
     return _statusFrames;
 }
 
+-(void) setValue:(NSString *)usernameValue{
+    self.cusername = usernameValue;
+}
 
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];

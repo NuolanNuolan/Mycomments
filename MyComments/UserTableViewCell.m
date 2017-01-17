@@ -86,12 +86,22 @@
     NSDictionary *data = self.viewFrame.data;
     
     NSString *icon = [data objectForKey:@"icon"];
+    BOOL isLoggedIn = [BWCommon isLoggedIn];
     if(icon != nil)
+    {
         [self.iconImage setImage:[UIImage imageNamed:icon]];
+        self.textLabel.text = [data objectForKey:@"title"];
+        if (isLoggedIn) {
+            self.valueLabel.text = [data objectForKey:@"text"];
+        }else{
+        
+            self.valueLabel.text = @"0";
+        }
+        
+        
+    }
     
-    
-    self.textLabel.text = [data objectForKey:@"title"];
-    self.valueLabel.text = [data objectForKey:@"text"];
+
     
 }
 
@@ -106,7 +116,8 @@
     self.textLabel.font = [UIFont systemFontOfSize:14];
     
     self.valueLabel.frame = self.viewFrame.valueF;
-    self.valueLabel.font = [UIFont systemFontOfSize:14];
+    [self.valueLabel setTextColor:[BWCommon getRGBColor:0x666666]];
+    self.valueLabel.font = [UIFont systemFontOfSize:12];
     
     
 }

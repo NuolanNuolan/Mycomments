@@ -70,7 +70,7 @@
         return;
     }
     
-    NSString *saddr = [NSString stringWithFormat:@"%f,%f",mapView.myLocation.coordinate.latitude,mapView.myLocation.coordinate.latitude];
+    NSString *saddr = [NSString stringWithFormat:@"%f,%f",mapView.myLocation.coordinate.latitude,mapView.myLocation.coordinate.longitude];
     
     NSString *daddr = [NSString stringWithFormat:@"%f,%f",marker.position.latitude,marker.position.longitude];
     
@@ -79,9 +79,17 @@
         [[UIApplication sharedApplication] openURL:
          [NSURL URLWithString:[NSString stringWithFormat:@"comgooglemaps://?saddr=%@&daddr=%@&directionsmode=driving",saddr,daddr]]];
     } else {
-        NSLog(@"Can't use comgooglemaps://");
+        
+        UIAlertController *alert = [UIAlertController alertControllerWithTitle:@"Error" message:@"Google maps not installed" preferredStyle:UIAlertControllerStyleAlert];
+        UIAlertAction *ok = [UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleDefault handler:nil];
+        [alert addAction:ok];
+        
+        [self presentViewController:alert animated:YES completion:nil];
+        
+        MYLOG(@"Can't use comgooglemaps://");
     }
 }
+
 /*
 #pragma mark - Navigation
 

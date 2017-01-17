@@ -141,9 +141,22 @@
     
     NSString *image_url = [data objectForKey:@"small_image"];
     
+    if(!image_url)
+        image_url = [data objectForKey:@"image"];
+    
+    MYLOG(@"%@",image_url);
+    
     image_url = [NSString stringWithFormat:@"%@/uploadfiles/%@!m90x90.jpg",[BWCommon getBaseInfo:@"site_url"],image_url ];
     
     [self.imageView sd_setImageWithURL:[NSURL URLWithString:image_url] placeholderImage:[UIImage imageNamed:@"appicon.png"] options:SDWebImageCacheMemoryOnly];
+    
+    if([[data objectForKey:@"is_closed"] isEqualToString:@"1"])
+    {
+        UIImageView *closedImage = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"closed"]];
+        closedImage.frame = CGRectMake(0, 0, 100, 78);
+        [self.imageView addSubview:closedImage];
+    }
+    
     
     self.nameLabel.text = [data objectForKey:@"name"];
     self.tagLabel.text = [data objectForKey:@"tags"];
@@ -152,9 +165,13 @@
     
     CGFloat distance = [[data objectForKey:@"distance"] floatValue];
     
-    self.distanceLabel.text = [self formatDistance:distance];
-
-    NSString *rateImage = [NSString stringWithFormat:@"comment_star_%@.png",[data objectForKey:@"rate"] ];
+    if(distance > 0){
+        self.distanceLabel.text = [self formatDistance:distance];
+    }
+    
+    int rate = [[data objectForKey:@"rate"] intValue];
+    
+    NSString *rateImage = [NSString stringWithFormat:@"comment_star_%d.png",rate ];
     [self.rateView setImage:[UIImage imageNamed:rateImage]];
 }
 
@@ -164,9 +181,19 @@
         
         str = [NSString stringWithFormat:@"%.1f km",(distance / 1000) ];
     }
-    else
+    else if(distance<=1000&&distance>500)
     {
-        str = [NSString stringWithFormat:@"%f m", distance  ];
+        str = [NSString stringWithFormat:@"<1km"];
+    }else if (distance<=500&&distance>100)
+    {
+    
+        str = [NSString stringWithFormat:@"<500m"];
+        
+    }else if (distance<=200)
+    {
+    
+         str = [NSString stringWithFormat:@"<200m"];
+        
     }
     return str;
 }
