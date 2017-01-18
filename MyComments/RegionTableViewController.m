@@ -10,8 +10,13 @@
 #import "BWCommon.h"
 #import "AFNetworkTool.h"
 
-@interface RegionTableViewController ()
+@interface RegionTableViewController ()<UIScrollViewDelegate,UISearchDisplayDelegate, UISearchBarDelegate>
+{
 
+    //定义一个不变的数组 来保存原始数据
+    NSArray *TheSameArr;
+}
+@property(nonatomic,strong)UISearchBar *searchBar;
 
 @end
 
@@ -44,9 +49,9 @@ CGSize size;
     
     self.navigationItem.title = @"Location";
     
-    UISearchBar *searchBar = [[UISearchBar alloc] initWithFrame:CGRectMake(0, 0, size.width, 40)];
-    
-    [self.tableView setTableHeaderView:searchBar];
+    _searchBar = [[UISearchBar alloc] initWithFrame:CGRectMake(0, 0, size.width, 40)];
+    _searchBar.delegate=self;
+    [self.tableView setTableHeaderView:_searchBar];
     
     //searchBar.text = @"Search";
     //searchBar add
@@ -88,7 +93,7 @@ CGSize size;
             
             [dataArray insertObject:gpsDict2 atIndex:0];
             }
-
+            TheSameArr = [NSArray arrayWithArray:dataArray];
             //self.tableView.footer.hidden = (dataArray.count <=0) ? YES : NO;
             
             MYLOG(@"city data :%@",[responseObject objectForKey:@"data"]);
@@ -167,7 +172,73 @@ CGSize size;
 - (NSString *)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section{
     return [[dataArray objectAtIndex:section] objectForKey:@"region_name"];
 }
+//滚动表格时键盘失去焦点
+-(void)scrollViewWillBeginDragging:(UIScrollView *)scrollView
+{
+    
+    [_searchBar setShowsCancelButton:NO animated:YES];
+    [_searchBar resignFirstResponder];
+    
+}
+#pragma mark-searchBarDelegate
 
+//在搜索框中修改搜索内容时，自动触发下面的方法
+-(BOOL)searchBarShouldEndEditing:(UISearchBar *)searchBar{
+    
+
+    
+    return YES;
+}
+-(void)searchBarTextDidBeginEditing:(UISearchBar *)searchBar{
+
+    
+    
+}
+-(void)searchBar:(UISearchBar *)searchBar textDidChange:(NSString *)searchText{
+
+    
+    MYLOG(@"%@",searchText);
+    if (![searchText isEqualToString:@""]) {
+        dataArray = [NSMutableArray arrayWithArray:TheSameArr];
+        if (dataArray.count!=0) {
+            //定义相关
+            NSArray *ForOneArr = [[NSArray alloc]init];
+            NSDictionary *ForTwoDic = [[NSDictionary alloc]init];
+            //定义重组数据相关
+            //        childrens数组
+            //        NSMutableArray *ChildrensArr = [NSMutableArray arrayWithCapacity:0];
+            NSMutableArray *dataSeaarr = [NSMutableArray arrayWithCapacity:0];
+            for (int i=0; i<dataArray.count; i++) {
+                NSMutableDictionary * ForThereDic = [NSMutableDictionary dictionaryWithDictionary:[dataArray objectAtIndex:i]];
+                ForOneArr= [ForThereDic objectForKey:@"childrens"];
+                //循环之前要清空
+                NSMutableArray *ChildrensArr = [NSMutableArray arrayWithCapacity:0];
+                for (int j=0; j<ForOneArr.count; j++) {
+                    ForTwoDic = [ForOneArr objectAtIndex:j];
+                    if ([BWCommon DoesItInclude:ForTwoDic[@"region_name"] withString:searchText]) {
+                        //如果包含了这个String就把这整个添加进数据
+                        [ChildrensArr addObject:ForTwoDic];
+                    }
+                }
+                if (ChildrensArr.count>0) {
+                    [ForThereDic setValue:ChildrensArr forKey:@"childrens"];
+                    [dataSeaarr addObject:ForThereDic];
+                    
+                }
+            }
+            MYLOG(@"搜索结果%@",dataSeaarr);
+            //展示搜索结果
+            dataArray = [NSMutableArray arrayWithArray:dataSeaarr];
+            [self.tableView reloadData];
+        }
+
+    }else
+    {
+    
+        dataArray = [NSMutableArray arrayWithArray:TheSameArr];
+        [self.tableView reloadData];
+    }
+}
 /*
 #pragma mark - Navigation
 

@@ -55,16 +55,20 @@ NSString *trackViewURL;
     
         [self.cityItemButton setTitle:@"All" forState:UIControlStateNormal];
     }
-    
-    self.region_id = [BWCommon getUserInfo:@"region_id"];
-    
-    
-    if(!self.region_id )
+    //这里是判断他有没有切换城市 如果切换了
+    NSString *reshregion_id =[BWCommon getUserInfo:@"region_id"];
+    if (reshregion_id) {
+        if (![reshregion_id isEqualToString:self.region_id]) {
+            self.gpage = 1;
+            self.region_id = reshregion_id;
+        }
+    }else
     {
+    
         self.region_id = @"20";
     }
     
-    MYLOG(@"%@",self.region_id);
+    MYLOG(@"我刷新了一次我的region_id%@",self.region_id);
     
 //    self.gpage = 1;
     

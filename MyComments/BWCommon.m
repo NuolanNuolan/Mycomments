@@ -41,7 +41,22 @@
     
     return [udata objectForKey:key];
 }
-
+//判断是否包含某个字符不缺分大小写
++(BOOL)DoesItInclude:(NSString *)str withString:(NSString *)str1
+{
+    if (str) {
+        if([str rangeOfString:str1 options:NSCaseInsensitiveSearch].location == NSNotFound){
+            
+            return NO;
+        }else
+        {
+            
+            return YES;
+        }
+    }
+    
+    return NO;
+}
 +(void) logout{
     NSUserDefaults *udata = [NSUserDefaults standardUserDefaults];
     

@@ -36,7 +36,8 @@
 +(void) setCommonData;
 
 +(void) setRegionData;
-
+//判断是否包含某个字符//判断是否包含某个字符不缺分大小写
++(BOOL)DoesItInclude:(NSString *)str withString:(NSString *)str1;
 +(NSMutableArray *) loadRegions:(NSInteger) parent_id initData:(NSString *) name;
 
 //+(NSMutableArray *) loadCategory:(NSInteger) parent_id initData:(NSString *) name;
