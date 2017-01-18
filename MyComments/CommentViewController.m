@@ -25,7 +25,11 @@
 @implementation CommentViewController
 
 @synthesize dataArray;
+-(void)viewWillAppear:(BOOL)animated
+{
 
+    [self refreshingData:self.gpage callback:^{}];
+}
 - (void)viewDidLoad {
     [super viewDidLoad];
     // Do any additional setup after loading the view.
@@ -61,13 +65,14 @@
     self.tableView = tableView;
     self.tableView.delegate = self;
     self.tableView.dataSource = self;
+    self.tableView.showsVerticalScrollIndicator=NO;
     
     UIView *v = [[UIView alloc] initWithFrame:CGRectZero];
     [self.tableView setTableFooterView:v];
     
 
     self.gpage = 1;
-    [self refreshingData:self.gpage callback:^{}];
+//    [self refreshingData:self.gpage callback:^{}];
     
     [self.tableView addLegendHeaderWithRefreshingTarget:self refreshingAction:@selector(headerRefreshing)];
     
@@ -260,7 +265,15 @@
 
     if (_ismyComments) {
         return YES;
+    }else
+    {
+        if ([[[dataArray objectAtIndex:indexPath.row] objectForKey:@"username"]isEqualToString:[BWCommon getUserInfo:@"username"]]) {
+            return YES;
+        }
+
+
     }
+//    MYLOG(@"%@",dataArray);
     return NO;
 }
 //
@@ -336,13 +349,26 @@
 
 -(void) deleteCommentPost:(NSInteger) cid{
     
+    //cid是indexpath.row
+    NSInteger sid = [[[dataArray objectAtIndex:cid] objectForKey:@"id"] integerValue];
+//    NSInteger uid = [[[dataArray objectAtIndex:cid] objectForKey:@"uid"] integerValue];
+//        MYLOG(@"cid是%ld,uid是%ld",(long)sid,(long)uid);
+    [HttpEngine DeleteComments:[BWCommon getUserInfo:@"username"] withcid:sid complete:^(NSString *issucc) {
+        if ([issucc isEqualToString:@"succ"]) {
+            [MBProgressHUD showSuccess:@"delete success"];
+            [dataArray removeObjectAtIndex:cid];
+            [self.tableView reloadData];
+        }else
+        {
+            UIAlertController*alert=[UIAlertController alertControllerWithTitle:@"System Tips" message:issucc preferredStyle: UIAlertControllerStyleAlert];
+            UIAlertAction *cancelAction=[UIAlertAction actionWithTitle:@"cancel" style:UIAlertActionStyleCancel handler:nil];
+            [alert addAction:cancelAction];
+            [self presentViewController:alert animated:YES completion:nil];
+
+        }
+    }];
     
 
-    NSInteger sid = [[[dataArray objectAtIndex:cid] objectForKey:@"sid"] integerValue];
-        MYLOG(@"cid是%ld",(long)sid);
-    MYLOG(@"我的UID是%@",[BWCommon getUserInfo:@"uid"]);
-//    [dataArray removeObjectAtIndex:cid];
-//    [_tableView reloadData];
 }
 
 -(void) likeTouched:(UIButton *) sender{
@@ -371,7 +397,6 @@
     NSInteger cid = sender.tag;
     
     NSString *url =  [[BWCommon getBaseInfo:@"api_url"] stringByAppendingString:@"likeIt"];
-    
     [AFNetworkTool postJSONWithUrl:url parameters:@{@"username":username,@"id":[NSString stringWithFormat:@"%ld",cid]} success:^(id responseObject) {
         
         MYLOG(@"%@",responseObject);
@@ -399,8 +424,8 @@
 
 - (NSArray *)statusFrames
 {
-    if (_statusFrames == nil) {
-        
+//    if (_statusFrames == nil) {
+    
         NSMutableArray *models = [NSMutableArray arrayWithCapacity:dataArray.count];
         
         for (NSDictionary *dict in dataArray) {
@@ -409,8 +434,8 @@
             vf.data = dict;
             [models addObject:vf];
         }
-        self.statusFrames = [models copy];
-    }
+        _statusFrames = [models copy];
+//    }
     
     return _statusFrames;
 }

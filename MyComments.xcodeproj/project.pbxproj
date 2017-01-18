@@ -193,6 +193,7 @@
 		32F877AE1BF8843800CC9C3A /* LDXScore.m in Sources */ = {isa = PBXBuildFile; fileRef = 32F877AD1BF8843800CC9C3A /* LDXScore.m */; };
 		EAC30A3C1E13B9AA00A59DE8 /* MBProgressHUD.bundle in Resources */ = {isa = PBXBuildFile; fileRef = EAC30A391E13B9AA00A59DE8 /* MBProgressHUD.bundle */; };
 		EAC30A3D1E13B9AA00A59DE8 /* MBProgressHUD+HM.m in Sources */ = {isa = PBXBuildFile; fileRef = EAC30A3B1E13B9AA00A59DE8 /* MBProgressHUD+HM.m */; };
+		EAE09DB51E2F09F4007EEBD3 /* HttpEngine.m in Sources */ = {isa = PBXBuildFile; fileRef = EAE09DB41E2F09F4007EEBD3 /* HttpEngine.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -471,6 +472,8 @@
 		EAC30A3A1E13B9AA00A59DE8 /* MBProgressHUD+HM.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "MBProgressHUD+HM.h"; sourceTree = "<group>"; };
 		EAC30A3B1E13B9AA00A59DE8 /* MBProgressHUD+HM.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "MBProgressHUD+HM.m"; sourceTree = "<group>"; };
 		EAD02DD01E10C198005743E3 /* PrefixHeader.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = PrefixHeader.pch; path = MyComments/PrefixHeader.pch; sourceTree = "<group>"; };
+		EAE09DB31E2F09F4007EEBD3 /* HttpEngine.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HttpEngine.h; sourceTree = "<group>"; };
+		EAE09DB41E2F09F4007EEBD3 /* HttpEngine.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HttpEngine.m; sourceTree = "<group>"; };
 		EAE35199ABFB8B33C6C42288 /* Pods-MyComments.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MyComments.debug.xcconfig"; path = "Pods/Target Support Files/Pods-MyComments/Pods-MyComments.debug.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -761,6 +764,8 @@
 				329A4B6B1B469A5B006F30C3 /* BWCommon.m */,
 				32704F681C53DC44006A08B3 /* ImageBrowser.h */,
 				32704F691C53DC82006A08B3 /* ImageBrowser.m */,
+				EAE09DB31E2F09F4007EEBD3 /* HttpEngine.h */,
+				EAE09DB41E2F09F4007EEBD3 /* HttpEngine.m */,
 			);
 			name = lib;
 			sourceTree = "<group>";
@@ -1285,6 +1290,7 @@
 				32410AB11BA32018007960FF /* PhotoViewController.m in Sources */,
 				32410A781B9DDAEC007960FF /* AvatarTableViewCell.m in Sources */,
 				32410A801B9F224B007960FF /* SearchTableViewCell.m in Sources */,
+				EAE09DB51E2F09F4007EEBD3 /* HttpEngine.m in Sources */,
 				329A4B821B46CECC006F30C3 /* BWSectionView.m in Sources */,
 				32AE9DBA1BF87B5E005C1B6B /* AddCommentViewController.m in Sources */,
 				3239EA771C9F98DD0073CC6E /* ForgetStep3ViewController.m in Sources */,

@@ -8,6 +8,8 @@
 #import "MBProgressHUD+HM.h"
 #import "AFNetworkTool.h"
 #import "ReactiveCocoa.h"
+#import "BWCommon.h"
+#import "HttpEngine.h"
 #import <SDWebImage/UIButton+WebCache.h>
 #import "UIImage+MultiFormat.h"
 #import <JSPatchPlatform/JSPatch.h>

@@ -47,10 +47,13 @@ NSString *trackViewURL;
     NSString *city_name = [BWCommon getUserInfo:@"region_name"];
     if(city_name)
     {
-        //if ([city_name length] > 10)
-        //  city_name =[NSString stringWithFormat:@"%@...",[city_name substringToIndex:10]];
-        
+        if ([city_name length] > 13)
+          city_name =[NSString stringWithFormat:@"%@...",[city_name substringToIndex:13]];
         [self.cityItemButton setTitle:city_name forState:UIControlStateNormal];
+    }else
+    {
+    
+        [self.cityItemButton setTitle:@"All" forState:UIControlStateNormal];
     }
     
     self.region_id = [BWCommon getUserInfo:@"region_id"];
@@ -63,9 +66,9 @@ NSString *trackViewURL;
     
     MYLOG(@"%@",self.region_id);
     
-    self.gpage = 1;
+//    self.gpage = 1;
     
-    [self refreshingData:1 callback:^{}];
+    [self refreshingData:self.gpage callback:^{}];
 }
 - (void)viewDidLoad {
     [super viewDidLoad];
@@ -203,7 +206,7 @@ NSString *trackViewURL;
     popularCityArray = [BWCommon getDataInfo:@"popular_city"];
     
 //    MYLOG(@"popular City Array:%@",popularCityArray);
-    //self.gpage = 1;
+    self.gpage = 1;
     
     //[self refreshingData:self.gpage callback:^{}];
     
