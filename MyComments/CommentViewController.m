@@ -28,13 +28,14 @@
 -(void)viewWillAppear:(BOOL)animated
 {
 
-    [self refreshingData:self.gpage callback:^{}];
+//    [self refreshingData:self.gpage callback:^{}];
 }
 - (void)viewDidLoad {
     [super viewDidLoad];
     // Do any additional setup after loading the view.
     
     [self pagelayout];
+    [self refreshingData:self.gpage callback:^{}];
 }
 
 - (void) pagelayout{

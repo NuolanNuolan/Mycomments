@@ -32,6 +32,9 @@
     [BWCommon loadCommonData];
     //JS热更新  线上
     [JSPatch startWithAppKey:JsPatchKey];
+    #ifdef DEBUG
+    [JSPatch setupDevelopment];
+    #endif
     [JSPatch sync];
     //JS热更新 线下
 //    [JSPatch testScriptInBundle];
@@ -113,7 +116,7 @@
                 NSString* msg =[releaseInfo objectForKey:@"releaseNotes"];
                 
                 
-                UIAlertController *alertControl = [UIAlertController alertControllerWithTitle:@"New Version Tips" message:[NSString stringWithFormat:@"%@%@%@", @"Features",msg, @"\nUpdate Now？"] preferredStyle:UIAlertControllerStyleAlert];
+                UIAlertController *alertControl = [UIAlertController alertControllerWithTitle:@"New Version Tips" message:[NSString stringWithFormat:@"%@%@%@", @"Features\n",msg, @"\nUpdate Now？"] preferredStyle:UIAlertControllerStyleAlert];
                 [alertControl addAction:[UIAlertAction actionWithTitle:@"Update" style:UIAlertActionStyleDestructive handler:^(UIAlertAction *action) {
                     // 点击确定按钮的时候, 会调用这个bloc
                     [[UIApplication sharedApplication] openURL:[NSURL URLWithString:_trackViewURL]];
