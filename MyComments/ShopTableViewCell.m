@@ -148,7 +148,7 @@
     
     image_url = [NSString stringWithFormat:@"%@/uploadfiles/%@!m90x90.jpg",[BWCommon getBaseInfo:@"site_url"],image_url ];
     
-    [self.imageView sd_setImageWithURL:[NSURL URLWithString:image_url] placeholderImage:[UIImage imageNamed:@"appicon.png"] options:SDWebImageCacheMemoryOnly];
+    [self.imageView sd_setImageWithURL:[NSURL URLWithString:image_url] placeholderImage:[UIImage imageNamed:@"appicon.png"]];
     
     if([[data objectForKey:@"is_closed"] isEqualToString:@"1"])
     {
@@ -171,7 +171,7 @@
     
     int rate = [[data objectForKey:@"rate"] intValue];
     
-    NSString *rateImage = [NSString stringWithFormat:@"comment_star_%d.png",rate ];
+    NSString *rateImage = [NSString stringWithFormat:@"comment_star_%d",rate ];
     [self.rateView setImage:[UIImage imageNamed:rateImage]];
 }
 

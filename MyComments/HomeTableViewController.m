@@ -13,7 +13,6 @@
 #import "ShopViewController.h"
 #import "ShopDetailViewController.h"
 #import "RegionTableViewController.h"
-//#import "SearchResultsViewController.h"
 #import "MemberTableViewController.h"
 #import "HomeMapViewController.h"
 #import "BWSectionView.h"
@@ -61,6 +60,7 @@ NSString *trackViewURL;
         if (![reshregion_id isEqualToString:self.region_id]) {
             self.gpage = 1;
             self.region_id = reshregion_id;
+            [self refreshingData:self.gpage callback:^{}];
         }
     }else
     {
@@ -72,7 +72,7 @@ NSString *trackViewURL;
     
 //    self.gpage = 1;
     
-    [self refreshingData:self.gpage callback:^{}];
+    
 }
 - (void)viewDidLoad {
     [super viewDidLoad];
@@ -82,9 +82,20 @@ NSString *trackViewURL;
     self.regions = [[NSArray alloc]init];
     //注册监听通知
     [self NotifationTableview];
-    //self.region_id = @"20";
+    
     
     [self pageLayout];
+    
+    NSString *reshregion_id =[BWCommon getUserInfo:@"region_id"];
+    if (reshregion_id) {
+        
+        self.region_id = reshregion_id;
+    }else
+    {
+        
+        self.region_id = @"20";
+    }
+    [self refreshingData:self.gpage callback:^{}];
 
 }
 -(void)NotifationTableview
@@ -491,6 +502,7 @@ NSString *trackViewURL;
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
 {
     if(indexPath.section == 0){
+        
         NSInteger swidth = (size.width *0.6)/3;
         return swidth + 40;
     }
@@ -505,7 +517,6 @@ NSString *trackViewURL;
     
     return 30;
 }
-
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
     
@@ -635,7 +646,7 @@ NSString *trackViewURL;
     self.delegate = viewController;
     viewController.hidesBottomBarWhenPushed = YES;
     
-    //MYLOG(@"sender title%@",sender.currentTitle);
+//    MYLOG(@"sender title%@",sender.currentTitle);
     [self.delegate setValue:sender.tag cid:0 region_name:sender.currentTitle cat_name:@""];
     [self.navigationController pushViewController:viewController animated:YES];
     

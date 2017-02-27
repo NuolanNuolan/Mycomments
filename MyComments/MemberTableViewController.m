@@ -135,7 +135,6 @@ bool mLoadedData=YES;
         {
             NSDictionary *udata = [json objectForKey:@"data"];
             
-            
             NSString *avatar = [NSString stringWithFormat:@"%@%@",[BWCommon getBaseInfo:@"site_url"],[udata objectForKey:@"avatar_small"]];
             
             self.baseInfo = [[NSMutableDictionary alloc] initWithObjectsAndKeys:[udata objectForKey:@"username"],@"title",[udata objectForKey:@"email"],@"text",avatar,@"avatar", nil];

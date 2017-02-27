@@ -128,12 +128,7 @@
     {
         [self.avatarImage sd_setImageWithURL:[NSURL URLWithString:icon] placeholderImage:[UIImage imageNamed:@"noavatar_large"] options:SDWebImageCacheMemoryOnly];
     }
-    //if(icon != nil)
-    //
-    
-    
     self.textLabel.text = [data objectForKey:@"title"];
-//    self.valueLabel.text = [data objectForKey:@"text"];
     NSString *UserEmail =[data objectForKey:@"text"];
     if (![UserEmail isEqualToString:@""]) {
         NSInteger length = [UserEmail length];
@@ -149,9 +144,6 @@
 
         self.valueLabel.text =string;
     }
-    
-    
-    
 }
 
 /**

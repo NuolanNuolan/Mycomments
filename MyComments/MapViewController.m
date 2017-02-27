@@ -33,8 +33,8 @@
     self.navigationItem.title = shop_name;
     // Creates a marker in the center of the map.
     
-    float lat =[[[[self shopDict] objectForKey:@"shop"] objectForKey:@"lat"] floatValue];
-    float lng =[[[[self shopDict] objectForKey:@"shop"] objectForKey:@"lng"] floatValue];
+    double lat =[[[[self shopDict] objectForKey:@"shop"] objectForKey:@"lat"] doubleValue];
+    double lng =[[[[self shopDict] objectForKey:@"shop"] objectForKey:@"lng"] doubleValue];
 
     GMSCameraPosition *camera = [GMSCameraPosition cameraWithLatitude:lat
                                                             longitude:lng

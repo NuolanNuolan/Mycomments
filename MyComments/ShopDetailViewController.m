@@ -977,9 +977,6 @@ NSInteger uploading_number = 0;
     MYLOG(@"%ld",uploading_number);
     for (PHAsset *asset in assets) {
         //MYLOG(@"%@",asset);
-        
-        
-        
         PHImageRequestOptions * imageRequestOptions = [[PHImageRequestOptions alloc] init];
         imageRequestOptions.synchronous = YES;
         [[PHImageManager defaultManager]

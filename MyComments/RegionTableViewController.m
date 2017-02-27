@@ -79,9 +79,7 @@ CGSize size;
         if(code == 200)
         {
             dataArray = [[responseObject objectForKey:@"data"] mutableCopy];
-            
-            //
-            
+
             NSString *gps_region_name = [BWCommon getUserInfo:@"gps_region_name"];
             NSString *gps_region_id = [BWCommon getUserInfo:@"gps_region_id"];
             

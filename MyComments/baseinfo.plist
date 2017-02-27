@@ -2,6 +2,8 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+	<key>api_url--</key>
+	<string>http://test.mycomments.com.my/default/app/</string>
 	<key>site_url</key>
 	<string>http://www.mycomments.com.my</string>
 	<key>api_url</key>

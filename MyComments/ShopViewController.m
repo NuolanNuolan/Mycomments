@@ -390,7 +390,6 @@ CGSize size;
     ShopDetailViewController *viewController = [[ShopDetailViewController alloc] init];
     self.detailDelegate = viewController;
     viewController.hidesBottomBarWhenPushed = YES;
-    
     [self.navigationController pushViewController:viewController animated:YES];
     NSInteger sid = [[[dataArray objectAtIndex:[indexPath row]] objectForKey:@"sid"] integerValue];
     [self.detailDelegate setValue:sid];
@@ -464,6 +463,7 @@ CGSize size;
         subCategoryData = [self subCategory:row];
         return [subCategoryData count];
     }
+    
     
     return 0;
     

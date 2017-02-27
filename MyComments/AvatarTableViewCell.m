@@ -71,6 +71,7 @@
         [self.contentView addSubview:valueLabel];
         
         UIButton *avatarButton = [[UIButton alloc] initWithFrame:CGRectMake(15, 15, 50, 50)];
+        //按钮高亮
         avatarButton.adjustsImageWhenHighlighted=NO;
         self.avatarButton = avatarButton;
         [self.contentView addSubview:avatarButton];

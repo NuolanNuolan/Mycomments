@@ -244,7 +244,6 @@ bool loadedData=YES;
         
         cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
         
-        //[cell.contentView addSubview:self.photoButton];
         
         self.photoButton = cell.avatarButton;
         
@@ -346,9 +345,11 @@ bool loadedData=YES;
     MYLOG(@"iconAction: %ld",sender.tag);
     if(sender.tag == 1){
         MyFansViewController *viewController = [[MyFansViewController alloc] init];
+//        viewController.hidesBottomBarWhenPushed=YES;
         [self.navigationController pushViewController:viewController animated:YES];
     }else if(sender.tag == 2){
         MyFollowersViewController *viewController = [[MyFollowersViewController alloc] init];
+//        viewController.hidesBottomBarWhenPushed=YES;
         [self.navigationController pushViewController:viewController animated:YES];
     }
     

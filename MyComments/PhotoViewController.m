@@ -180,6 +180,8 @@ CGSize size;
             for(NSInteger i=0;i<[dataArray count];i++){
                 NSString *image_url = [[dataArray objectAtIndex:i ] objectForKey:@"original_image"];
                 NSString *image_url2 = [NSString stringWithFormat:@"%@/uploadfiles/%@!w640x800.jpg",[BWCommon getBaseInfo:@"site_url"],image_url];
+                MYLOG(@"%@",[NSString stringWithFormat:@"%@/uploadfiles/%@",[BWCommon getBaseInfo:@"site_url"],image_url]);
+                //这个图片地址是经过剪切的
                 
                 [self.photos addObject:[MWPhoto photoWithURL:[NSURL URLWithString:image_url2]]];
             
@@ -252,6 +254,7 @@ CGSize size;
             
             [cell.contentView addSubview:imageView];
         }];
+        
         
         
         

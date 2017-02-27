@@ -87,13 +87,13 @@ CGSize size;
     
     self.photoArray = [[NSMutableArray alloc] init];
     self.photoDataArray = [[NSMutableArray alloc] init];
-    
+    //第一个
     UITextField *name = [self createTextField:@"" Title:@"Merchant Name"];
     name.frame = CGRectMake(15,20,size.width-30,50);
     [sclView addSubview:name];
     name.delegate = self;
     self.name = name;
-    
+    //第二个
     UITextField *category = [self createTextField:@"" Title:@"Category"];
     category.frame = CGRectMake(15,90,size.width-30,50);
     [sclView addSubview:category];
@@ -112,7 +112,7 @@ CGSize size;
 
     
     [self setPickerView:category];
-    
+    //第三个
     UITextField *location = [self createTextField:@"" Title:@"Location"];
     location.frame = CGRectMake(15,160,size.width-30,50);
     [sclView addSubview:location];
@@ -133,7 +133,7 @@ CGSize size;
     [self setPickerView:location];
     
     NSInteger h = 230;
-    
+    //第四个
     UITextField *address = [self createTextField:@"" Title:@"Address"];
     address.frame = CGRectMake(15,h,size.width-30,50);
     [sclView addSubview:address];
@@ -141,7 +141,7 @@ CGSize size;
     self.address = address;
     
     h+=70;
-    
+    //第五个
     UITextField *tel = [self createTextField:@"" Title:@"Tel"];
     tel.frame = CGRectMake(15,h,size.width-30,50);
     [sclView addSubview:tel];
@@ -149,6 +149,7 @@ CGSize size;
     self.tel = tel;
     
     h+=70;
+    //第六个
     UITextField *website = [self createTextField:@"" Title:@"Webite"];
     website.frame = CGRectMake(15,h,size.width-30,50);
     [sclView addSubview:website];
@@ -156,6 +157,7 @@ CGSize size;
     self.website = website;
     
     h+=70;
+    //第七个
     UITextField *openingTime = [self createTextField:@"" Title:@"Opening Time"];
     openingTime.frame = CGRectMake(15,h,size.width-30,50);
     [sclView addSubview:openingTime];
@@ -316,7 +318,7 @@ CGSize size;
 -(void) submitTouched:(UIButton *) sender{
     
     UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Tips" message:@"" delegate:self cancelButtonTitle:@"Ok" otherButtonTitles:nil];
-    
+
     if([self.name.text isEqualToString:@""]){
         [alert setMessage:@"Please input merchant name"];
         [alert show];
@@ -557,7 +559,7 @@ CGSize size;
 
         }
         
-        
+        MYLOG(@"%ld",(long)cid);
         //self.province.text = [selectedRegions componentsJoinedByString:@" - "];
     }
     else if(pickerView.tag == 2)
@@ -924,7 +926,7 @@ CGSize size;
 
 - (void)saveImage:(UIImage *)tempImage WithName:(NSString *)imageName
 {
-    NSData* imageData = UIImageJPEGRepresentation(tempImage,1);
+    NSData* imageData = UIImageJPEGRepresentation(tempImage,0.3);
     NSArray* paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
     NSString* documentsDirectory = [paths objectAtIndex:0];
     // Now we get the full path to the file

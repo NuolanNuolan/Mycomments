@@ -159,11 +159,6 @@ CGSize size;
     return row;
 }
 
-- (void)didReceiveMemoryWarning {
-    [super didReceiveMemoryWarning];
-    // Dispose of any resources that can be recreated.
-}
-
 #pragma mark - Table view data source
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
@@ -209,7 +204,7 @@ CGSize size;
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
 
     ShopViewController *viewController = [[ShopViewController alloc] init];
-    //self.detailDelegate = viewController;
+    
     self.delegate = viewController;
     [self.delegate setValue:0 cid:indexPath.row+2 region_name:@"" cat_name:@""];
     viewController.hidesBottomBarWhenPushed = YES;

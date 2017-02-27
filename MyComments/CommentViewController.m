@@ -221,7 +221,6 @@
     
     CommentMainTableViewCell *cell = [CommentMainTableViewCell cellWithTableView:tableView];
     
-    
     cell.viewFrame = self.statusFrames[indexPath.row];
     cell.memberButton.tag = indexPath.row;
     cell.hasName = YES;

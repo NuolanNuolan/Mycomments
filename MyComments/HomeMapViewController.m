@@ -80,6 +80,7 @@ CLLocation *_location;
                                                             longitude:101.7
                                                                  zoom:14];
     mapView_ = [GMSMapView mapWithFrame:CGRectZero camera:camera];
+    
     mapView_.myLocationEnabled = YES;
     mapView_.settings.myLocationButton = YES;
     mapView_.settings.scrollGestures = YES;
@@ -109,7 +110,6 @@ CLLocation *_location;
     
     [postData setValue:[NSString stringWithFormat:@"%f",lng] forKey:@"lng"];
     [postData setValue:[NSString stringWithFormat:@"%f",lat] forKey:@"lat"];
-    
     //[postData setValue:@"101.7" forKey:@"lng"];
     //[postData setValue:@"3.16" forKey:@"lat"];
 
@@ -168,7 +168,7 @@ CLLocation *_location;
 -(void) mapView:(GMSMapView *)mapView didChangeCameraPosition:(GMSCameraPosition *)position{
     MYLOG(@"mapView moved!!!! %@",position);
     
-    //[self loadRelatedShop:position.target.longitude lat:position.target.latitude];
+//    [self loadRelatedShop:position.target.longitude lat:position.target.latitude];
 }
 
 -(void) mapView:(GMSMapView *)mapView idleAtCameraPosition:(GMSCameraPosition *)position{
